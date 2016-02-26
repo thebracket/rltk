@@ -16,8 +16,7 @@ public:
 	void print(const int idx, const std::string text, const color_t fg, const color_t bg);
 	inline void print(const int x, const int y, const std::string text, const color_t fg, const color_t bg) { print(idx(x,y), text, fg, bg); };
 
-private:
-	std::pair<int,int> font_size;
+	std::pair<int,int> font_size{8,8};
 	std::pair<int,int> terminal_size;
 	bool render_background = true;
 	uint8_t alpha = 255;

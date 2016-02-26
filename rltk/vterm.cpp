@@ -10,12 +10,13 @@ namespace vterm {
 void layer::resize(const std::pair<int,int> screen_size) {
 	const int width = screen_size.first / font_size.first;
 	const int height = screen_size.second / font_size.second;
+	terminal_size = std::make_pair(width,height);
 	buffer.resize(height*width);
 	cls();
 }
 
 void layer::cls() {
-	constexpr char_t blank{ black, black, ' ' };
+	constexpr char_t blank{ black, black, 'A' };
 	std::fill(buffer.begin(), buffer.end(), blank);
 }
 

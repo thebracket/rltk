@@ -24,7 +24,7 @@ void sdl2::present() {
 }
 
 void sdl2::clear_to_black() {
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 	SDL_RenderClear(renderer);
 }
 

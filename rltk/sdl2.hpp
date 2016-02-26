@@ -31,7 +31,6 @@ public:
 
 	void load_texture(const std::string tag, const std::string filename);
 
-private:
 	std::string window_title = "RLTK Window";
 	SDL_Window * window;
 	SDL_Renderer * renderer;

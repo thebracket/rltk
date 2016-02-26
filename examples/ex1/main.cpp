@@ -1,9 +1,12 @@
 #include <iostream>
 #include "../../rltk/rltk.hpp"
+#include <sstream>
 
 bool tick(double duration_ms) {
 	auto res = rltk::get_screen_size_px();
-	std::cout << "Frame duration: " << duration_ms << " ms. Resolution: " << res.first << "x" << res.second << "\n";
+	std::stringstream ss;
+	ss << "Frame duration: " << duration_ms << " ms. Resolution: " << res.first << "x" << res.second << "\n";
+	rltk::print_to_root(1, 1, ss.str());
 	return false;
 }
 
