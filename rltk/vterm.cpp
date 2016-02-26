@@ -19,6 +19,14 @@ void layer::cls() {
 	std::fill(buffer.begin(), buffer.end(), blank);
 }
 
+void layer::print(const int idx, const std::string text, const color_t fg, const color_t bg) {
+	for (std::size_t i=0; i<text.size(); ++i) {
+		const char target = text[i];
+		const char_t render{ fg, bg, static_cast<uint8_t>(target) };
+		buffer[idx] = render;
+	}
+}
+
 }
 }
 
