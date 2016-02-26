@@ -8,7 +8,8 @@ namespace vterm {
 
 class layer {
 public:
-		
+	void resize(const std::pair<int,int> screen_size);
+	void cls(); 	
 
 private:
 	std::pair<int,int> font_size;
