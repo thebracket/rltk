@@ -9,7 +9,7 @@ namespace internal {
 
 extern std::unordered_map<std::string, texture_resource> textures;
 
-void load_texture(SDL_Renderer * renderer, const std::string tag, const std::string filename);
+void load_texture_resource(SDL_Renderer * renderer, const std::string tag, const std::string filename);
 SDL_Texture * get_texture(const std::string tag);
 
 }

@@ -1,5 +1,6 @@
 #include "sdl2.hpp"
 #include <stdexcept>
+#include "sdl2_resource_manager.hpp"
 
 namespace rltk {
 namespace internal {
@@ -45,6 +46,10 @@ void sdl2::poll(events_t &result) {
 			}
 		}
 	}
+}
+
+void sdl2::load_texture(const std::string tag, const std::string filename) {
+	load_texture_resource(renderer, tag, filename);
 }
 
 }

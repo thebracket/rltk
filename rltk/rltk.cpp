@@ -22,6 +22,11 @@ void run() {
 	rltk::internal::sdl2 sdl;
 	rltk::internal::events_t events;
 
+	// Load fonts
+	sdl.load_texture("8x8", "terminal8x8.png");
+	sdl.load_texture("16x16", "terminal16x16.png");
+	sdl.load_texture("32x32", "terminal32x32.png");
+
 	double duration_ms = 0.0;
 	while (!quitting) {
 		// Timers

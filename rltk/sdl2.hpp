@@ -3,6 +3,7 @@
 #include <SDL2/SDL.h>
 #include <string>
 #include <utility>
+#include "sdl2_resource_manager.hpp"
 
 namespace rltk {
 namespace internal {
@@ -27,6 +28,8 @@ public:
 	void present();
 	void clear_to_black();
 	std::pair<int,int> get_screen_size();
+
+	void load_texture(const std::string tag, const std::string filename);
 
 private:
 	std::string window_title = "RLTK Window";
