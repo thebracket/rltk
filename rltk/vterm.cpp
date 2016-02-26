@@ -1,6 +1,7 @@
 #include "vterm.hpp"
 #include <algorithm>
 #include "colors.hpp"
+#include <iostream>
 
 using rltk::color::black;
 
@@ -16,15 +17,17 @@ void layer::resize(const std::pair<int,int> screen_size) {
 }
 
 void layer::cls() {
-	constexpr char_t blank{ black, black, 'A' };
+	constexpr char_t blank{ black, black, ' ' };
 	std::fill(buffer.begin(), buffer.end(), blank);
 }
 
 void layer::print(const int idx, const std::string text, const color_t fg, const color_t bg) {
+	int n = idx;
 	for (std::size_t i=0; i<text.size(); ++i) {
-		const char target = text[i];
-		const char_t render{ fg, bg, static_cast<uint8_t>(target) };
-		buffer[idx] = render;
+		const uint8_t target = text[i];
+		const char_t render{ fg, bg, target };
+		buffer[n] = render;
+		++n;
 	}
 }
 

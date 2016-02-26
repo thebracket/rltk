@@ -25,7 +25,7 @@ void init(tick_callback_t tick_handler, const int width, const int height, const
 inline void render_console(rltk::internal::sdl2 &sdl, rltk::vterm::layer &layer) {
 	SDL_SetRenderDrawColor(sdl.renderer, 0, 0, 0, 255);
 	SDL_Texture * font = rltk::internal::get_texture("8x8");
-	if (font == nullptr) throw std::runtime_error("Unable to load font.");
+	if (font == nullptr) throw std::runtime_error("Unable to access font.");
 	const int ascii_height = layer.terminal_size.second;
 	const int ascii_width = layer.terminal_size.first;
 
@@ -39,7 +39,7 @@ inline void render_console(rltk::internal::sdl2 &sdl, rltk::vterm::layer &layer)
 			
 			SDL_Rect dst_rec{screen_x, screen_y, 8, 8 };
 			SDL_Rect src_rec{texture_x, texture_y, 8, 8};
-			SDL_SetTextureColorMod(font, 255, 255, 255);
+			//SDL_SetTextureColorMod(font, 255, 255, 255);
 			SDL_RenderCopy(sdl.renderer, font, &src_rec, &dst_rec);
 		}
 	} 

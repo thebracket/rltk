@@ -1,5 +1,6 @@
 #include "sdl2_texture_resource.hpp"
 #include <stdexcept>
+#include <iostream>
 
 namespace rltk {
 namespace internal {
@@ -9,11 +10,13 @@ texture_resource::texture_resource(SDL_Renderer * renderer, const std::string fi
 	if (tmp_surface == nullptr) throw std::runtime_error("Unable to load image: " + filename);
 	image = SDL_CreateTextureFromSurface(renderer, tmp_surface);
 	SDL_FreeSurface(tmp_surface);
+	std::cout << "Created texture\n";
 }
 
 texture_resource::~texture_resource() {
 	SDL_DestroyTexture(image);
 	image = nullptr;
+	std::cout << "Destroyed texture\n";
 }
 
 }
