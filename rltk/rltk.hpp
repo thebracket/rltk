@@ -6,10 +6,11 @@
 
 #include <string>
 #include <functional>
+#include "types.hpp"
 
 namespace rltk {
 
-void init(std::function<bool()> tick_handler, const int width = 800, const int height = 600, const std::string title = "RLTK Window");
+void init(tick_callback_t tick_handler, const int width = 800, const int height = 600, const std::string title = "RLTK Window");
 void run();
 
 }
