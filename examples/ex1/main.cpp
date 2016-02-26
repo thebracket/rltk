@@ -1,13 +1,19 @@
 #include <iostream>
 #include "../../rltk/rltk.hpp"
 
-int main() {
-	rltk::internal::sdl2 sdl;
-	int n=0;
-	while (n < 1000) {
-		++n;
-		sdl.clear_to_black();
-		sdl.present();
+int count = 0;
+
+bool tick() {
+	++count;
+	if (count > 100) {
+		return true;
+	} else {
+		return false;
 	}
+}
+
+int main() {
+	rltk::init(tick);
+	rltk::run();
 }
 
