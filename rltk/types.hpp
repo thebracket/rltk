@@ -15,7 +15,8 @@ struct color_t {
 };
 
 struct char_t {
-	color_t color;
+	color_t fg;
+	color_t bg;
 	uint8_t glyph; 	
 };
 

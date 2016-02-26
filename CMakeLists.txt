@@ -8,8 +8,11 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -Wall -Wpedantic -march=native -mtun
 set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -L/opt/local/lib -L/usr/lib/i386-linux-gnu -lSDL2 -lSDL2_image -lSDL2_ttf")
 
 add_library(rltk 	rltk/sdl2.cpp
+			rltk/sdl2_texture_resource.cpp
+			rltk/sdl2_resource_manager.cpp
 			rltk/config.cpp
 			rltk/rltk.cpp
+			rltk/vterm.cpp
 	   )
 
 add_executable(ex1 examples/ex1/main.cpp)

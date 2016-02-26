@@ -1,18 +1,15 @@
 #include "sdl2.hpp"
+#include <stdexcept>
 
 namespace rltk {
 namespace internal {
 
 sdl2::sdl2() {
 	window = SDL_CreateWindow(window_title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 480, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
-	if (window == nullptr) {
-		throw 102;
-	}
+	if (window == nullptr) throw std::runtime_error("Unable to create window.");
 
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-	if (renderer == nullptr) {
-		throw 103;
-	}	
+	if (renderer == nullptr) throw std::runtime_error("Unable to create renderer.");
 }
 
 sdl2::~sdl2() {
