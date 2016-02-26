@@ -30,6 +30,26 @@ void sdl2::clear_to_black() {
 	SDL_RenderClear(renderer);
 }
 
+std::pair<int,int> sdl2::get_screen_size() {
+        int w,h;
+        SDL_GetWindowSize(window, &w, &h);
+        return std::make_pair(w,h);
+}
+
+void sdl2::poll(events_t &result) {
+	SDL_Event event;
+	while (SDL_PollEvent(&event)) {
+		if (event.type == SDL_QUIT) {
+			result.request_quit = true;
+		}
+		if (event.type == SDL_WINDOWEVENT) {
+			if (event.window.event == SDL_WINDOWEVENT_RESIZED or event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
+				result.resized = true;
+			}
+		}
+	}
+}
+
 }
 }
 

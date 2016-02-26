@@ -1,16 +1,10 @@
 #include <iostream>
 #include "../../rltk/rltk.hpp"
 
-int count = 0;
-
 bool tick(double duration_ms) {
-	std::cout << "Frame duration: " << duration_ms << " ms\n";
-	++count;
-	if (count > 100) {
-		return true;
-	} else {
-		return false;
-	}
+	auto res = rltk::get_screen_size_px();
+	std::cout << "Frame duration: " << duration_ms << " ms. Resolution: " << res.first << "x" << res.second << "\n";
+	return false;
 }
 
 int main() {
