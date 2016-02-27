@@ -96,5 +96,9 @@ void print_to_root(int x, int y, std::string t) {
 	detail::root_console.print(x, y, t, color::white, color::black);
 }
 
+void cls_root() {
+	detail::root_console.cls();
+}
+
 }
 
