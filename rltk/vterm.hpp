@@ -2,6 +2,7 @@
 
 #include "types.hpp"
 #include <vector>
+#include <string>
 
 namespace rltk {
 namespace vterm {
