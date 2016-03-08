@@ -22,6 +22,10 @@ void virtual_terminal::clear() {
 	std::fill(buffer.begin(), buffer.end(), vchar{ 32, {255,255,255}, {0,0,0} });
 }
 
+void virtual_terminal::clear(const vchar &target) {
+	std::fill(buffer.begin(), buffer.end(), target);
+}
+
 void virtual_terminal::set_char(const int idx, const vchar &target) {
 	buffer[idx] = target;
 }

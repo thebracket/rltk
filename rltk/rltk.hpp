@@ -10,6 +10,7 @@
 #include "texture_resources.hpp"
 #include "virtual_terminal.hpp"
 #include "colors.hpp"
+#include "rng.hpp"
 
 namespace rltk {
 
