@@ -27,7 +27,7 @@ struct vchar {
 
 struct virtual_terminal {
 public:
-	virtual_terminal(const std::string fontt, const int x=0, const int y=0) : font_tag(fontt), offset_x(x), offset_y(y) {
+	virtual_terminal(const std::string fontt, const int x=0, const int y=0, const bool background=true) : font_tag(fontt), offset_x(x), offset_y(y), has_background(background) {
 		font = get_bitmap_font(fontt);
 	}
 
@@ -46,6 +46,7 @@ private:
 	int term_height;
 	int offset_x;
 	int offset_y;
+	bool has_background;
 	bitmap_font * font = nullptr;
 	sf::Texture * tex = nullptr;
 	std::vector<vchar> buffer;
