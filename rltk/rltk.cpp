@@ -5,8 +5,6 @@ namespace rltk {
 
 void run(std::function<void()> on_tick, const int window_width, const int window_height, const std::string window_title) {
     sf::RenderWindow window(sf::VideoMode(window_width, window_height), window_title);
-    sf::CircleShape shape(100.f);
-    shape.setFillColor(sf::Color::Green);
 
     while (window.isOpen())
     {
@@ -19,7 +17,6 @@ void run(std::function<void()> on_tick, const int window_width, const int window
 
         window.clear();
         on_tick();
-        window.draw(shape);
         window.display();
     }
 }
