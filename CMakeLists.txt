@@ -10,6 +10,7 @@ set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -L/opt/local/lib -L/usr/l
 add_library(rltk 	rltk/rltk.cpp
 					rltk/texture_resources.cpp
 					rltk/bitmap_font.cpp
+					rltk/virtual_terminal.cpp
 )
 
 # Require SFML
