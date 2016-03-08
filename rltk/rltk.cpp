@@ -4,7 +4,7 @@
 namespace rltk {
 
 void run(std::function<void(double)> on_tick, const int window_width, const int window_height, const std::string window_title) {
-    sf::RenderWindow window(sf::VideoMode(window_width, window_height), window_title);
+    sf::RenderWindow window(sf::VideoMode(window_width, window_height, sf::Style::Titlebar | sf::Style::Resize | sf::Style::Close), window_title);
 
     double duration_ms = 0.0;
     while (window.isOpen())
