@@ -7,5 +7,5 @@
 #include <functional>
 
 namespace rltk {
-void run(std::function<void()> on_tick, const int window_width=1024, const int window_height=768, const std::string window_title="RLTK Roguelike");
+void run(std::function<void(double)> on_tick, const int window_width=1024, const int window_height=768, const std::string window_title="RLTK Roguelike");
 }
