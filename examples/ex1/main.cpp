@@ -23,7 +23,7 @@ void tick(double duration_ms) {
 	std::stringstream ss;
 	ss << "Frame duration: " << duration_ms << " ms (" << (1000.0/duration_ms) << " FPS).";
 	get_root_console()->print(1,1,"Hello World", WHITE, BLACK);
-	get_root_console()->print(1,2,ss.str(), YELLOW, BLACK);
+	get_root_console()->print(1,2,ss.str(), YELLOW, BLUE);
 }
 
 // Your main function
