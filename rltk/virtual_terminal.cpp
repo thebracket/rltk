@@ -57,6 +57,7 @@ void virtual_terminal::render(sf::RenderWindow &window) {
 			sprite.setTexture(*tex);
 			sprite.setTextureRect(sf::IntRect(texture_x, texture_y, font_width, font_height));
 			sprite.move(sf::Vector2f(x*font_width, y*font_height));
+			sprite.setColor(target.foreground.as_sfml_color());
 			window.draw(sprite);
 
 			++idx;
