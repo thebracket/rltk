@@ -35,8 +35,8 @@ using namespace rltk;
 void tick(double duration_ms) {
 	std::stringstream ss;
 	ss << "Frame duration: " << duration_ms << " ms (" << (1000.0/duration_ms) << " FPS).";
-	root_console->print(1,1,"Hello World", WHITE, BLACK);
-	root_console->print(1,2,ss.str(), YELLOW, BLUE);
+	root_console->print(1, 1, "Hello World", WHITE, BLACK);
+	root_console->print(1, 2, ss.str(), YELLOW, BLUE);
 }
 
 int main()
