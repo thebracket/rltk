@@ -11,10 +11,6 @@ sf::RenderWindow * get_window() {
 	return main_window.get();
 }
 
-virtual_terminal * get_root_console() {
-    return root_console.get();
-}
-
 void init(const int window_width, const int window_height, const std::string window_title) {
 	main_window = std::make_unique<sf::RenderWindow>(sf::VideoMode(window_width, window_height, sf::Style::Titlebar | sf::Style::Resize | sf::Style::Close), window_title);
     main_window->setVerticalSyncEnabled(true);
@@ -36,7 +32,6 @@ void run(std::function<void(double)> on_tick, const std::string root_console_fon
             if (event.type == sf::Event::Closed) {
                 main_window->close();
             } else if (event.type == sf::Event::Resized) {
-                sf::Vector2u size_pixels = main_window->getSize();
                 root_console->resize_pixels(event.size.width, event.size.height);
                 main_window->setView(sf::View(sf::FloatRect(0.f, 0.f, event.size.width, event.size.height)));
             }
