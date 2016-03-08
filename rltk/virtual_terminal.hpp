@@ -16,6 +16,7 @@ namespace rltk {
 
 struct color_t {
 	uint8_t r,g,b;
+	inline sf::Color as_sfml_color() const { return sf::Color(r,g,b); }
 };
 
 struct vchar {

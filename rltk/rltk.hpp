@@ -9,6 +9,7 @@
 #include <SFML/Graphics.hpp>
 #include "texture_resources.hpp"
 #include "virtual_terminal.hpp"
+#include "colors.hpp"
 
 namespace rltk {
 
