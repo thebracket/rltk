@@ -1,5 +1,4 @@
-# rltk
-*Roguelike Toolkit - Modern (C++14) SFML-based toolkit for creating roguelikes.*
+# rltk : Roguelike Toolkit - Modern (C++14) SFML-based toolkit for creating roguelikes.
 
 It's very early days, but I hope that this can be a useful tool. Black Future was getting messy, and I needed to separate out some 
 engine logic from game logic for my sanity; I realized that others might find the underlying engine code useful.
