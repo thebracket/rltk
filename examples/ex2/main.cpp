@@ -10,9 +10,6 @@
 // You need to include the RLTK header
 #include "../../rltk/rltk.hpp"
 
-// We're using a stringstream to build the hello world message.
-#include <sstream>
-
 // For convenience, import the whole rltk namespace. You may not want to do this
 // in larger projects, to avoid naming collisions.
 using namespace rltk;
