@@ -21,7 +21,9 @@ include_directories(${SFML_INCLUDE_DIR})
 
 add_executable(ex1 examples/ex1/main.cpp)
 add_executable(ex2 examples/ex2/main.cpp)
+add_executable(ex3 examples/ex3/main.cpp)
 target_link_libraries(rltk ${SFML_LIBRARIES})
 target_link_libraries(ex1 rltk)
 target_link_libraries(ex2 rltk)
+target_link_libraries(ex3 rltk)
 
