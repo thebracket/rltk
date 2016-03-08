@@ -1,6 +1,6 @@
 #include "../../rltk/rltk.hpp"
 
-void tick() {
+void tick(double time_elapsed) {
 
 }
 
