@@ -8,6 +8,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -Wall -Wpedantic -march=native -mtun
 set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -L/opt/local/lib -L/usr/lib/i386-linux-gnu")
 
 add_library(rltk 	rltk/rltk.cpp
+					rltk/texture_resources.cpp
 )
 
 # Require SFML
@@ -22,9 +23,9 @@ target_link_libraries(ex1 rltk)
 set(Boost_USE_STATIC_LIBS        ON) # only find static libs
 set(Boost_USE_MULTITHREADED      ON)
 set(Boost_USE_STATIC_RUNTIME     OFF)
-find_package(Boost)
+find_package(Boost COMPONENTS system REQUIRED)
 if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
-  target_link_libraries(ex1 ${Boost_LIBRARIES})
+  target_link_libraries(rltk ${Boost_LIBRARIES})
 endif()
 
