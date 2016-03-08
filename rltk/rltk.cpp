@@ -35,7 +35,12 @@ void run(std::function<void(double)> on_tick, const std::string root_console_fon
         {
             if (event.type == sf::Event::Closed) {
                 main_window->close();
+            } else if (event.type == sf::Event::Resized) {
+                sf::Vector2u size_pixels = main_window->getSize();
+                root_console->resize_pixels(event.size.width, event.size.height);
+                main_window->setView(sf::View(sf::FloatRect(0.f, 0.f, event.size.width, event.size.height)));
             }
+
         }
 
         main_window->clear();
