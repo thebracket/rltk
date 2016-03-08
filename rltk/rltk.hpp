@@ -11,6 +11,7 @@
 #include "virtual_terminal.hpp"
 #include "colors.hpp"
 #include "rng.hpp"
+#include "geometry.hpp"
 
 namespace rltk {
 

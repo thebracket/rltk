@@ -12,6 +12,7 @@ add_library(rltk 	rltk/rltk.cpp
 					rltk/bitmap_font.cpp
 					rltk/virtual_terminal.cpp
 					rltk/rng.cpp
+					rltk/geometry.cpp
 )
 
 # Require SFML
