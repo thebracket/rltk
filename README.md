@@ -8,6 +8,21 @@ Right now, it's a very fast ASCII (code-page 480) terminal renderer compatible w
 Eventually, it will provide assistance with a number of game-related topics including path-finding, line-plotting,
 and probably some of the entity-component-system I've been enjoying.
 
+## Building from source
+
+You need SFML for your platform, and cmake. Make a "build" folder, and use CMake to generate build files for your platform (I'll expand upon
+this later, when this is a more useful library).
+
+## Included Examples (with lots of comments!)
+
+I'll write proper documentation as the library evolves; I don't really want to write up a lot of docs and have to revise them
+heavily as things solidify. I'm doing my best to include examples evolving towards a real roguelike. Currently, these are:
+
+* [Example 1](https://github.com/thebracket/rltk/blob/master/examples/ex1/main.cpp): demonstrates a Hello World with frame-rate.
+
+* [Example 2](https://github.com/thebracket/rltk/blob/master/examples/ex2/main.cpp): a randomly moving yellow @ on a field of white dots.
+
+## Example
 The goal is to keep it simple from the user's point of view. The following code is enough to setup an ASCII terminal,
 and display **Hello World** with a frame-rate displayed (around 100 FPS on my workstation):
 
