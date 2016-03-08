@@ -21,6 +21,8 @@ heavily as things solidify. I'm doing my best to include examples evolving towar
 
 * [Example 2](https://github.com/thebracket/rltk/blob/master/examples/ex2/main.cpp): a randomly moving yellow @ on a field of white dots.
 
+* [Example 3](https://github.com/thebracket/rltk/blob/master/examples/ex3/main.cpp): our @ dude again, this time using Bresenham's line to find his way. It also renders additional glyphs, as Mr @ finds his way to his destination.
+
 ## Example
 The goal is to keep it simple from the user's point of view. The following code is enough to setup an ASCII terminal,
 and display **Hello World** with a frame-rate displayed (around 100 FPS on my workstation):
