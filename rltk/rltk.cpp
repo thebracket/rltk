@@ -10,12 +10,12 @@ sf::RenderWindow * get_window() {
 	return main_window.get();
 }
 
-void run(std::function<void(double)> on_tick, const int window_width, const int window_height, const std::string window_title) {
-
-	std::make_unique<sf::RenderWindow>(sf::VideoMode(window_width, window_height, sf::Style::Titlebar | sf::Style::Resize | sf::Style::Close), window_title);
-
+void init(const int window_width, const int window_height, const std::string window_title) {
+	main_window = std::make_unique<sf::RenderWindow>(sf::VideoMode(window_width, window_height, sf::Style::Titlebar | sf::Style::Resize | sf::Style::Close), window_title);
     main_window->setVerticalSyncEnabled(true);
+}
 
+void run(std::function<void(double)> on_tick) {
     double duration_ms = 0.0;
     while (main_window->isOpen())
     {
