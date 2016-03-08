@@ -1,3 +1,4 @@
+#pragma once
 /* RLTK (RogueLike Tool Kit) 1.00
  * Copyright (c) 2016-Present, Bracket Productions.
  * Licensed under the LGPL - see LICENSE file.
@@ -7,7 +8,7 @@
 #include <functional>
 #include <SFML/Graphics.hpp>
 #include "texture_resources.hpp"
-#include "bitmap_font.hpp"
+#include "virtual_terminal.hpp"
 
 namespace rltk {
 
@@ -20,7 +21,12 @@ void init(const int window_width=1024, const int window_height=768, const std::s
  * The main run loop. Calls on_tick each frame. Window can be initially defined with width/height/title, but these
  * have sane defaults to get you started.
  */
-void run(std::function<void(double)> on_tick);
+void run(std::function<void(double)> on_tick, const std::string root_console_font);
+
+/*
+ * For rendering to the console
+ */
+virtual_terminal * get_root_console();
 
 /*
  * In case you want to do some SFML stuff yourself, this provides a pointer to the render window.
