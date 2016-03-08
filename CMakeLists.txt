@@ -11,6 +11,7 @@ add_library(rltk 	rltk/rltk.cpp
 					rltk/texture_resources.cpp
 					rltk/bitmap_font.cpp
 					rltk/virtual_terminal.cpp
+					rltk/rng.cpp
 )
 
 # Require SFML
@@ -18,17 +19,8 @@ find_package(SFML 2 COMPONENTS system window graphics REQUIRED)
 include_directories(${SFML_INCLUDE_DIR})
 
 add_executable(ex1 examples/ex1/main.cpp)
+add_executable(ex2 examples/ex2/main.cpp)
 target_link_libraries(rltk ${SFML_LIBRARIES})
 target_link_libraries(ex1 rltk)
-
-# Require Boost
-set(Boost_USE_STATIC_LIBS        ON) # only find static libs
-set(Boost_USE_MULTITHREADED      ON)
-set(Boost_USE_STATIC_RUNTIME     OFF)
-find_package(Boost COMPONENTS system REQUIRED)
-if(Boost_FOUND)
-  include_directories(${Boost_INCLUDE_DIRS})
-  target_link_libraries(rltk ${Boost_LIBRARIES})
-  target_link_libraries(ex1 ${Boost_LIBRARIES})
-endif()
+target_link_libraries(ex2 rltk)
 
