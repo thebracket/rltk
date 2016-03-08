@@ -1,8 +1,12 @@
 #include "../../rltk/rltk.hpp"
 
+void tick() {
+
+}
+
 int main()
 {
-	rltk::run();
+	rltk::run(tick);
 
     return 0;
 }

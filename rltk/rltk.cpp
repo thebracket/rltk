@@ -3,8 +3,8 @@
 
 namespace rltk {
 
-void run() {
-    sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
+void run(std::function<void()> on_tick, const int window_width, const int window_height, const std::string window_title) {
+    sf::RenderWindow window(sf::VideoMode(window_width, window_height), window_title);
     sf::CircleShape shape(100.f);
     shape.setFillColor(sf::Color::Green);
 
@@ -18,6 +18,7 @@ void run() {
         }
 
         window.clear();
+        on_tick();
         window.draw(shape);
         window.display();
     }
