@@ -1,10 +1,14 @@
 #include "rltk.hpp"
-#include <SFML/Graphics.hpp>
+#include "texture.hpp"
 #include <memory>
 
 namespace rltk {
 
 std::unique_ptr<sf::RenderWindow> main_window;
+
+sf::RenderWindow * get_window() {
+	return main_window.get();
+}
 
 void run(std::function<void(double)> on_tick, const int window_width, const int window_height, const std::string window_title) {
 
