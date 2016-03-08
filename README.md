@@ -3,7 +3,7 @@
 It's very early days, but I hope that this can be a useful tool. Black Future was getting messy, and I needed to separate out some 
 engine logic from game logic for my sanity; I realized that others might find the underlying engine code useful.
 
-Right now, it's a very fast ASCII (code-page 480) terminal renderer compatible with fonts from libtcod and Dwarf Fortress.
+Right now, it's a very fast ASCII (code-page 437) terminal renderer compatible with fonts from libtcod and Dwarf Fortress.
 Eventually, it will provide assistance with a number of game-related topics including path-finding, line-plotting,
 and probably some of the entity-component-system I've been enjoying.
 
