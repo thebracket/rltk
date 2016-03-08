@@ -4,8 +4,8 @@ project("rltk")
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED on)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -Wall -Wpedantic -march=native -mtune=native -g -I/opt/local/include")
-set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -L/opt/local/lib -L/usr/lib/i386-linux-gnu -lSDL2 -lSDL2_image -lSDL2_ttf")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -Wall -Wpedantic -march=native -mtune=native -g")
+set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -L/opt/local/lib -L/usr/lib/i386-linux-gnu")
 
 # add_library(rltk 	rltk/sdl2.cpp
 #			rltk/sdl2_texture_resource.cpp
@@ -15,16 +15,21 @@ set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -L/opt/local/lib -L/usr/l
 #			rltk/vterm.cpp
 #	   )
 
+# Require SFML
+find_package(SFML 2 COMPONENTS system window graphics REQUIRED)
+include_directories(${SFML_INCLUDE_DIR})
+
 add_executable(ex1 examples/ex1/main.cpp)
 # target_link_libraries(ex1 rltk)
+target_link_libraries(ex1 ${SFML_LIBRARIES})
 
 # Require Boost
-#set(Boost_USE_STATIC_LIBS        ON) # only find static libs
-#set(Boost_USE_MULTITHREADED      ON)
-#set(Boost_USE_STATIC_RUNTIME     OFF)
-#find_package(Boost)
-#if(Boost_FOUND)
-#  include_directories(${Boost_INCLUDE_DIRS})
-#  target_link_libraries(rltk ${Boost_LIBRARIES})
-#endif()
+set(Boost_USE_STATIC_LIBS        ON) # only find static libs
+set(Boost_USE_MULTITHREADED      ON)
+set(Boost_USE_STATIC_RUNTIME     OFF)
+find_package(Boost)
+if(Boost_FOUND)
+  include_directories(${Boost_INCLUDE_DIRS})
+  target_link_libraries(ex1 ${Boost_LIBRARIES})
+endif()
 
