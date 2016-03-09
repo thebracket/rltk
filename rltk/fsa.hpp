@@ -47,6 +47,8 @@
 #include <string.h>
 #include <stdio.h>
 
+namespace rltk {
+
 template<class USER_TYPE> class FixedSizeAllocator
 {
 
@@ -242,3 +244,5 @@ private:
 	FSA_ELEMENT *m_pMemory;
 
 };
+
+}
