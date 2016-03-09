@@ -51,11 +51,12 @@
 #endif
 
 namespace rltk {
+namespace astar {
 
-template<class T> class AStarState;
+template<class T> class a_star_state;
 
-// The AStar search class. UserState is the users state space type
-template<class UserState> class AStarSearch
+// The AStar search class. user_state is the users state space type
+template<class user_state> class AStarSearch
 {
 
 public:
@@ -92,7 +93,7 @@ public:
 		{
 		}
 
-		UserState m_UserState;
+		user_state m_user_state;
 	};
 
 	// For sorting the heap the STL needs compare function that lets us compare
@@ -137,7 +138,7 @@ public:
 	}
 
 	// Set Start and goal states
-	void SetStartAndGoalStates(UserState &Start, UserState &Goal)
+	void SetStartAndGoalStates(user_state &Start, user_state &Goal)
 	{
 		m_CancelRequest = false;
 
@@ -146,8 +147,8 @@ public:
 
 		assert((m_Start != NULL && m_Goal != NULL));
 
-		m_Start->m_UserState = Start;
-		m_Goal->m_UserState = Goal;
+		m_Start->m_user_state = Start;
+		m_Goal->m_user_state = Goal;
 
 		m_State = SEARCH_STATE_SEARCHING;
 
@@ -155,8 +156,8 @@ public:
 		// The user only needs fill out the state information
 
 		m_Start->g = 0;
-		m_Start->h = m_Start->m_UserState.GoalDistanceEstimate(
-				m_Goal->m_UserState);
+		m_Start->h = m_Start->m_user_state.GoalDistanceEstimate(
+				m_Goal->m_user_state);
 		m_Start->f = m_Start->g + m_Start->h;
 		m_Start->parent = 0;
 
@@ -205,7 +206,7 @@ public:
 		m_OpenList.pop_back();
 
 		// Check for the goal, once we pop that we're done
-		if (n->m_UserState.IsGoal(m_Goal->m_UserState))
+		if (n->m_user_state.IsGoal(m_Goal->m_user_state))
 		{
 			// The user is going to use the Goal Node he passed in 
 			// so copy the parent pointer of n 
@@ -214,7 +215,7 @@ public:
 
 			// A special case is that the goal was passed in as the start state
 			// so handle that here
-			if (false == n->m_UserState.IsSameState(m_Start->m_UserState))
+			if (false == n->m_user_state.IsSameState(m_Start->m_user_state))
 			{
 				FreeNode(n);
 
@@ -251,8 +252,8 @@ public:
 
 			// User provides this functions and uses AddSuccessor to add each successor of
 			// node 'n' to m_Successors
-			bool ret = n->m_UserState.GetSuccessors(this,
-					n->parent ? &n->parent->m_UserState : NULL);
+			bool ret = n->m_user_state.GetSuccessors(this,
+					n->parent ? &n->parent->m_user_state : NULL);
 
 			if (!ret)
 			{
@@ -283,7 +284,7 @@ public:
 
 				// 	The g value for this successor ...
 				float newg = n->g
-						+ n->m_UserState.GetCost((*successor)->m_UserState);
+						+ n->m_user_state.GetCost((*successor)->m_user_state);
 
 				// Now we need to find whether the node is on the open or closed lists
 				// If it is but the node that is already on them is better (lower g)
@@ -296,8 +297,8 @@ public:
 				for (openlist_result = m_OpenList.begin();
 						openlist_result != m_OpenList.end(); openlist_result++)
 				{
-					if ((*openlist_result)->m_UserState.IsSameState(
-							(*successor)->m_UserState))
+					if ((*openlist_result)->m_user_state.IsSameState(
+							(*successor)->m_user_state))
 					{
 						break;
 					}
@@ -323,8 +324,8 @@ public:
 						closedlist_result != m_ClosedList.end();
 						closedlist_result++)
 				{
-					if ((*closedlist_result)->m_UserState.IsSameState(
-							(*successor)->m_UserState))
+					if ((*closedlist_result)->m_user_state.IsSameState(
+							(*successor)->m_user_state))
 					{
 						break;
 					}
@@ -350,8 +351,8 @@ public:
 				(*successor)->parent = n;
 				(*successor)->g = newg;
 				(*successor)->h =
-						(*successor)->m_UserState.GoalDistanceEstimate(
-								m_Goal->m_UserState);
+						(*successor)->m_user_state.GoalDistanceEstimate(
+								m_Goal->m_user_state);
 				(*successor)->f = (*successor)->g + (*successor)->h;
 
 				// Remove successor from closed if it was on it
@@ -407,13 +408,13 @@ public:
 
 	// User calls this to add a successor to a list of successors
 	// when expanding the search frontier
-	bool AddSuccessor(UserState &State)
+	bool AddSuccessor(user_state &State)
 	{
 		Node *node = AllocateNode();
 
 		if (node)
 		{
-			node->m_UserState = State;
+			node->m_user_state = State;
 
 			m_Successors.push_back(node);
 
@@ -458,12 +459,12 @@ public:
 	// Functions for traversing the solution
 
 	// Get start node
-	UserState *GetSolutionStart()
+	user_state *GetSolutionStart()
 	{
 		m_CurrentSolutionNode = m_Start;
 		if (m_Start)
 		{
-			return &m_Start->m_UserState;
+			return &m_Start->m_user_state;
 		}
 		else
 		{
@@ -472,7 +473,7 @@ public:
 	}
 
 	// Get next node
-	UserState *GetSolutionNext()
+	user_state *GetSolutionNext()
 	{
 		if (m_CurrentSolutionNode)
 		{
@@ -483,7 +484,7 @@ public:
 
 				m_CurrentSolutionNode = m_CurrentSolutionNode->child;
 
-				return &child->m_UserState;
+				return &child->m_user_state;
 			}
 		}
 
@@ -491,12 +492,12 @@ public:
 	}
 
 	// Get end node
-	UserState *GetSolutionEnd()
+	user_state *GetSolutionEnd()
 	{
 		m_CurrentSolutionNode = m_Goal;
 		if (m_Goal)
 		{
-			return &m_Goal->m_UserState;
+			return &m_Goal->m_user_state;
 		}
 		else
 		{
@@ -505,7 +506,7 @@ public:
 	}
 
 	// Step solution iterator backwards
-	UserState *GetSolutionPrev()
+	user_state *GetSolutionPrev()
 	{
 		if (m_CurrentSolutionNode)
 		{
@@ -516,7 +517,7 @@ public:
 
 				m_CurrentSolutionNode = m_CurrentSolutionNode->parent;
 
-				return &parent->m_UserState;
+				return &parent->m_user_state;
 			}
 		}
 
@@ -540,13 +541,13 @@ public:
 	// For educational use and debugging it is useful to be able to view
 	// the open and closed list at each step, here are two functions to allow that.
 
-	UserState *GetOpenListStart()
+	user_state *GetOpenListStart()
 	{
 		float f, g, h;
 		return GetOpenListStart(f, g, h);
 	}
 
-	UserState *GetOpenListStart(float &f, float &g, float &h)
+	user_state *GetOpenListStart(float &f, float &g, float &h)
 	{
 		iterDbgOpen = m_OpenList.begin();
 		if (iterDbgOpen != m_OpenList.end())
@@ -554,19 +555,19 @@ public:
 			f = (*iterDbgOpen)->f;
 			g = (*iterDbgOpen)->g;
 			h = (*iterDbgOpen)->h;
-			return &(*iterDbgOpen)->m_UserState;
+			return &(*iterDbgOpen)->m_user_state;
 		}
 
 		return NULL;
 	}
 
-	UserState *GetOpenListNext()
+	user_state *GetOpenListNext()
 	{
 		float f, g, h;
 		return GetOpenListNext(f, g, h);
 	}
 
-	UserState *GetOpenListNext(float &f, float &g, float &h)
+	user_state *GetOpenListNext(float &f, float &g, float &h)
 	{
 		iterDbgOpen++;
 		if (iterDbgOpen != m_OpenList.end())
@@ -574,19 +575,19 @@ public:
 			f = (*iterDbgOpen)->f;
 			g = (*iterDbgOpen)->g;
 			h = (*iterDbgOpen)->h;
-			return &(*iterDbgOpen)->m_UserState;
+			return &(*iterDbgOpen)->m_user_state;
 		}
 
 		return NULL;
 	}
 
-	UserState *GetClosedListStart()
+	user_state *GetClosedListStart()
 	{
 		float f, g, h;
 		return GetClosedListStart(f, g, h);
 	}
 
-	UserState *GetClosedListStart(float &f, float &g, float &h)
+	user_state *GetClosedListStart(float &f, float &g, float &h)
 	{
 		iterDbgClosed = m_ClosedList.begin();
 		if (iterDbgClosed != m_ClosedList.end())
@@ -595,19 +596,19 @@ public:
 			g = (*iterDbgClosed)->g;
 			h = (*iterDbgClosed)->h;
 
-			return &(*iterDbgClosed)->m_UserState;
+			return &(*iterDbgClosed)->m_user_state;
 		}
 
 		return NULL;
 	}
 
-	UserState *GetClosedListNext()
+	user_state *GetClosedListNext()
 	{
 		float f, g, h;
 		return GetClosedListNext(f, g, h);
 	}
 
-	UserState *GetClosedListNext(float &f, float &g, float &h)
+	user_state *GetClosedListNext(float &f, float &g, float &h)
 	{
 		iterDbgClosed++;
 		if (iterDbgClosed != m_ClosedList.end())
@@ -616,7 +617,7 @@ public:
 			g = (*iterDbgClosed)->g;
 			h = (*iterDbgClosed)->h;
 
-			return &(*iterDbgClosed)->m_UserState;
+			return &(*iterDbgClosed)->m_user_state;
 		}
 
 		return NULL;
@@ -793,10 +794,10 @@ private:
 
 };
 
-template<class T> class AStarState
+template<class T> class a_star_state
 {
 public:
-	virtual ~AStarState()
+	virtual ~a_star_state()
 	{
 	}
 	virtual float GoalDistanceEstimate(T &nodeGoal) = 0; // Heuristic function which computes the estimated cost to the goal node
@@ -806,4 +807,5 @@ public:
 	virtual bool IsSameState(T &rhs) = 0; // Returns true if this node is the same as the rhs node
 };
 
+}
 }
