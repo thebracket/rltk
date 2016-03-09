@@ -12,6 +12,7 @@
 #include "colors.hpp"
 #include "rng.hpp"
 #include "geometry.hpp"
+#include "astar.hpp"
 
 namespace rltk {
 
