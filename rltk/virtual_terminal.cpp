@@ -55,12 +55,12 @@ void virtual_terminal::render(sf::RenderWindow &window) {
 
 	int idx = 0;
 	for (int y=0; y<term_height; ++y) {
-		const int screen_y = y * font_height;
+		const int screen_y = (y * font_height) + offset_y;
 		for (int x=0; x<term_width; ++x) {
 			const vchar target = buffer[idx];
 			const int texture_x = (target.glyph % 16) * font_width;
 			const int texture_y = (target.glyph / 16) * font_height;
-			const int screen_x = x * font_width;
+			const int screen_x = (x * font_width) + offset_x;
 			sf::Vector2f pos(screen_x, screen_y);
 
 			// Draw the background
