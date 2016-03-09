@@ -28,7 +28,6 @@
 // used for text debugging
 #include <iostream>
 #include <stdio.h>
-//#include <conio.h>
 #include <assert.h>
 
 // stl includes
@@ -155,8 +154,7 @@ public:
 	unsigned int SearchStep()
 	{
 		// Firstly break if the user has not initialised the search
-		assert(
-				(m_State > SEARCH_STATE_NOT_INITIALISED) && (m_State < SEARCH_STATE_INVALID));
+		assert((m_State > SEARCH_STATE_NOT_INITIALISED) && (m_State < SEARCH_STATE_INVALID));
 
 		// Next I want it to be safe to do a searchstep once the search has succeeded...
 		if ((m_State == SEARCH_STATE_SUCCEEDED) || (m_State == SEARCH_STATE_FAILED))
@@ -257,8 +255,7 @@ public:
 			{
 
 				// 	The g value for this successor ...
-				float newg = n->g
-						+ n->m_user_state.GetCost((*successor)->m_user_state);
+				float newg = n->g + n->m_user_state.GetCost((*successor)->m_user_state);
 
 				// Now we need to find whether the node is on the open or closed lists
 				// If it is but the node that is already on them is better (lower g)
@@ -334,7 +331,6 @@ public:
 					// Greg Douglas <gregdouglasmail@gmail.com>
 					// who noticed that this code path was incorrect
 					// Here we have found a new state which is already CLOSED
-					// anus
 
 				}
 
