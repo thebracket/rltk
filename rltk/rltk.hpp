@@ -12,6 +12,7 @@
 #include "colors.hpp"
 #include "rng.hpp"
 #include "geometry.hpp"
+#include "path_finding.hpp"
 
 namespace rltk {
 
