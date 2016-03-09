@@ -37,8 +37,6 @@
 #include <vector>
 #include <cfloat>
 
-using namespace std;
-
 // fast fixed size memory allocator, used for fast node memory management
 #include "fsa.hpp"
 
@@ -51,6 +49,8 @@ using namespace std;
 #if defined(WIN32) && defined(_WINDOWS)
 #pragma warning( disable : 4786 )
 #endif
+
+namespace rltk {
 
 template<class T> class AStarState;
 
@@ -257,7 +257,7 @@ public:
 			if (!ret)
 			{
 
-				typename vector<Node *>::iterator successor;
+				typename std::vector<Node *>::iterator successor;
 
 				// free the nodes that may previously have been added 
 				for (successor = m_Successors.begin();
@@ -276,7 +276,7 @@ public:
 			}
 
 			// Now handle each successor to the current node ...
-			for (typename vector<Node *>::iterator successor =
+			for (typename std::vector<Node *>::iterator successor =
 					m_Successors.begin(); successor != m_Successors.end();
 					successor++)
 			{
@@ -291,7 +291,7 @@ public:
 
 				// First linear search of open list to find node
 
-				typename vector<Node *>::iterator openlist_result;
+				typename std::vector<Node *>::iterator openlist_result;
 
 				for (openlist_result = m_OpenList.begin();
 						openlist_result != m_OpenList.end(); openlist_result++)
@@ -317,7 +317,7 @@ public:
 					}
 				}
 
-				typename vector<Node *>::iterator closedlist_result;
+				typename std::vector<Node *>::iterator closedlist_result;
 
 				for (closedlist_result = m_ClosedList.begin();
 						closedlist_result != m_ClosedList.end();
@@ -645,7 +645,7 @@ private:
 	void FreeAllNodes()
 	{
 		// iterate open list and delete all nodes
-		typename vector<Node *>::iterator iterOpen = m_OpenList.begin();
+		typename std::vector<Node *>::iterator iterOpen = m_OpenList.begin();
 
 		while (iterOpen != m_OpenList.end())
 		{
@@ -658,7 +658,7 @@ private:
 		m_OpenList.clear();
 
 		// iterate closed list and delete unused nodes
-		typename vector<Node *>::iterator iterClosed;
+		typename std::vector<Node *>::iterator iterClosed;
 
 		for (iterClosed = m_ClosedList.begin();
 				iterClosed != m_ClosedList.end(); iterClosed++)
@@ -680,7 +680,7 @@ private:
 	void FreeUnusedNodes()
 	{
 		// iterate open list and delete unused nodes
-		typename vector<Node *>::iterator iterOpen = m_OpenList.begin();
+		typename std::vector<Node *>::iterator iterOpen = m_OpenList.begin();
 
 		while (iterOpen != m_OpenList.end())
 		{
@@ -699,7 +699,7 @@ private:
 		m_OpenList.clear();
 
 		// iterate closed list and delete unused nodes
-		typename vector<Node *>::iterator iterClosed;
+		typename std::vector<Node *>::iterator iterClosed;
 
 		for (iterClosed = m_ClosedList.begin();
 				iterClosed != m_ClosedList.end(); iterClosed++)
@@ -755,14 +755,14 @@ private:
 	// data
 
 	// Heap (simple vector but used as a heap, cf. Steve Rabin's game gems article)
-	vector<Node *> m_OpenList;
+	std::vector<Node *> m_OpenList;
 
 	// Closed list is a vector.
-	vector<Node *> m_ClosedList;
+	std::vector<Node *> m_ClosedList;
 
 	// Successors is a vector filled out by the user each type successors to a node
 	// are generated
-	vector<Node *> m_Successors;
+	std::vector<Node *> m_Successors;
 
 	// State
 	unsigned int m_State;
@@ -783,8 +783,8 @@ private:
 
 	//Debug : need to keep these two iterators around
 	// for the user Dbg functions
-	typename vector<Node *>::iterator iterDbgOpen;
-	typename vector<Node *>::iterator iterDbgClosed;
+	typename std::vector<Node *>::iterator iterDbgOpen;
+	typename std::vector<Node *>::iterator iterDbgClosed;
 
 	// debugging : count memory allocation and free's
 	int m_AllocateNodeCount;
@@ -806,3 +806,4 @@ public:
 	virtual bool IsSameState(T &rhs) = 0; // Returns true if this node is the same as the rhs node
 };
 
+}
