@@ -37,13 +37,6 @@
 #include <vector>
 #include <cfloat>
 
-// fast fixed size memory allocator, used for fast node memory management
-#include "fsa.hpp"
-
-// Fixed size memory allocator can be disabled to compare performance
-// Uses std new and delete instead if you turn it off
-#define USE_FSA_MEMORY 1
-
 // disable warning that debugging information has lines that are truncated
 // occurs in stl headers
 #if defined(WIN32) && defined(_WINDOWS)
@@ -110,19 +103,11 @@ public:
 	// methods
 
 	// constructor just initialises private data
-	a_star_search() : m_State(SEARCH_STATE_NOT_INITIALISED), m_CurrentSolutionnode_t( NULL),
-#if USE_FSA_MEMORY
-					m_FixedSizeAllocator(1000),
-#endif
-					m_Allocatenode_tCount(0), m_CancelRequest(false)
+	a_star_search() : m_State(SEARCH_STATE_NOT_INITIALISED), m_CurrentSolutionnode_t( NULL), m_Allocatenode_tCount(0), m_CancelRequest(false)
 	{
 	}
 
-	a_star_search(int Maxnode_ts) :	m_State(SEARCH_STATE_NOT_INITIALISED), m_CurrentSolutionnode_t( NULL),
-#if USE_FSA_MEMORY
-					m_FixedSizeAllocator(Maxnode_ts),
-#endif
-					m_Allocatenode_tCount(0), m_CancelRequest(false)
+	a_star_search(int Maxnode_ts) :	m_State(SEARCH_STATE_NOT_INITIALISED), m_CurrentSolutionnode_t( NULL),	m_Allocatenode_tCount(0), m_CancelRequest(false)
 	{
 	}
 
