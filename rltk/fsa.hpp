@@ -48,6 +48,7 @@
 #include <stdio.h>
 
 namespace rltk {
+namespace astar {
 
 template<class USER_TYPE> class FixedSizeAllocator
 {
@@ -245,4 +246,5 @@ private:
 
 };
 
+}
 }
