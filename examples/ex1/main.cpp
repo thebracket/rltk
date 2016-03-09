@@ -22,8 +22,8 @@ void tick(double duration_ms) {
 	// In this case, we just want to print "Hello World" in white on black.
 	std::stringstream ss;
 	ss << "Frame duration: " << duration_ms << " ms (" << (1000.0/duration_ms) << " FPS).";
-	root_console->print(1,1,"Hello World", WHITE, BLACK);
-	root_console->print(1,2,ss.str(), YELLOW, BLUE);
+	console->print(1,1,"Hello World", WHITE, BLACK);
+	console->print(1,2,ss.str(), YELLOW, BLUE);
 }
 
 // Your main function

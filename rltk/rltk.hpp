@@ -29,7 +29,7 @@ void run(std::function<void(double)> on_tick, const std::string root_console_fon
 /*
  * For rendering to the console
  */
-extern std::unique_ptr<virtual_terminal> root_console;
+extern std::unique_ptr<virtual_terminal> console;
 
 /*
  * In case you want to do some SFML stuff yourself, this provides a pointer to the render window.

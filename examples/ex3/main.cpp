@@ -53,7 +53,7 @@ double tick_time = 0.0;
 // since the last time it was called.
 void tick(double duration_ms) {
 	// Rather than clearing the screen to black, we set it to all white dots.
-	root_console->clear(vchar{'.', WHITE, BLACK});
+	console->clear(vchar{'.', WHITE, BLACK});
 
 	// Increase the tick time by the frame duration. If it has exceeded
 	// the tick duration, then we move the @.
@@ -63,8 +63,8 @@ void tick(double duration_ms) {
 		// If we're at our destination, we need a new one!
 		if ((destination_x == dude_x and destination_y == dude_y) or path.empty()) {
 			// We use the RNG to determine where we want to go
-			destination_x = rng.roll_dice(1, root_console->term_width)-1;
-			destination_y = rng.roll_dice(1, root_console->term_height)-1;
+			destination_x = rng.roll_dice(1, console->term_width)-1;
+			destination_y = rng.roll_dice(1, console->term_height)-1;
 			
 			// Now we use "line_func". The prototype for this is:
 			// void line_func(int x1, int y1, const int x2, const int y2, std::function<void(int, int)> func);
@@ -91,20 +91,20 @@ void tick(double duration_ms) {
 	// after an update? For now, we aren't handling the concept of a map that is larger
 	// than the screen - so if the window resizes, the @ gets clipped to a visible area.
 	if (dude_x < 0) dude_x = 0;
-	if (dude_x > root_console->term_width) dude_x = root_console->term_width;
+	if (dude_x > console->term_width) dude_x = console->term_width;
 	if (dude_y < 0) dude_y = 0;
-	if (dude_y > root_console->term_height) dude_x = root_console->term_height;
+	if (dude_y > console->term_height) dude_x = console->term_height;
 
 	// Render our planned path. We're using auto and a range-for to avoid typing all
 	// the iterator stuff
 	for (auto step : path) {
-		root_console->set_char(root_console->at(step.first, step.second), star);
+		console->set_char(console->at(step.first, step.second), star);
 	}
 
 	// Render our destination
-	root_console->set_char(root_console->at(destination_x, destination_y), destination);
+	console->set_char(console->at(destination_x, destination_y), destination);
 	// Finally, we render the @ symbol. dude_x and dude_y are in terminal coordinates.
-	root_console->set_char(root_console->at(dude_x, dude_y), dude);
+	console->set_char(console->at(dude_x, dude_y), dude);
 }
 
 // Your main function

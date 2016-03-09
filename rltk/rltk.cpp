@@ -5,7 +5,7 @@
 namespace rltk {
 
 std::unique_ptr<sf::RenderWindow> main_window;
-std::unique_ptr<virtual_terminal> root_console;
+std::unique_ptr<virtual_terminal> console;
 
 sf::RenderWindow * get_window() {
 	return main_window.get();
@@ -17,9 +17,9 @@ void init(const int window_width, const int window_height, const std::string win
 }
 
 void run(std::function<void(double)> on_tick, const std::string root_console_font) {
-    root_console = std::make_unique<virtual_terminal>(root_console_font, 0, 0);
+    console = std::make_unique<virtual_terminal>(root_console_font, 0, 0);
     sf::Vector2u size_pixels = main_window->getSize();
-    root_console->resize_pixels(size_pixels.x, size_pixels.y);
+    console->resize_pixels(size_pixels.x, size_pixels.y);
 
     double duration_ms = 0.0;
     while (main_window->isOpen())
@@ -32,18 +32,18 @@ void run(std::function<void(double)> on_tick, const std::string root_console_fon
             if (event.type == sf::Event::Closed) {
                 main_window->close();
             } else if (event.type == sf::Event::Resized) {
-                root_console->resize_pixels(event.size.width, event.size.height);
+                console->resize_pixels(event.size.width, event.size.height);
                 main_window->setView(sf::View(sf::FloatRect(0.f, 0.f, event.size.width, event.size.height)));
             }
 
         }
 
         main_window->clear();
-        root_console->clear();
+        console->clear();
 
         on_tick(duration_ms);
 
-        root_console->render(*main_window);
+        console->render(*main_window);
 
         main_window->display();
 
