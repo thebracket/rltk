@@ -33,8 +33,6 @@ random_number_generator rng;
 const vchar dude{'@', YELLOW, BLACK};
 // We're also going to render our destination as a pink heart. Aww.
 const vchar destination_glyph{3, MAGENTA, BLACK};
-// We'll also render our planned path ahead as a series of stars
-const vchar star{'*', GREEN, BLACK};
 // We now need to represent walls and floors, too
 const vchar wall_tile{'#', WHITE, BLACK};
 const vchar floor_tile{'.', WHITE, BLACK}; // Note that "floor" is taken as a name in C++!
@@ -218,8 +216,16 @@ void tick(double duration_ms) {
 	// Render our planned path. We're using auto and a range-for to avoid typing all
 	// the iterator stuff
 	if (path) {
+		// We're going to show off a bit and "lerp" the color along the path; the red
+		// lightens as it approaches the destination. This is a preview of some of the
+		// color functions.
+		const float n_steps = path->steps.size();
+		float i = 0;
 		for (auto step : path->steps) {
+			const float lerp_amount = i / n_steps;
+			vchar star{ '*', lerp(DARKEST_RED, LIGHTEST_RED, lerp_amount), BLACK };
 			console->set_char(console->at(step.x, step.y), star);
+			++i;
 		}
 	}
 
