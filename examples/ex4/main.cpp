@@ -223,8 +223,8 @@ void tick(double duration_ms) {
 		float i = 0;
 		for (auto step : path->steps) {
 			const float lerp_amount = i / n_steps;
-			vchar star{ '*', lerp(DARKEST_RED, LIGHTEST_RED, lerp_amount), BLACK };
-			console->set_char(console->at(step.x, step.y), star);
+			vchar highlight{ 177, lerp(DARK_GREEN, LIGHTEST_GREEN, lerp_amount), BLACK };
+			console->set_char(console->at(step.x, step.y), highlight);
 			++i;
 		}
 	}
