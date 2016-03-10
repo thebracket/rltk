@@ -16,6 +16,7 @@ void virtual_terminal::resize_chars(const int width, const int height) {
 	buffer.resize(num_chars);
 	term_width = width;
 	term_height = height;
+	backing.create(term_width * font->character_size.first, term_height * font->character_size.second);
 }
 
 void virtual_terminal::clear() {
@@ -53,14 +54,16 @@ void virtual_terminal::render(sf::RenderWindow &window) {
 	const int space_x = (219 % 16) * font_width;
 	const int space_y = (219 / 16) * font_height;
 
+	backing.clear();
+
 	int idx = 0;
 	for (int y=0; y<term_height; ++y) {
-		const int screen_y = (y * font_height) + offset_y;
+		const int screen_y = (y * font_height);
 		for (int x=0; x<term_width; ++x) {
 			const vchar target = buffer[idx];
 			const int texture_x = (target.glyph % 16) * font_width;
 			const int texture_y = (target.glyph / 16) * font_height;
-			const int screen_x = (x * font_width) + offset_x;
+			const int screen_x = (x * font_width);
 			sf::Vector2f pos(screen_x, screen_y);
 
 			// Draw the background
@@ -70,7 +73,7 @@ void virtual_terminal::render(sf::RenderWindow &window) {
 				bg.setTextureRect(sf::IntRect(space_x, space_y, font_width, font_height));
 				bg.move(pos);
 				bg.setColor(color_to_sfml(target.background));
-				window.draw(bg);
+				backing.draw(bg);
 			}
 
 			// Draw the foreground
@@ -79,11 +82,14 @@ void virtual_terminal::render(sf::RenderWindow &window) {
 			sprite.setTextureRect(sf::IntRect(texture_x, texture_y, font_width, font_height));
 			sprite.move(pos);
 			sprite.setColor(color_to_sfml(target.foreground));
-			window.draw(sprite);
+			backing.draw(sprite);
 
 			++idx;
 		}
 	}
+
+	backing.display();
+	window.draw(sf::Sprite(backing.getTexture()));
 }
 
 }

@@ -41,6 +41,7 @@ public:
 	int term_height;
 
 private:
+	sf::RenderTexture backing;
 	std::string font_tag;
 	int offset_x;
 	int offset_y;
