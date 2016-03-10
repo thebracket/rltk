@@ -18,11 +18,11 @@
 using namespace rltk;
 
 // For now, we always want our "dude" to be a yellow @ - so he's constexpr
-constexpr vchar dude{'@', YELLOW, BLACK};
+const vchar dude{'@', YELLOW, BLACK};
 // We're also going to render our destination as a pink heart. Aww.
-constexpr vchar destination{3, MAGENTA, BLACK};
+const vchar destination{3, MAGENTA, BLACK};
 // We'll also render our planned path ahead as a series of stars
-constexpr vchar star{'*', GREEN, BLACK};
+const vchar star{'*', GREEN, BLACK};
 // The dude's location in X/Y terms
 int dude_x = 10;
 int dude_y = 10;

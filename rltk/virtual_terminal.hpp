@@ -10,14 +10,10 @@
 #include <string>
 #include <SFML/Graphics.hpp>
 #include "bitmap_font.hpp"
- #include "texture.hpp"
+#include "texture.hpp"
+#include "color_t.hpp"
 
 namespace rltk {
-
-struct color_t {
-	uint8_t r,g,b;
-	inline sf::Color as_sfml_color() const { return sf::Color(r,g,b); }
-};
 
 struct vchar {
 	int glyph;

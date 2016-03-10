@@ -29,14 +29,14 @@ using namespace rltk;
 random_number_generator rng;
 
 // For now, we always want our "dude" to be a yellow @ - so he's constexpr
-constexpr vchar dude{'@', YELLOW, BLACK};
+const vchar dude{'@', YELLOW, BLACK};
 // We're also going to render our destination as a pink heart. Aww.
-constexpr vchar destination_glyph{3, MAGENTA, BLACK};
+const vchar destination_glyph{3, MAGENTA, BLACK};
 // We'll also render our planned path ahead as a series of stars
-constexpr vchar star{'*', GREEN, BLACK};
+const vchar star{'*', GREEN, BLACK};
 // We now need to represent walls and floors, too
-constexpr vchar wall_tile{'#', WHITE, BLACK};
-constexpr vchar floor_tile{'.', WHITE, BLACK}; // Note that "floor" is taken as a name in C++!
+const vchar wall_tile{'#', WHITE, BLACK};
+const vchar floor_tile{'.', WHITE, BLACK}; // Note that "floor" is taken as a name in C++!
 
 // Now we define a structure to represent a location. In this case, it's a simple
 // x/y coordinate.
