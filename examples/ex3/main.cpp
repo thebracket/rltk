@@ -16,6 +16,7 @@
 // For convenience, import the whole rltk namespace. You may not want to do this
 // in larger projects, to avoid naming collisions.
 using namespace rltk;
+using namespace rltk::colors;
 
 // For now, we always want our "dude" to be a yellow @ - so he's constexpr
 const vchar dude{'@', YELLOW, BLACK};
