@@ -1,6 +1,6 @@
 #pragma once
 
-#include "virtual_terminal.hpp"
+#include "color_t.hpp"
 
 namespace rltk {
 
