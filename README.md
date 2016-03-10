@@ -17,13 +17,18 @@ this later, when this is a more useful library).
 I'll write proper documentation as the library evolves; I don't really want to write up a lot of docs and have to revise them
 heavily as things solidify. I'm doing my best to include examples evolving towards a real roguelike. Currently, these are:
 
-* [Example 1](https://github.com/thebracket/rltk/blob/master/examples/ex1/main.cpp): demonstrates a Hello World with frame-rate.
+### Example 1: Hello World
+![Hello World](https://raw.githubusercontent.com/thebracket/rltk/master/tutorial_images/example1.png "Hello World")
+[Example 1](https://github.com/thebracket/rltk/blob/master/examples/ex1/main.cpp): demonstrates a Hello World with frame-rate.
 
-* [Example 2](https://github.com/thebracket/rltk/blob/master/examples/ex2/main.cpp): a randomly moving yellow @ on a field of white dots.
+### Example 2: Randomly moving @
+[Example 2](https://github.com/thebracket/rltk/blob/master/examples/ex2/main.cpp): a randomly moving yellow @ on a field of white dots.
 
-* [Example 3](https://github.com/thebracket/rltk/blob/master/examples/ex3/main.cpp): our @ dude again, this time using Bresenham's line to find his way. It also renders additional glyphs, as Mr @ finds his way to his destination.
+### Example 3: Bresenham's Line Pathing
+[Example 3](https://github.com/thebracket/rltk/blob/master/examples/ex3/main.cpp): our @ dude again, this time using Bresenham's line to find his way. It also renders additional glyphs, as Mr @ finds his way to his destination.
 
-* [Example 4](https://github.com/thebracket/rltk/blob/master/examples/ex4/main.cpp): our @ dude again, now on a defined map with obstacles and using A* to find his way to the heart. This demonstrates using templates to specialize map support - we won't force you to use a specific map representation!
+### Example 4: A-Star Pathing
+[Example 4](https://github.com/thebracket/rltk/blob/master/examples/ex4/main.cpp): our @ dude again, now on a defined map with obstacles and using A* to find his way to the heart. This demonstrates using templates to specialize map support - we won't force you to use a specific map representation!
 
 ## Example
 The goal is to keep it simple from the user's point of view. The following code is enough to setup an ASCII terminal,
