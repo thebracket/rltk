@@ -100,4 +100,7 @@ color_t darken(const int &amount, const color_t &col);
 /* Applies colored lighting effect; colors that don't exist remain dark. Lights are from 0.0 to 1.0. */
 color_t apply_colored_light(const color_t &col, const std::tuple<float,float,float> &light);
 
+/* Calculates an intermediate color on a linear RGB color ramp. Amount is from 0 to 1 */
+extern color_t lerp(const color_t &first, const color_t &second, float amount);
+
 }

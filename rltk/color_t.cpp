@@ -184,4 +184,28 @@ color_t apply_colored_light(const color_t &col, const std::tuple<float,float,flo
 	return color_t(red, green, blue);
 }
 
+color_t lerp(const color_t &first, const color_t &second, float amount) {
+	const float r1 = first.r;
+	const float g1 = first.g;
+	const float b1 = first.b;
+
+	const float r2 = second.r;
+	const float g2 = second.g;
+	const float b2 = second.b;
+
+	const float rdiff = r2 - r1;
+	const float gdiff = g2 - g1;
+	const float bdiff = b2 - b1;
+
+	const float red = r1 + (rdiff * amount);
+	const float green = g1 + (gdiff * amount);
+	const float blue = b1 + (bdiff * amount);
+
+	const int r = red;
+	const int g = green;
+	const int b = blue;
+
+	return color_t(r,g,b);
+}
+
 }
