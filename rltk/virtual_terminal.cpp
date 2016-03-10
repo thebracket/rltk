@@ -48,8 +48,6 @@ void virtual_terminal::render(sf::RenderWindow &window) {
 	}
 	const int font_width = font->character_size.first;
 	const int font_height = font->character_size.second;
-	const int font_width_2 = font_width * 2;
-	const int font_height_2 = font_height * 2;	
 
 	const int space_x = (219 % 16) * font_width;
 	const int space_y = (219 / 16) * font_height;
