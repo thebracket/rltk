@@ -89,7 +89,10 @@ void virtual_terminal::render(sf::RenderWindow &window) {
 	}
 
 	backing.display();
-	window.draw(sf::Sprite(backing.getTexture()));
+	sf::Sprite compositor(backing.getTexture());
+	compositor.move(offset_x, offset_y);
+	compositor.setColor(sf::Color(tint.r, tint.g, tint.b, alpha));
+	window.draw(sf::Sprite(compositor));
 }
 
 }

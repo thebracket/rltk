@@ -37,6 +37,10 @@ public:
 
 	void render(sf::RenderWindow &window);
 
+	inline void set_alpha(const uint8_t new_alpha) { alpha = new_alpha; }
+	inline void set_tint(const color_t new_tint) { tint = new_tint; }
+	inline void set_offset(int x, int y) { offset_x = x; offset_y = y; };
+
 	int term_width;
 	int term_height;
 
@@ -45,6 +49,8 @@ private:
 	std::string font_tag;
 	int offset_x;
 	int offset_y;
+	uint8_t alpha = 255;
+	color_t tint{255,255,255};
 	bool has_background;
 	bitmap_font * font = nullptr;
 	sf::Texture * tex = nullptr;
