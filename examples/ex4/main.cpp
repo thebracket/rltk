@@ -23,6 +23,7 @@
 // For convenience, import the whole rltk namespace. You may not want to do this
 // in larger projects, to avoid naming collisions.
 using namespace rltk;
+using namespace rltk::colors;
 
 // A default-defined random number generator. You can specify a seed to get
 // the same results each time, but for now we're keeping it simple.

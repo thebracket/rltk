@@ -46,6 +46,7 @@ and display **Hello World** with a frame-rate displayed (around 100 FPS on my wo
 #include <sstream>
 
 using namespace rltk;
+using namespace rltk::colors;
 
 void tick(double duration_ms) {
 	std::stringstream ss;

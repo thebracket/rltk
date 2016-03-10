@@ -15,6 +15,7 @@
 // For convenience, import the whole rltk namespace. You may not want to do this
 // in larger projects, to avoid naming collisions.
 using namespace rltk;
+using namespace rltk::colors;
 
 // Tick is called every frame. The parameter specifies how many ms have elapsed
 // since the last time it was called.
