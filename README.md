@@ -33,7 +33,7 @@ heavily as things solidify. I'm doing my best to include examples evolving towar
 [Example 3](https://github.com/thebracket/rltk/blob/master/examples/ex3/main.cpp): our @ dude again, this time using Bresenham's line to find his way. It also renders additional glyphs, as Mr @ finds his way to his destination.
 
 ### Example 4: A-Star Pathing
-![A Star Pathing](https://raw.githubusercontent.com/thebracket/rltk/master/tutorial_images/example3.gif "A Star Pathing")
+![A Star Pathing](https://raw.githubusercontent.com/thebracket/rltk/master/tutorial_images/example4.gif "A Star Pathing")
 
 [Example 4](https://github.com/thebracket/rltk/blob/master/examples/ex4/main.cpp): our @ dude again, now on a defined map with obstacles and using A* to find his way to the heart. This demonstrates using templates to specialize map support - we won't force you to use a specific map representation!
 
