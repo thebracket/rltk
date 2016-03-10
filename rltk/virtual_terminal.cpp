@@ -69,7 +69,7 @@ void virtual_terminal::render(sf::RenderWindow &window) {
 				bg.setTexture(*tex);
 				bg.setTextureRect(sf::IntRect(space_x, space_y, font_width, font_height));
 				bg.move(pos);
-				bg.setColor(target.background.as_sfml_color());
+				bg.setColor(color_to_sfml(target.background));
 				window.draw(bg);
 			}
 
@@ -78,7 +78,7 @@ void virtual_terminal::render(sf::RenderWindow &window) {
 			sprite.setTexture(*tex);
 			sprite.setTextureRect(sf::IntRect(texture_x, texture_y, font_width, font_height));
 			sprite.move(pos);
-			sprite.setColor(target.foreground.as_sfml_color());
+			sprite.setColor(color_to_sfml(target.foreground));
 			window.draw(sprite);
 
 			++idx;

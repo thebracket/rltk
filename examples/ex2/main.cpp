@@ -15,7 +15,7 @@
 using namespace rltk;
 
 // For now, we always want our "dude" to be a yellow @ - so he's constexpr
-constexpr vchar dude{'@', YELLOW, BLACK};
+const vchar dude{'@', YELLOW, BLACK};
 // The dude's location in X/Y terms
 int dude_x = 10;
 int dude_y = 10;
