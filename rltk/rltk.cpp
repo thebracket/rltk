@@ -20,6 +20,7 @@ void run(std::function<void(double)> on_tick, const std::string root_console_fon
     console = std::make_unique<virtual_terminal>(root_console_font, 0, 0);
     sf::Vector2u size_pixels = main_window->getSize();
     console->resize_pixels(size_pixels.x, size_pixels.y);
+    reset_mouse_state();
 
     double duration_ms = 0.0;
     while (main_window->isOpen())
@@ -34,8 +35,17 @@ void run(std::function<void(double)> on_tick, const std::string root_console_fon
             } else if (event.type == sf::Event::Resized) {
                 console->resize_pixels(event.size.width, event.size.height);
                 main_window->setView(sf::View(sf::FloatRect(0.f, 0.f, event.size.width, event.size.height)));
+            } else if (event.type == sf::Event::LostFocus) {
+                set_window_focus_state(false);
+            } else if (event.type == sf::Event::GainedFocus) {
+                set_window_focus_state(true);
+            } else if (event.type == sf::Event::MouseButtonPressed) {                
+                set_mouse_button_state(event.mouseButton.button, true);
+            } else if (event.type == sf::Event::MouseButtonReleased) {
+                set_mouse_button_state(event.mouseButton.button, false);
+            } else if (event.type == sf::Event::MouseMoved) {
+                set_mouse_position(event.mouseMove.x, event.mouseMove.y);
             }
-
         }
 
         main_window->clear();

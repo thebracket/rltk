@@ -14,6 +14,7 @@ add_library(rltk 	rltk/rltk.cpp
 					rltk/virtual_terminal.cpp
 					rltk/rng.cpp
 					rltk/geometry.cpp
+					rltk/input_handler.cpp
 )
 
 # Require SFML
@@ -24,9 +25,11 @@ add_executable(ex1 examples/ex1/main.cpp)
 add_executable(ex2 examples/ex2/main.cpp)
 add_executable(ex3 examples/ex3/main.cpp)
 add_executable(ex4 examples/ex4/main.cpp)
+add_executable(ex5 examples/ex5/main.cpp)
 target_link_libraries(rltk ${SFML_LIBRARIES})
 target_link_libraries(ex1 rltk)
 target_link_libraries(ex2 rltk)
 target_link_libraries(ex3 rltk)
 target_link_libraries(ex4 rltk)
+target_link_libraries(ex5 rltk)
 
