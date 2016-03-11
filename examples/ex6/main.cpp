@@ -222,11 +222,16 @@ void tick(double duration_ms) {
 		// Are we there yet?
 		if (dude_position == destination) {
 			// Now we poll the mouse to determine where we want to go
+			// This requests the mouse position in PIXELS, and ties it into our mouse_x/mouse_y variables.
 			int mouse_x, mouse_y;
 			std::tie(mouse_x, mouse_y) = get_mouse_position();
+
+			// Since we're using an 8x8, it's just a matter of dividing by 8 to find the terminal-character
+			// coordinates. There will be a helper function for this once we get into retained GUIs.
 			const int terminal_x = mouse_x / 8;
 			const int terminal_y = mouse_y / 8;
 
+			// If the mouse is pointing at a walkable location, and the left button is down - path to the mouse.
 			if (map.walkable[map.at(terminal_x, terminal_y)] and get_mouse_button_state(rltk::button::LEFT)) {
 				destination.x = terminal_x;
 				destination.y = terminal_y;
@@ -239,6 +244,7 @@ void tick(double duration_ms) {
 					std::cout << "RESET: THIS ISN'T MEANT TO HAPPEN!\n";
 				}
 			} else {
+				// If the mouse is not clicked, then path to the mouse cursor for display only
 				if (path) path.reset();
 				path = find_path<location_t, navigator>(dude_position, location_t{terminal_x, terminal_y});
 			}
@@ -271,6 +277,8 @@ void tick(double duration_ms) {
 		for (auto step : path->steps) {
 			const float lerp_amount = i / n_steps;
 			vchar highlight;
+			// If we're at our destination, we are showing possible paths - highlight green;
+			// otherwise, highlight red to indicate that we are en route.
 			if (dude_position == destination) {
 				highlight = { 177, lerp(DARK_GREEN, LIGHTEST_GREEN, lerp_amount), BLACK };
 			} else {
