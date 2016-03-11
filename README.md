@@ -40,7 +40,8 @@ heavily as things solidify. I'm doing my best to include examples evolving towar
 ### Example 5: Mouse Controlled Path-Finding
 ![Mouse Driven A Star Pathing](https://raw.githubusercontent.com/thebracket/rltk/master/tutorial_images/example5.gif "Mouse Driven A Star Pathing")
 
-[Example 5](https://github.com/thebracket/rltk/blob/master/examples/ex5/main.cpp): our @ dude again, now on a defined map with obstacles and using A* to find his way to the heart. This demonstrates using templates to specialize map support - we won't force you to use a specific map representation!
+[Example 5](https://github.com/thebracket/rltk/blob/master/examples/ex5/main.cpp): our @ dude again, using A* pathing to find his way to the mouse
+cursor. Click and he goes there.
 
 ## Example
 The goal is to keep it simple from the user's point of view. The following code is enough to setup an ASCII terminal,
