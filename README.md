@@ -43,6 +43,11 @@ heavily as things solidify. I'm doing my best to include examples evolving towar
 [Example 5](https://github.com/thebracket/rltk/blob/master/examples/ex5/main.cpp): our @ dude again, using A* pathing to find his way to the mouse
 cursor. Click and he goes there.
 
+### Example 6: Visibility
+![Visibility](https://raw.githubusercontent.com/thebracket/rltk/master/tutorial_images/example6.gif "Visibility")
+
+[Example 6](https://github.com/thebracket/rltk/blob/master/examples/ex6/main.cpp): Example 5, but now we have true visibility plotted as you wander.
+
 ## Example
 The goal is to keep it simple from the user's point of view. The following code is enough to setup an ASCII terminal,
 and display **Hello World** with a frame-rate displayed (around 100 FPS on my workstation):
