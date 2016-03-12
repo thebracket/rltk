@@ -10,6 +10,7 @@
 #include "astar.hpp"
 #include <memory>
 #include <deque>
+#include <stdexcept>
 
 namespace rltk {
 
@@ -43,8 +44,7 @@ public:
 		if (parent_node != nullptr) {		
 			navigator_t::get_successors(parent_node->pos, successors);			
 		} else {
-			location_t start = navigator_t::get_start();
-			navigator_t::get_successors(start, successors);
+			throw std::runtime_error("Null parent error.");
 		}
 		for (location_t loc : successors) {
 			map_search_node<location_t, navigator_t> tmp(loc);
