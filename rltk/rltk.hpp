@@ -15,6 +15,7 @@
 #include "path_finding.hpp"
 #include "input_handler.hpp"
 #include "visibility.hpp"
+#include "gui.hpp"
 
 namespace rltk {
 
