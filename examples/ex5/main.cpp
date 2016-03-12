@@ -108,10 +108,6 @@ location_t destination {10,10};
 
 // The A* library also requires a helper class to understand your map format.
 struct navigator {
-	static location_t get_start() {
-		return dude_position;
-	}
-
 	// This lets you define a distance heuristic. Manhattan distance works really well, but
 	// for now we'll just use a simple euclidian distance squared.
 	// The geometry system defines one for us.
