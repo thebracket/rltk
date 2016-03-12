@@ -15,6 +15,7 @@ add_library(rltk 	rltk/rltk.cpp
 					rltk/rng.cpp
 					rltk/geometry.cpp
 					rltk/input_handler.cpp
+					rltk/gui.cpp
 )
 
 # Require SFML
