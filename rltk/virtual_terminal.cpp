@@ -33,7 +33,7 @@ void virtual_terminal::set_char(const int idx, const vchar &target) {
 
 void virtual_terminal::print(const int x, const int y, const std::string &s, const color_t &fg, const color_t &bg) {
 	int idx = at(x,y);
-	for (int i=0; i<s.size(); ++i) {
+	for (std::size_t i=0; i<s.size(); ++i) {
 		buffer[idx] = { s[i], fg, bg };
 		++idx;
 	}
