@@ -9,6 +9,8 @@
 
 #include <SFML/Graphics.hpp>
 #include <functional>
+#include <vector>
+#include <memory>
 
 namespace rltk {
 
@@ -18,9 +20,22 @@ struct bounding_box {
 	int x, y, w, h;
 };
 
-class panel {
-public:
+enum panel_mode { full, fixed_height, fixed_width, expander };
+
+struct panel {
+	panel();
+	panel(const panel_mode MODE) : mode(MODE) {}
+
 	bounding_box position;
+	panel_mode mode;
+	std::vector<panel> sub_panels;
+	int fix_height;
+
+	void render(panel * parent, sf::Window &window);
+	void resize(panel * parent, sf::Window &window);
+
+	void resize_full(panel * parent, sf::Window &window);
+	void resize_fixed_height(panel * parent, sf::Window &window);
 };
 
 class gui {
@@ -31,6 +46,7 @@ public:
 	void render(sf::Window &window);
 private:
 	bool window_resized = true;
+	std::vector<panel> panels;
 };
 
 }
