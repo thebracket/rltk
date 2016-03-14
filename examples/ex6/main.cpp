@@ -160,6 +160,14 @@ struct navigator {
 	static bool is_same_state(location_t &lhs, location_t &rhs) {
 		return lhs == rhs;
 	}
+
+	// We're using the Bresneham's line optimization for pathing this time, which requires a few extra
+	// static methods. These are designed to translate between your map format and co-ordinates used by
+	// the library (we don't want to force you to structure things a certain way).
+	static int get_x(const location_t &loc) { return loc.x; }
+	static int get_y(const location_t &loc) { return loc.y; }
+	static location_t get_xy(const int &x, const int &y) { return location_t{x,y}; }
+	static bool is_walkable(const location_t &loc) { return map.walkable[map.at(loc.x, loc.y)]; }
 };
 
 // Lets go really fast!
@@ -242,7 +250,7 @@ void tick(double duration_ms) {
 			} else {
 				// If the mouse is not clicked, then path to the mouse cursor for display only
 				if (path) path.reset();
-				path = find_path<location_t, navigator>(dude_position, location_t{terminal_x, terminal_y});
+				path = find_path_2d<location_t, navigator>(dude_position, location_t{terminal_x, terminal_y});
 			}
 		} else {
 			// Follow the breadcrumbs!

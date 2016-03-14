@@ -8,9 +8,11 @@
  */
 
 #include "astar.hpp"
+#include "geometry.hpp"
 #include <memory>
 #include <deque>
 #include <stdexcept>
+#include <type_traits>
 
 namespace rltk {
 
@@ -76,8 +78,135 @@ struct navigation_path {
 	std::deque<location_t> steps;
 };
 
+/*
+ * find_path_3d implements A*, and provides an optimization that scans a 3D Bresenham line at the beginning
+ * to check for a simple line-of-sight (and paths along it). 
+ * 
+ * We jump through a few hoops to make sure that it will work with whatever map format you choose to use,
+ * hence: it requires that the navigator_t class provide:
+ * - get_x, get_y_, get_z - to translate X/Y/Z into whatever name the user wishes to utilize.
+ * - get_xyz - returns a location_t given X/Y/Z co-ordinates.
+ */
 template<class location_t, class navigator_t>
-std::shared_ptr<navigation_path<location_t>> find_path(location_t start, location_t end) 
+std::shared_ptr<navigation_path<location_t>> find_path_3d(const location_t start, const location_t end) 
+{
+	{
+		std::shared_ptr<navigation_path<location_t>> result = std::shared_ptr<navigation_path<location_t>>(new navigation_path<location_t>());
+		result->success = true;
+		line_func3d(navigator_t::get_x(start), navigator_t::get_y(start), navigator_t::get_z(start), navigator_t::get_x(end), navigator_t::get_y(end), navigator_t::get_z(end), [result] (int X, int Y, int Z) {
+			location_t step = navigator_t::get_xyz(X,Y, Z);
+			if (result->success and navigator_t::is_walkable(step)) {
+				result->steps.push_back(step);
+			} else {
+				result->success = false;
+			}
+		});
+		if (result->success) {
+			return result;
+		}
+	}
+
+	AStarSearch<map_search_node<location_t, navigator_t>> a_star_search;
+	map_search_node<location_t, navigator_t> a_start(start);
+	map_search_node<location_t, navigator_t> a_end(end);
+
+	a_star_search.SetStartAndGoalStates(a_start, a_end);
+	unsigned int search_state;
+	unsigned int search_steps = 0;
+
+	do {
+		search_state = a_star_search.SearchStep();
+		++search_steps;
+	} while (search_state == AStarSearch<map_search_node<navigator_t, location_t>>::SEARCH_STATE_SEARCHING);
+
+	if (search_state == AStarSearch<map_search_node<navigator_t, location_t>>::SEARCH_STATE_SUCCEEDED) {
+		std::shared_ptr<navigation_path<location_t>> result = std::shared_ptr<navigation_path<location_t>>(new navigation_path<location_t>());
+		result->destination = end;
+		map_search_node<location_t, navigator_t> * node = a_star_search.GetSolutionStart();
+		for (;;) {
+			node = a_star_search.GetSolutionNext();
+			if (!node) break;
+			result->steps.push_back(node->pos);
+		}
+		a_star_search.FreeSolutionNodes();
+		a_star_search.EnsureMemoryFreed();
+		result->success = true;
+		return result;
+	}
+
+	std::shared_ptr<navigation_path<location_t>> result = std::make_shared<navigation_path<location_t>>();
+	a_star_search.EnsureMemoryFreed();
+	return result;
+}
+
+/*
+ * find_path_2d implements A*, and provides an optimization that scans a 2D Bresenham line at the beginning
+ * to check for a simple line-of-sight (and paths along it). 
+ * 
+ * We jump through a few hoops to make sure that it will work with whatever map format you choose to use,
+ * hence: it requires that the navigator_t class provide:
+ * - get_x, get_y  - to translate X/Y/Z into whatever name the user wishes to utilize.
+ * - get_xy - returns a location_t given X/Y/Z co-ordinates.
+ */
+template<class location_t, class navigator_t>
+std::shared_ptr<navigation_path<location_t>> find_path_2d(const location_t start, const location_t end) 
+{
+	{
+		std::shared_ptr<navigation_path<location_t>> result = std::shared_ptr<navigation_path<location_t>>(new navigation_path<location_t>());
+		result->success = true;
+		line_func(navigator_t::get_x(start), navigator_t::get_y(start), navigator_t::get_x(end), navigator_t::get_y(end), [result] (int X, int Y) {
+			location_t step = navigator_t::get_xy(X,Y);
+			if (result->success and navigator_t::is_walkable(step)) {
+				result->steps.push_back(step);
+			} else {
+				result->success = false;
+			}
+		});
+		if (result->success) {
+			return result;
+		}
+	}
+
+	AStarSearch<map_search_node<location_t, navigator_t>> a_star_search;
+	map_search_node<location_t, navigator_t> a_start(start);
+	map_search_node<location_t, navigator_t> a_end(end);
+
+	a_star_search.SetStartAndGoalStates(a_start, a_end);
+	unsigned int search_state;
+	unsigned int search_steps = 0;
+
+	do {
+		search_state = a_star_search.SearchStep();
+		++search_steps;
+	} while (search_state == AStarSearch<map_search_node<navigator_t, location_t>>::SEARCH_STATE_SEARCHING);
+
+	if (search_state == AStarSearch<map_search_node<navigator_t, location_t>>::SEARCH_STATE_SUCCEEDED) {
+		std::shared_ptr<navigation_path<location_t>> result = std::shared_ptr<navigation_path<location_t>>(new navigation_path<location_t>());
+		result->destination = end;
+		map_search_node<location_t, navigator_t> * node = a_star_search.GetSolutionStart();
+		for (;;) {
+			node = a_star_search.GetSolutionNext();
+			if (!node) break;
+			result->steps.push_back(node->pos);
+		}
+		a_star_search.FreeSolutionNodes();
+		a_star_search.EnsureMemoryFreed();
+		result->success = true;
+		return result;
+	}
+
+	std::shared_ptr<navigation_path<location_t>> result = std::make_shared<navigation_path<location_t>>();
+	a_star_search.EnsureMemoryFreed();
+	return result;
+}
+
+/*
+ * Implements a simple A-Star path, with no line-search optimization. This has the benefit of avoiding
+ * requiring as much additional translation between the template and your preferred map format, at the
+ * expense of being potentially slower for some paths.
+ */
+template<class location_t, class navigator_t>
+std::shared_ptr<navigation_path<location_t>> find_path(const location_t start, const location_t end) 
 {
 	AStarSearch<map_search_node<location_t, navigator_t>> a_star_search;
 	map_search_node<location_t, navigator_t> a_start(start);
