@@ -177,7 +177,7 @@ double tick_time = 0.0;
 // Helper function: calls the RLTK visibility sweep 2D algorithm with lambdas to
 // assist in understanding our map format.
 inline void visibility_sweep() {
-	visibility_sweep_2d<location_t>(dude_position, 10, 
+	visibility_sweep_2d<location_t, navigator>(dude_position, 10, 
 		[] (location_t reveal) { 
 			map.revealed[map.at(reveal.x, reveal.y)] = true;
 			map.visible[map.at(reveal.x, reveal.y)] = true;
