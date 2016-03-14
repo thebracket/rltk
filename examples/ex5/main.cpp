@@ -32,7 +32,7 @@ const vchar dude{'@', YELLOW, BLACK};
 const vchar destination_glyph{3, MAGENTA, BLACK};
 // We now need to represent walls and floors, too
 const vchar wall_tile{'#', WHITE, BLACK};
-const vchar floor_tile{'.', WHITE, BLACK}; // Note that "floor" is taken as a name in C++!
+const vchar floor_tile{'.', GREY, BLACK}; // Note that "floor" is taken as a name in C++!
 
 // Now we define a structure to represent a location. In this case, it's a simple
 // x/y coordinate.

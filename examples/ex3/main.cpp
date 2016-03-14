@@ -54,7 +54,7 @@ double tick_time = 0.0;
 // since the last time it was called.
 void tick(double duration_ms) {
 	// Rather than clearing the screen to black, we set it to all white dots.
-	console->clear(vchar{'.', WHITE, BLACK});
+	console->clear(vchar{'.', GREY, BLACK});
 
 	// Increase the tick time by the frame duration. If it has exceeded
 	// the tick duration, then we move the @.
