@@ -171,7 +171,7 @@ struct navigator {
 };
 
 // Lets go really fast!
-constexpr double tick_duration = 1.0;
+constexpr double tick_duration = 0.0;
 double tick_time = 0.0;
 
 // Helper function: calls the RLTK visibility sweep 2D algorithm with lambdas to
