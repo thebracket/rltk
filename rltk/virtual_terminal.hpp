@@ -46,6 +46,7 @@ public:
 
 private:
 	sf::RenderTexture backing;
+	sf::VertexArray vertices;
 	std::string font_tag;
 	int offset_x;
 	int offset_y;
