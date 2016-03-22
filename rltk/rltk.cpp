@@ -6,7 +6,6 @@ namespace rltk {
 
 std::unique_ptr<sf::RenderWindow> main_window;
 std::unique_ptr<virtual_terminal> console;
-std::unique_ptr<gui> active_gui;
 
 namespace main_detail {
 bool use_root_console;
@@ -42,7 +41,6 @@ void run(std::function<void(double)> on_tick, const std::string root_console_fon
                 main_window->close();
             } else if (event.type == sf::Event::Resized) {
                 console->resize_pixels(event.size.width, event.size.height);
-                if (active_gui) active_gui->on_resized();
                 main_window->setView(sf::View(sf::FloatRect(0.f, 0.f, event.size.width, event.size.height)));                
             } else if (event.type == sf::Event::LostFocus) {
                 set_window_focus_state(false);
@@ -63,7 +61,6 @@ void run(std::function<void(double)> on_tick, const std::string root_console_fon
         on_tick(duration_ms);
 
         if (main_detail::use_root_console) console->render(*main_window);
-        if (active_gui) active_gui->render(*main_window);
 
         main_window->display();
 
