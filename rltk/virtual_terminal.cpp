@@ -20,33 +20,55 @@ void virtual_terminal::resize_chars(const int width, const int height) {
 
 	// Build the vertex buffer
 	vertices.setPrimitiveType(sf::Quads);
-	vertices.resize(width * height * 8);
+	if (has_background) {
+		vertices.resize(width * height * 8);
+	} else {
+		vertices.resize(width * height * 4);		
+	}
 
-	const int idx_half = width * height * 4;
-	const int font_width = font->character_size.first;
-	const int font_height = font->character_size.second;
+	if (has_background) {
+		const int idx_half = width * height * 4;
+		const int font_width = font->character_size.first;
+		const int font_height = font->character_size.second;
 
-	const int space_x = (219 % 16) * font_width;
-	const int space_y = (219 / 16) * font_height;
+		const int space_x = (219 % 16) * font_width;
+		const int space_y = (219 / 16) * font_height;
 
-	for (int y=0; y<height; ++y) {
-		for (int x=0; x<width; ++x) {
-			const int idx = ((y*width) + x)*4;
-			const int idx2 = idx + idx_half;
-			vertices[idx].position = sf::Vector2f(x * font->character_size.first, y * font->character_size.second);
-			vertices[idx+1].position = sf::Vector2f((x+1) * font->character_size.first, y * font->character_size.second);
-			vertices[idx+2].position = sf::Vector2f((x+1) * font->character_size.first, (y+1) * font->character_size.second);
-			vertices[idx+3].position = sf::Vector2f(x * font->character_size.first, (y+1) * font->character_size.second);
+		for (int y=0; y<height; ++y) {
+			for (int x=0; x<width; ++x) {
+				const int idx = ((y*width) + x)*4;
+				const int idx2 = idx + idx_half;
+				vertices[idx].position = sf::Vector2f(x * font->character_size.first, y * font->character_size.second);
+				vertices[idx+1].position = sf::Vector2f((x+1) * font->character_size.first, y * font->character_size.second);
+				vertices[idx+2].position = sf::Vector2f((x+1) * font->character_size.first, (y+1) * font->character_size.second);
+				vertices[idx+3].position = sf::Vector2f(x * font->character_size.first, (y+1) * font->character_size.second);
 
-			vertices[idx].texCoords = sf::Vector2f( space_x, space_y );
-			vertices[idx+1].texCoords = sf::Vector2f( space_x + font_width, space_y );
-			vertices[idx+2].texCoords = sf::Vector2f( space_x + font_width, space_y + font_height );
-			vertices[idx+3].texCoords = sf::Vector2f( space_x, space_y + font_height );
+				vertices[idx].texCoords = sf::Vector2f( space_x, space_y );
+				vertices[idx+1].texCoords = sf::Vector2f( space_x + font_width, space_y );
+				vertices[idx+2].texCoords = sf::Vector2f( space_x + font_width, space_y + font_height );
+				vertices[idx+3].texCoords = sf::Vector2f( space_x, space_y + font_height );
 
-			vertices[idx2].position = sf::Vector2f(x * font->character_size.first, y * font->character_size.second);
-			vertices[idx2+1].position = sf::Vector2f((x+1) * font->character_size.first, y * font->character_size.second);
-			vertices[idx2+2].position = sf::Vector2f((x+1) * font->character_size.first, (y+1) * font->character_size.second);
-			vertices[idx2+3].position = sf::Vector2f(x * font->character_size.first, (y+1) * font->character_size.second);
+				vertices[idx2].position = sf::Vector2f(x * font->character_size.first, y * font->character_size.second);
+				vertices[idx2+1].position = sf::Vector2f((x+1) * font->character_size.first, y * font->character_size.second);
+				vertices[idx2+2].position = sf::Vector2f((x+1) * font->character_size.first, (y+1) * font->character_size.second);
+				vertices[idx2+3].position = sf::Vector2f(x * font->character_size.first, (y+1) * font->character_size.second);
+			}
+		}
+	} else {
+		const int font_width = font->character_size.first;
+		const int font_height = font->character_size.second;
+
+		const int space_x = (219 % 16) * font_width;
+		const int space_y = (219 / 16) * font_height;
+
+		for (int y=0; y<height; ++y) {
+			for (int x=0; x<width; ++x) {
+				const int idx = ((y*width) + x)*4;
+				vertices[idx].position = sf::Vector2f(x * font->character_size.first, y * font->character_size.second);
+				vertices[idx+1].position = sf::Vector2f((x+1) * font->character_size.first, y * font->character_size.second);
+				vertices[idx+2].position = sf::Vector2f((x+1) * font->character_size.first, (y+1) * font->character_size.second);
+				vertices[idx+3].position = sf::Vector2f(x * font->character_size.first, (y+1) * font->character_size.second);
+			}
 		}
 	}
 }
@@ -87,6 +109,7 @@ void virtual_terminal::render(sf::RenderWindow &window) {
 	backing.clear();
 
 	int vertex_idx = term_height * term_width * 4;
+	if (!has_background) vertex_idx = 0;
 	int bg_idx = 0;
 	int idx=0;
 	for (int y=0; y<term_height; ++y) {
@@ -102,6 +125,7 @@ void virtual_terminal::render(sf::RenderWindow &window) {
 				vertices[bg_idx+2].color = bgsfml;
 				vertices[bg_idx+3].color = bgsfml;
 			}
+
 			vertices[vertex_idx].texCoords = sf::Vector2f( texture_x, texture_y );
 			vertices[vertex_idx+1].texCoords = sf::Vector2f( texture_x + font_width, texture_y );
 			vertices[vertex_idx+2].texCoords = sf::Vector2f( texture_x + font_width, texture_y + font_height );
