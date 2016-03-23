@@ -43,6 +43,7 @@ int main()
 
 	//register_bitmap_font_load("16x16", "terminal16x16", "../assets/terminal16x16.png", 16, 16);
 	//register_bitmap_font_load("32x32", "terminal32x32", "../assets/terminal32x32.png", 32, 32);
+	//register_bitmap_font_load("8x16", "terminal8x16", "../assets/VGA8x16.png", 8, 16);
 
 	// Enter the main loop. "tick" is the function we wrote above, and "8x8" is the font's name
 	// we specified as the first parameter to the font loader (the second is an internal "texture_tag")
