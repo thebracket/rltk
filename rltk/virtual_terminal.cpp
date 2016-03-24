@@ -94,6 +94,8 @@ void virtual_terminal::print(const int x, const int y, const std::string &s, con
 }
 
 void virtual_terminal::render(sf::RenderWindow &window) {
+	if (!visible) return;
+
 	if (font == nullptr) {
 		throw std::runtime_error("Font not loaded: " + font_tag);
 	}

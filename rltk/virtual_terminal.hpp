@@ -43,6 +43,7 @@ public:
 
 	int term_width;
 	int term_height;
+	bool visible = true;
 
 private:
 	sf::RenderTexture backing;
