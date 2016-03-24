@@ -9,7 +9,7 @@
 #include <vector>
 #include <string>
 #include <SFML/Graphics.hpp>
-#include "bitmap_font.hpp"
+#include "font_manager.hpp"
 #include "texture.hpp"
 #include "color_t.hpp"
 

@@ -7,6 +7,7 @@
 #include <string>
 #include <functional>
 #include <SFML/Graphics.hpp>
+#include "font_manager.hpp"
 #include "texture_resources.hpp"
 #include "virtual_terminal.hpp"
 #include "colors.hpp"
