@@ -44,6 +44,24 @@ void gui_t::add_layer(const int handle, const int X, const int Y, const int W, c
 	);
 }
 
+void gui_t::add_owner_layer(const int handle, const int X, const int Y, const int W, const int H, 
+	std::function<void(layer_t *,int,int)> resize_fun, std::function<void(layer_t *, sf::RenderWindow &)> owner_draw_fun, int order) 
+{
+	layers.emplace(std::make_pair(handle, layer_t(X, Y, W, H, resize_fun, owner_draw_fun)));
+	if (order == -1) {
+		order = render_order;
+		++render_order;
+	}
+	gui_detail::render_order.push_back(std::make_pair(order, get_layer(handle)));
+	std::sort(gui_detail::render_order.begin(), gui_detail::render_order.end(), 
+		[] (std::pair<int, layer_t *> a, std::pair<int, layer_t *> b) 
+		{
+		return a.first < b.first;
+		}
+	);
+}
+
+
 void gui_t::delete_layer(const int handle) {
 	gui_detail::render_order.erase(std::remove_if(gui_detail::render_order.begin(), gui_detail::render_order.end(), 
 		[&handle, this] (std::pair<int, layer_t *> a) 

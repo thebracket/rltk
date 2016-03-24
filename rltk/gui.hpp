@@ -74,7 +74,11 @@ public:
 	void on_resize(const int w, const int h);
 	void render(sf::RenderWindow &window);
 
-	void add_layer(const int handle, const int X, const int Y, const int W, const int H, std::string font_name, std::function<void(layer_t *,int,int)> resize_fun, bool has_background=true, const int order=-1);
+	// Specialization for adding console layers
+	void add_layer(const int handle, const int X, const int Y, const int W, const int H, std::string font_name, std::function<void(layer_t *,int,int)> resize_fun, bool has_background=true, int order=-1);
+	
+	// Specialization for adding owner-draw layers
+	void add_owner_layer(const int handle, const int X, const int Y, const int W, const int H, std::function<void(layer_t *,int,int)> resize_fun, std::function<void(layer_t *, sf::RenderWindow &)> owner_draw_fun, int order=-1);
 	void delete_layer(const int handle);
 	layer_t * get_layer(const int handle);
 
