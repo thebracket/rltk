@@ -36,6 +36,10 @@ public:
 	inline void set_char(const int x, const int y, vchar target) { set_char(at(x,y), target); }
 	void print(const int x, const int y, const std::string &s, const color_t &fg, const color_t &bg);
 	void print_center(const int y, const std::string &s, const color_t &fg, const color_t &bg);
+	inline void box(const color_t &fg, const color_t &bg, bool double_lines=false) {
+		box (0, 0, term_width-1, term_height-1, fg, bg, double_lines);
+	}
+	void box(const int x, const int y, const int w, const int h, const color_t &fg, const color_t &bg, bool double_lines=false);
 
 	void render(sf::RenderWindow &window);
 

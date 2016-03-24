@@ -2,6 +2,7 @@
 #include "texture_resources.hpp"
 #include <algorithm>
 #include <stdexcept>
+#include <iostream>
 
 namespace rltk {
 
@@ -12,7 +13,7 @@ void virtual_terminal::resize_pixels(const int width, const int height) {
 }
 
 void virtual_terminal::resize_chars(const int width, const int height) {
-	const int num_chars = width*height;
+	const int num_chars = width*(height+1);
 	buffer.resize(num_chars);
 	term_width = width;
 	term_height = height;
@@ -55,9 +56,6 @@ void virtual_terminal::resize_chars(const int width, const int height) {
 			}
 		}
 	} else {
-		const int font_width = font->character_size.first;
-		const int font_height = font->character_size.second;
-
 		for (int y=0; y<height; ++y) {
 			for (int x=0; x<width; ++x) {
 				const int idx = ((y*width) + x)*4;
@@ -79,6 +77,7 @@ void virtual_terminal::clear(const vchar &target) {
 }
 
 void virtual_terminal::set_char(const int idx, const vchar &target) {
+	if (idx < 0 or idx > buffer.size()) throw std::runtime_error("Out of screen range");
 	buffer[idx] = target;
 }
 
@@ -94,6 +93,41 @@ void virtual_terminal::print_center(const int y, const std::string &s, const col
 	print((term_width/2) - (s.size()/2), y, s, fg, bg);
 }
 
+void virtual_terminal::box(const int x, const int y, const int w, const int h, const color_t &fg, const color_t &bg, bool double_lines) {
+	//std::cout << h << "\n";
+	for (int i=1; i<w; ++i) {
+		if (!double_lines) {
+			set_char(x+i, y, vchar{196, fg, bg});
+			set_char(x+i, y+h, vchar{196, fg, bg});
+		} else {
+			set_char(x+i, y, vchar{205, fg, bg});
+			set_char(x+i, y+h, vchar{205, fg, bg});
+		}
+	}
+	
+	for (int i=1; i<h; ++i) {
+		if (!double_lines) {
+			set_char(x, y+i, vchar{179, fg, bg});
+			set_char(x+w, y+i, vchar{179, fg, bg});
+		} else {
+			set_char(x, y+i, vchar{186, fg, bg});
+			set_char(x+w, y+i, vchar{186, fg, bg});
+		}
+	}
+	
+	if (!double_lines) {
+		set_char(x,y, vchar{218, fg, bg});
+		set_char(x+w, y, vchar{191, fg, bg});
+		set_char(x, y+h, vchar{192, fg, bg});
+		set_char(x+w, y+h, vchar{217, fg, bg});
+	} else {
+		set_char(x,y, vchar{201, fg, bg});
+		set_char(x+w, y, vchar{187, fg, bg});
+		set_char(x, y+h, vchar{200, fg, bg});
+		set_char(x+w, y+h, vchar{188, fg, bg});
+	}
+}
+
 void virtual_terminal::render(sf::RenderWindow &window) {
 	if (!visible) return;
 
@@ -105,8 +139,6 @@ void virtual_terminal::render(sf::RenderWindow &window) {
 	}
 	const int font_width = font->character_size.first;
 	const int font_height = font->character_size.second;
-
-	backing.clear();
 
 	int vertex_idx = term_height * term_width * 4;
 	if (!has_background) vertex_idx = 0;
