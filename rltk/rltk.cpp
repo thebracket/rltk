@@ -15,18 +15,30 @@ sf::RenderWindow * get_window() {
 	return main_window.get();
 }
 
-void init(const std::string font_path, const int window_width, const int window_height, const std::string window_title, bool use_root_console, const std::string root_font) {
-    register_font_directory(font_path);
-
-	main_window = std::make_unique<sf::RenderWindow>(sf::VideoMode(window_width, window_height, sf::Style::Titlebar | sf::Style::Resize | sf::Style::Close), window_title);
+void init(const config_simple &config) {
+    register_font_directory(config.font_path);
+    bitmap_font * font = get_font(config.root_font);
+    main_window = std::make_unique<sf::RenderWindow>(sf::VideoMode(config.width * font->character_size.first, 
+        config.height * font->character_size.second, 
+        sf::Style::Titlebar | sf::Style::Resize | sf::Style::Close), config.window_title);
     main_window->setVerticalSyncEnabled(true);
-    main_detail::use_root_console = use_root_console;
+    main_detail::use_root_console = true;
 
-    if (main_detail::use_root_console) {
-        console = std::make_unique<virtual_terminal>(root_font, 0, 0);
-        sf::Vector2u size_pixels = main_window->getSize();
-        console->resize_pixels(size_pixels.x, size_pixels.y);
-    }
+    console = std::make_unique<virtual_terminal>(config.root_font, 0, 0);
+    sf::Vector2u size_pixels = main_window->getSize();
+    console->resize_pixels(size_pixels.x, size_pixels.y);
+}
+
+void init(const config_simple_px &config) {
+    register_font_directory(config.font_path);
+    main_window = std::make_unique<sf::RenderWindow>(sf::VideoMode(config.width_px, config.height_px, 
+        sf::Style::Titlebar | sf::Style::Resize | sf::Style::Close), config.window_title);
+    main_window->setVerticalSyncEnabled(true);
+    main_detail::use_root_console = true;
+
+    console = std::make_unique<virtual_terminal>(config.root_font, 0, 0);
+    sf::Vector2u size_pixels = main_window->getSize();
+    console->resize_pixels(size_pixels.x, size_pixels.y);
 }
 
 void run(std::function<void(double)> on_tick) {    
