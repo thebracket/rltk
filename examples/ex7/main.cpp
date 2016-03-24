@@ -24,7 +24,7 @@ int main()
 	// This time, we're using a full initialization: width, height, window title, and "false" meaning we don't
 	// want an automatically generated root console. This is necessary when you want to use the complex layout
 	// functions.
-	init(config_simple_px("../assets"));
+	init(config_advanced("../assets"));
 	run(tick);
 
     return 0;
