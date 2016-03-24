@@ -1,6 +1,5 @@
 #include "gui.hpp"
 #include <stdexcept>
-#include <vector>
 #include <utility>
 #include <algorithm>
 
