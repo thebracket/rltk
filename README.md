@@ -47,6 +47,11 @@ cursor. Click and he goes there.
 
 [Example 6](https://github.com/thebracket/rltk/blob/master/examples/ex6/main.cpp): Example 5, but now we have true visibility plotted as you wander.
 
+### Example 7: Multi-font ASCII Layout
+![ComplexGui](https://raw.githubusercontent.com/thebracket/rltk/master/tutorial_images/example7.png "Complex GUI")
+
+[Example 7](https://github.com/thebracket/rltk/blob/master/examples/ex7/main.cpp): A complex GUI with multiple fonts and layers, dynamically resizable.
+
 ## Example
 The goal is to keep it simple from the user's point of view. The following code is enough to setup an ASCII terminal,
 and display **Hello World** with a frame-rate displayed (around 100 FPS on my workstation):
