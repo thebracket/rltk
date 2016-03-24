@@ -24,9 +24,8 @@ int main()
 	// This time, we're using a full initialization: width, height, window title, and "false" meaning we don't
 	// want an automatically generated root console. This is necessary when you want to use the complex layout
 	// functions.
-	init(1024, 768, "RLTK Complex GUI", false);
-	register_font("8x8", "../assets/terminal8x8.png", 8, 8);
-	run(tick, "8x8");
+	init("../assets", 1024, 768, "RLTK Complex GUI", false);
+	run(tick);
 
     return 0;
 }

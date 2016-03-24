@@ -67,9 +67,8 @@ void tick(double duration_ms) {
 
 int main()
 {
-	init();
-	register_bitmap_font_load("8x8", "terminal8x8", "../assets/terminal8x8.png", 8, 8);
-	run(tick, "8x8");
+	init("../assets");
+	run(tick);
   return 0;
 }
 ```
