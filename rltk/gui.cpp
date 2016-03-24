@@ -32,6 +32,11 @@ void gui_t::add_layer(const int handle, const int X, const int Y, const int W, c
 	gui_detail::render_order.push_back(get_layer(handle));
 }
 
+void gui_t::delete_layer(const int handle) {
+	gui_detail::render_order.erase(std::remove(gui_detail::render_order.begin(), gui_detail::render_order.end(), get_layer(handle)), gui_detail::render_order.end());
+	layers.erase(handle);
+}
+
 layer_t * gui_t::get_layer(const int handle) {
 	auto finder = layers.find(handle);
 	if (finder == layers.end()) throw std::runtime_error("Unknown layer handle: " + std::to_string(handle));
