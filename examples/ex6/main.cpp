@@ -307,10 +307,9 @@ int main()
 	// as init(1024,768,"My Amazing Game")
 	init();
 
-	// Register the font we want to use for ASCII rendering. The extended _load form of the
-	// function also loads the bitmap for you. Don't worry about cleaning up - the library
-	// does that for you.
-	register_font("8x8", "../assets/terminal8x8.png", 8, 8);
+	// The folder "assets" contains a fonts.json file that defines all of the fonts we have in there.
+	// This is a quick way to make them available.
+	register_font_directory("../assets");
 
 	// We do a visibility sweep to start, so your starting position is revealed
 	visibility_sweep();

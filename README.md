@@ -9,8 +9,7 @@ and probably some of the entity-component-system I've been enjoying.
 
 ## Building from source
 
-You need SFML for your platform, and cmake. Make a "build" folder, and use CMake to generate build files for your platform (I'll expand upon
-this later, when this is a more useful library).
+You need SFML for your platform, Boost, and cmake. Make a "build" folder, and use CMake to generate build files for your platform (I'll expand upon this later, when this is a more useful library).
 
 ## Included Examples (with lots of comments!)
 
