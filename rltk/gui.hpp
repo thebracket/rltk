@@ -52,13 +52,14 @@ public:
 	void on_resize(const int w, const int h);
 	void render(sf::RenderWindow &window);
 
-	void add_layer(const int handle, const int X, const int Y, const int W, const int H, std::string font_name, std::function<void(layer_t *,int,int)> resize_fun, bool has_background=true);
+	void add_layer(const int handle, const int X, const int Y, const int W, const int H, std::string font_name, std::function<void(layer_t *,int,int)> resize_fun, bool has_background=true, const int order=-1);
 	void delete_layer(const int handle);
 	layer_t * get_layer(const int handle);
 
 private:
 	int screen_width;
 	int screen_height;
+	int render_order = 0;
 
 	std::unordered_map<int, layer_t> layers;
 };
