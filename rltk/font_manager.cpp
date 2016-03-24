@@ -1,4 +1,4 @@
-#include "bitmap_font.hpp"
+#include "font_manager.hpp"
 #include "texture_resources.hpp"
 #include <unordered_map>
 #include <stdexcept>
@@ -31,17 +31,12 @@ inline void check_texture_exists(const std::string &texture_tag) {
 	}
 }
 
-void register_bitmap_font(const std::string font_tag, const std::string texture_tag, int width, int height) {
-	check_for_duplicate_font(font_tag);
-	check_texture_exists(texture_tag);	
-	font_detail::atlas[font_tag] = bitmap_font(texture_tag, width, height);
-}
-
-void register_bitmap_font_load(const std::string font_tag, const std::string texture_tag, const std::string filename, int width, int height) {
+void register_bitmap_font(const std::string font_tag, const std::string filename, int width, int height) {
+	const std::string texture_tag = "font_tex_" + filename;
 	check_for_duplicate_font(font_tag);
 	register_texture(filename, texture_tag);
 	check_texture_exists(texture_tag);	
-	font_detail::atlas[font_tag] = bitmap_font(texture_tag, width, height);
+	font_detail::atlas.emplace(std::make_pair(font_tag, bitmap_font(texture_tag, width, height)));
 }
 
 
