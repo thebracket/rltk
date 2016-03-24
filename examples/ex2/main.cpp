@@ -82,12 +82,12 @@ int main()
 	// Register the font we want to use for ASCII rendering. The extended _load form of the
 	// function also loads the bitmap for you. Don't worry about cleaning up - the library
 	// does that for you.
-	register_bitmap_font("8x8", "../assets/terminal8x8.png", 8, 8);
+	register_font("8x8", "../assets/terminal8x8.png", 8, 8);
 
 	// Here are some other font-size options:
 
-	//register_bitmap_font_load("16x16", "terminal16x16", "../assets/terminal16x16.png", 16, 16);
-	//register_bitmap_font_load("32x32", "terminal32x32", "../assets/terminal32x32.png", 32, 32);
+	//register_font("16x16", "terminal16x16", "../assets/terminal16x16.png", 16, 16);
+	//register_font("32x32", "terminal32x32", "../assets/terminal32x32.png", 32, 32);
 
 	// Enter the main loop. "tick" is the function we wrote above, and "8x8" is the font's name
 	// we specified as the first parameter to the font loader (the second is an internal "texture_tag")

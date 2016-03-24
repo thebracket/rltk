@@ -310,7 +310,7 @@ int main()
 	// Register the font we want to use for ASCII rendering. The extended _load form of the
 	// function also loads the bitmap for you. Don't worry about cleaning up - the library
 	// does that for you.
-	register_bitmap_font("8x8", "../assets/terminal8x8.png", 8, 8);
+	register_font("8x8", "../assets/terminal8x8.png", 8, 8);
 
 	// We do a visibility sweep to start, so your starting position is revealed
 	visibility_sweep();
