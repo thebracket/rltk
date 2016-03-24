@@ -15,18 +15,21 @@ sf::RenderWindow * get_window() {
 	return main_window.get();
 }
 
-void init(const int window_width, const int window_height, const std::string window_title, bool use_root_console) {
+void init(const std::string font_path, const int window_width, const int window_height, const std::string window_title, bool use_root_console, const std::string root_font) {
+    register_font_directory(font_path);
+
 	main_window = std::make_unique<sf::RenderWindow>(sf::VideoMode(window_width, window_height, sf::Style::Titlebar | sf::Style::Resize | sf::Style::Close), window_title);
     main_window->setVerticalSyncEnabled(true);
     main_detail::use_root_console = use_root_console;
-}
 
-void run(std::function<void(double)> on_tick, const std::string root_console_font) {
     if (main_detail::use_root_console) {
-        console = std::make_unique<virtual_terminal>(root_console_font, 0, 0);
+        console = std::make_unique<virtual_terminal>(root_font, 0, 0);
         sf::Vector2u size_pixels = main_window->getSize();
         console->resize_pixels(size_pixels.x, size_pixels.y);
     }
+}
+
+void run(std::function<void(double)> on_tick) {    
     reset_mouse_state();
 
     double duration_ms = 0.0;

@@ -77,15 +77,11 @@ int main()
 {
 	// Really rltk::init; initializes the system. You can specify window size and title here
 	// as init(1024,768,"My Amazing Game")
-	init();
-
-	// The folder "assets" contains a fonts.json file that defines all of the fonts we have in there.
-	// This is a quick way to make them available.
-	register_font_directory("../assets");
+	init("../assets");
 
 	// Enter the main loop. "tick" is the function we wrote above, and "8x8" is the font's name
 	// we specified as the first parameter to the font loader (the second is an internal "texture_tag")
-	run(tick, "8x8");
+	run(tick);
 
     return 0;
 }
