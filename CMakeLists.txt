@@ -30,6 +30,7 @@ add_executable(ex4 examples/ex4/main.cpp)
 add_executable(ex5 examples/ex5/main.cpp)
 add_executable(ex6 examples/ex6/main.cpp)
 add_executable(ex7 examples/ex7/main.cpp)
+add_executable(ex8 examples/ex8/main.cpp)
 target_link_libraries(rltk ${SFML_LIBRARIES})
 target_link_libraries(ex1 rltk)
 target_link_libraries(ex2 rltk)
@@ -38,6 +39,7 @@ target_link_libraries(ex4 rltk)
 target_link_libraries(ex5 rltk)
 target_link_libraries(ex6 rltk)
 target_link_libraries(ex7 rltk)
+target_link_libraries(ex8 rltk)
 
 # Require Boost
 set(Boost_USE_STATIC_LIBS      OFF) # only find static libs
