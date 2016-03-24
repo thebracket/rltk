@@ -40,7 +40,7 @@ void gui_t::add_layer(const int handle, const int X, const int Y, const int W, c
 	std::sort(gui_detail::render_order.begin(), gui_detail::render_order.end(), 
 		[] (std::pair<int, layer_t *> a, std::pair<int, layer_t *> b) 
 		{
-		return a.first > b.first;
+		return a.first < b.first;
 		}
 	);
 }

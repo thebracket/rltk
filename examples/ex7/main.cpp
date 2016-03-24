@@ -29,8 +29,10 @@ void tick(double duration_ms) {
 	term(TITLE_LAYER)->clear(vchar{' ', YELLOW, BLUE});
 	term(TITLE_LAYER)->print_center(0, "Big 32x32 Title", YELLOW, BLUE);
 	term(MAIN_LAYER)->clear(vchar{'.', GREY, BLACK});
+	term(MAIN_LAYER)->box(GREY, BLACK, true);
 	term(MAIN_LAYER)->set_char(10, 10, vchar{'@', YELLOW, BLACK});
 	term(LOG_LAYER)->clear(vchar{' ', WHITE, DARKEST_GREEN});
+	term(LOG_LAYER)->box(DARKEST_GREEN, BLACK);
 	term(LOG_LAYER)->print(1,1, "Log Entry", LIGHT_GREEN, DARKEST_GREEN);
 	term(LOG_LAYER)->print(1,2, "More text!", LIGHT_GREEN, DARKEST_GREEN);
 	term(LOG_LAYER)->print(1,3, "Even more...", LIGHT_GREEN, DARKEST_GREEN);
@@ -83,9 +85,9 @@ int main()
 	init(config_advanced("../assets"));
 
 	gui->add_layer(TITLE_LAYER, 0, 0, 1024, 32, "32x32", resize_title);
-	gui->add_layer(MAIN_LAYER, 0, 32, 864, 768-16, "8x8", resize_main);
-	gui->add_layer(LOG_LAYER, 864, 32, 160, 768-16, "8x16", resize_log);
-	gui->add_layer(OVERLAY_LAYER, 0, 32, 864, 768-16, "8x8", resize_main); // We re-use resize_main, we want it over the top
+	gui->add_layer(MAIN_LAYER, 0, 32, 1024-160, 768-32, "8x8", resize_main);
+	gui->add_layer(LOG_LAYER, 864, 32, 160, 768-32, "8x16", resize_log);
+	gui->add_layer(OVERLAY_LAYER, 0, 32, 1024-160, 768-32, "8x8", resize_main); // We re-use resize_main, we want it over the top
 	term(OVERLAY_LAYER)->set_alpha(196); // Make the overlay translucent
 
 	run(tick);
