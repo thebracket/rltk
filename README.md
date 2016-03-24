@@ -67,7 +67,7 @@ void tick(double duration_ms) {
 
 int main()
 {
-	init("../assets");
+	init(config_simple_px("../assets"));
 	run(tick);
   return 0;
 }

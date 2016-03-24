@@ -111,12 +111,10 @@ void tick(double duration_ms) {
 // Your main function
 int main()
 {
-	// Really rltk::init; initializes the system. You can specify window size and title here
-	// as init(1024,768,"My Amazing Game")
-	init("../assets");
+	// Initialize with defaults.
+	init(config_simple_px("../assets"));
 
-	// Enter the main loop. "tick" is the function we wrote above, and "8x8" is the font's name
-	// we specified as the first parameter to the font loader (the second is an internal "texture_tag")
+	// Enter the main loop. "tick" is the function we wrote above.
 	run(tick);
 
     return 0;

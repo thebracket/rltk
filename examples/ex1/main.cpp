@@ -30,12 +30,16 @@ void tick(double duration_ms) {
 // Your main function
 int main()
 {
-	// Really rltk::init; initializes the system. You can specify window size and title here
-	// as init(1024,768,"My Amazing Game")
-	init("../assets");
+	// Initialize the library. Here, we are providing plenty of into so you can see what is
+	// available. There's also the option to use config_simple_px to configure by pixels
+	// rather than characters.
+	// The first parameter is the path to the font files.
+	// The second and third parameters specify the desired console size in screen characters (80x25).
+	// The fourth parameter is the window title.
+	// The final parameter says that we'd like the default console to use an 8x16 VGA font. Not so great for games, but easy to read!
+	init(config_simple("../assets", 80, 25, "RLTK Hello World", "8x16"));
 
-	// Enter the main loop. "tick" is the function we wrote above, and "8x8" is the font's name
-	// we specified as the first parameter to the font loader (the second is an internal "texture_tag")
+	// Enter the main loop. "tick" is the function we wrote above.
 	run(tick);
 
     return 0;
