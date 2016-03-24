@@ -2,6 +2,14 @@
 #include "texture_resources.hpp"
 #include <unordered_map>
 #include <stdexcept>
+#include <boost/filesystem.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+#include <iostream>
+
+using namespace boost::filesystem;
+using boost::property_tree::ptree;
+using boost::property_tree::read_json;
 
 namespace rltk {
 
@@ -39,5 +47,25 @@ void register_font(const std::string font_tag, const std::string filename, int w
 	font_detail::atlas.emplace(std::make_pair(font_tag, bitmap_font(texture_tag, width, height)));
 }
 
+void register_font_directory(const std::string path) {
+	if (!exists(path)) throw std::runtime_error("Font directory does not exist.");
+	if (!is_directory(path)) throw std::runtime_error("Font directory is not a directory.");
+	const std::string info_file = path + "/fonts.json";
+	if (!exists(info_file)) throw std::runtime_error("No fonts.json file in font directory.");
+
+	ptree font_tree;
+	read_json(info_file, font_tree);
+
+	ptree::const_iterator end = font_tree.get_child("fonts").end();
+    for (ptree::const_iterator it = font_tree.get_child("fonts").begin(); it != end; ++it) {
+    	const std::string font_name = it->first;
+    	const std::string font_tree_path = "fonts." + font_name + ".";
+    	const std::string font_file = font_tree.get<std::string>(font_tree_path + "file");
+    	const int width = font_tree.get<int>(font_tree_path + "width");
+    	const int height = font_tree.get<int>(font_tree_path + "height");
+
+    	register_font(font_name, path + "/" + font_file, width, height);
+    }
+}
 
 }

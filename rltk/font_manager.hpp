@@ -19,6 +19,7 @@ struct bitmap_font {
 	const std::pair<int,int> character_size;
 };
 
+void register_font_directory(const std::string path);
 bitmap_font * get_font(const std::string font_tag);
 void register_font(const std::string font_tag, const std::string filename, int width=8, int height=8);
 
