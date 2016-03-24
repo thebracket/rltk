@@ -24,7 +24,7 @@ struct vchar {
 struct virtual_terminal {
 public:
 	virtual_terminal(const std::string fontt, const int x=0, const int y=0, const bool background=true) : font_tag(fontt), offset_x(x), offset_y(y), has_background(background) {
-		font = get_bitmap_font(fontt);
+		font = get_font(fontt);
 	}
 
 	void resize_pixels(const int width, const int height);

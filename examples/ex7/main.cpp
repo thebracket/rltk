@@ -25,7 +25,7 @@ int main()
 	// want an automatically generated root console. This is necessary when you want to use the complex layout
 	// functions.
 	init(1024, 768, "RLTK Complex GUI", false);
-	register_bitmap_font("8x8", "../assets/terminal8x8.png", 8, 8);
+	register_font("8x8", "../assets/terminal8x8.png", 8, 8);
 	run(tick, "8x8");
 
     return 0;
