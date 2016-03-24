@@ -41,6 +41,14 @@ void init(const config_simple_px &config) {
     console->resize_pixels(size_pixels.x, size_pixels.y);
 }
 
+void init(const config_advanced &config) {
+    register_font_directory(config.font_path);
+    main_window = std::make_unique<sf::RenderWindow>(sf::VideoMode(config.width_px, config.height_px, 
+        sf::Style::Titlebar | sf::Style::Resize | sf::Style::Close), config.window_title);
+    main_window->setVerticalSyncEnabled(true);
+    main_detail::use_root_console = false;
+}
+
 void run(std::function<void(double)> on_tick) {    
     reset_mouse_state();
 
