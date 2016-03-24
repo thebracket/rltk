@@ -95,4 +95,15 @@ extern std::unique_ptr<virtual_terminal> console;
  */
 sf::RenderWindow * get_window();
 
+/*
+ * For GUI manipulation
+ */
+extern std::unique_ptr<gui_t> gui;
+
+/*
+ * Convenience function to quickly get a GUI layer
+ */
+inline layer_t * layer(const int &handle) { return gui->get_layer(handle); }
+inline virtual_terminal * term(const int &handle) { return gui->get_layer(handle)->console.get(); }
+
 }

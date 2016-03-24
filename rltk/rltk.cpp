@@ -6,6 +6,7 @@ namespace rltk {
 
 std::unique_ptr<sf::RenderWindow> main_window;
 std::unique_ptr<virtual_terminal> console;
+std::unique_ptr<gui_t> gui;
 
 namespace main_detail {
 bool use_root_console;
@@ -13,6 +14,10 @@ bool use_root_console;
 
 sf::RenderWindow * get_window() {
 	return main_window.get();
+}
+
+gui_t * get_gui() {
+    return gui.get();
 }
 
 void init(const config_simple &config) {
@@ -47,6 +52,8 @@ void init(const config_advanced &config) {
         sf::Style::Titlebar | sf::Style::Resize | sf::Style::Close), config.window_title);
     main_window->setVerticalSyncEnabled(true);
     main_detail::use_root_console = false;
+
+    gui = std::make_unique<gui_t>(config.width_px, config.height_px);
 }
 
 void run(std::function<void(double)> on_tick) {    
@@ -63,8 +70,9 @@ void run(std::function<void(double)> on_tick) {
             if (event.type == sf::Event::Closed) {
                 main_window->close();
             } else if (event.type == sf::Event::Resized) {
-                console->resize_pixels(event.size.width, event.size.height);
-                main_window->setView(sf::View(sf::FloatRect(0.f, 0.f, event.size.width, event.size.height)));                
+                main_window->setView(sf::View(sf::FloatRect(0.f, 0.f, event.size.width, event.size.height))); 
+                if (main_detail::use_root_console) console->resize_pixels(event.size.width, event.size.height);
+                if (gui) gui->on_resize(event.size.width, event.size.height);
             } else if (event.type == sf::Event::LostFocus) {
                 set_window_focus_state(false);
             } else if (event.type == sf::Event::GainedFocus) {
@@ -83,7 +91,11 @@ void run(std::function<void(double)> on_tick) {
 
         on_tick(duration_ms);
 
-        if (main_detail::use_root_console) console->render(*main_window);
+        if (main_detail::use_root_console) {
+            console->render(*main_window);
+        } else {
+            gui->render(*main_window);
+        }
 
         main_window->display();
 

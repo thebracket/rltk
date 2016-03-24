@@ -58,9 +58,6 @@ void virtual_terminal::resize_chars(const int width, const int height) {
 		const int font_width = font->character_size.first;
 		const int font_height = font->character_size.second;
 
-		const int space_x = (219 % 16) * font_width;
-		const int space_y = (219 / 16) * font_height;
-
 		for (int y=0; y<height; ++y) {
 			for (int x=0; x<width; ++x) {
 				const int idx = ((y*width) + x)*4;
@@ -93,6 +90,10 @@ void virtual_terminal::print(const int x, const int y, const std::string &s, con
 	}
 }
 
+void virtual_terminal::print_center(const int y, const std::string &s, const color_t &fg, const color_t &bg) {
+	print((term_width/2) - (s.size()/2), y, s, fg, bg);
+}
+
 void virtual_terminal::render(sf::RenderWindow &window) {
 	if (!visible) return;
 
@@ -104,9 +105,6 @@ void virtual_terminal::render(sf::RenderWindow &window) {
 	}
 	const int font_width = font->character_size.first;
 	const int font_height = font->character_size.second;
-
-	const int space_x = (219 % 16) * font_width;
-	const int space_y = (219 / 16) * font_height;
 
 	backing.clear();
 
@@ -122,6 +120,9 @@ void virtual_terminal::render(sf::RenderWindow &window) {
 
 			if (has_background) {
 				sf::Color bgsfml = color_to_sfml(target.background);
+				if (alpha != 255 and target.background.r == 0 and target.background.g == 0 and target.background.b == 0) {
+					bgsfml.a = 0;
+				}
 				vertices[bg_idx].color = bgsfml;
 				vertices[bg_idx+1].color = bgsfml;
 				vertices[bg_idx+2].color = bgsfml;
@@ -144,6 +145,7 @@ void virtual_terminal::render(sf::RenderWindow &window) {
 			++idx;
 		}
 	}
+	backing.clear(sf::Color(0,0,0,0));
 	backing.draw(vertices, tex);
 
 	backing.display();

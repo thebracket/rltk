@@ -33,7 +33,9 @@ public:
 	void clear(const vchar &target);
 	inline int at(const int x, const int y) { return ( y * term_width) + x; }
 	void set_char(const int idx, const vchar &target);
+	inline void set_char(const int x, const int y, vchar target) { set_char(at(x,y), target); }
 	void print(const int x, const int y, const std::string &s, const color_t &fg, const color_t &bg);
+	void print_center(const int y, const std::string &s, const color_t &fg, const color_t &bg);
 
 	void render(sf::RenderWindow &window);
 
