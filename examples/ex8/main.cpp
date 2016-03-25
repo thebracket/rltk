@@ -64,8 +64,16 @@ void resize_retained(layer_t * l, int w, int h) {
 void tick(double duration_ms) {
 	term(LOG_LAYER)->clear(vchar{' ', WHITE, DARKEST_GREEN});
 	term(LOG_LAYER)->box(DARKEST_GREEN, BLACK);
-	term(LOG_LAYER)->print(1,1, "Log Entry", LIGHT_GREEN, DARKEST_GREEN);
-	term(LOG_LAYER)->print(1,2, "More text!", LIGHT_GREEN, DARKEST_GREEN);
+
+	if (static_cast<gui_checkbox_t *>(layer(RETAINED_TEST_LAYER)->control(TEST_CHECKBOX))->checked) {
+		term(LOG_LAYER)->print(1,1, "Checked", LIGHTEST_GREEN, DARKEST_GREEN);
+	} else {
+		term(LOG_LAYER)->print(1,1, "Not Checked", DARK_GREEN, DARKEST_GREEN);
+	}
+
+	std::stringstream radio_ss;
+	radio_ss << "Option: " << static_cast<gui_radiobuttons_t *>(layer(RETAINED_TEST_LAYER)->control(TEST_RADIOSET))->selected_value;
+	term(LOG_LAYER)->print(1,2, radio_ss.str(), LIGHT_GREEN, DARKEST_GREEN);
 	term(LOG_LAYER)->print(1,3, "Even more...", LIGHT_GREEN, DARKEST_GREEN);
 	term(LOG_LAYER)->print(1,4, "... goes here", LIGHT_GREEN, DARKEST_GREEN);
 
