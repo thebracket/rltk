@@ -71,7 +71,14 @@ struct layer_t {
 	void render(sf::RenderWindow &window);
 
 	// Retained Mode Controls
-	inline gui_control_t * control(const int handle) { 
+	template<class T>
+	T * control(const int handle) { 
+		auto finder = controls.find(handle);
+		if (finder == controls.end()) throw std::runtime_error("Unknown GUI control handle: " + std::to_string(handle));
+		return static_cast<T *>(finder->second.get());
+	}
+
+	gui_control_t * control(const int handle) {
 		auto finder = controls.find(handle);
 		if (finder == controls.end()) throw std::runtime_error("Unknown GUI control handle: " + std::to_string(handle));
 		return finder->second.get();

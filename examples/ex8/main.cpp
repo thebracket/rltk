@@ -65,14 +65,16 @@ void tick(double duration_ms) {
 	term(LOG_LAYER)->clear(vchar{' ', WHITE, DARKEST_GREEN});
 	term(LOG_LAYER)->box(DARKEST_GREEN, BLACK);
 
-	if (static_cast<gui_checkbox_t *>(layer(RETAINED_TEST_LAYER)->control(TEST_CHECKBOX))->checked) {
+	layer_t * retained = layer(RETAINED_TEST_LAYER);
+
+	if ( retained->control<gui_checkbox_t>(TEST_CHECKBOX)->checked ) {
 		term(LOG_LAYER)->print(1,1, "Checked", LIGHTEST_GREEN, DARKEST_GREEN);
 	} else {
 		term(LOG_LAYER)->print(1,1, "Not Checked", DARK_GREEN, DARKEST_GREEN);
 	}
 
 	std::stringstream radio_ss;
-	radio_ss << "Option: " << static_cast<gui_radiobuttons_t *>(layer(RETAINED_TEST_LAYER)->control(TEST_RADIOSET))->selected_value;
+	radio_ss << "Option: " << retained->control<gui_radiobuttons_t>(TEST_RADIOSET)->selected_value;
 	term(LOG_LAYER)->print(1,2, radio_ss.str(), LIGHT_GREEN, DARKEST_GREEN);
 	term(LOG_LAYER)->print(1,3, "Even more...", LIGHT_GREEN, DARKEST_GREEN);
 	term(LOG_LAYER)->print(1,4, "... goes here", LIGHT_GREEN, DARKEST_GREEN);
@@ -100,33 +102,36 @@ int main()
 	term(LOG_LAYER)->set_alpha(196); // Make the overlay translucent
 	gui->add_layer(RETAINED_TEST_LAYER, 100, 100, 400, 200, "8x16", resize_retained);
 
+	// To reduce typing, grab a pointer to the retained layer:
+	layer_t * retained = layer(RETAINED_TEST_LAYER);
+
 	// Now we build some retained-mode controls. These don't require additional work during rendering
 	// Note that we are providing a handle to the control. That lets us access it later with 
 	// layer(layerhandle)->control(controlhandle). It's up to you to store the handles; they can be any
 	// int.
-	layer(RETAINED_TEST_LAYER)->add_boundary_box(TEST_BOUNDARY_BOX, true, DARK_GREY, BLACK);
-	layer(RETAINED_TEST_LAYER)->add_static_text(TEST_STATIC_TEST, 1, 1, "Retained Mode Static Text", YELLOW, BLACK);
+	retained->add_boundary_box(TEST_BOUNDARY_BOX, true, DARK_GREY, BLACK);
+	retained->add_static_text(TEST_STATIC_TEST, 1, 1, "Retained Mode Static Text", YELLOW, BLACK);
 
 	// For this control, we'll define an on-mouse-over. We're using a lambda, but it could be any function
 	// with that takes a gui_control_t * as a parameter. We'll also use "on render start" to define a function
 	// run when the control rendering starts.
-	layer(RETAINED_TEST_LAYER)->add_static_text(TEST_MOUSE_HOVER, 1, 2, "Hover the mouse over me!", WHITE, BLACK);
-	layer(RETAINED_TEST_LAYER)->control(TEST_MOUSE_HOVER)->on_render_start = [] (gui_control_t * control) {
+	retained->add_static_text(TEST_MOUSE_HOVER, 1, 2, "Hover the mouse over me!", WHITE, BLACK);
+	retained->control(TEST_MOUSE_HOVER)->on_render_start = [] (gui_control_t * control) {
 		auto static_text = static_cast<gui_static_text_t *>(control);
 		static_text->background = BLACK;
 		static_text->text = "Hover the mouse over me!";
 	};
-	layer(RETAINED_TEST_LAYER)->control(TEST_MOUSE_HOVER)->on_mouse_over = [] (gui_control_t * control, int terminal_x, int terminal_y) {
+	retained->control(TEST_MOUSE_HOVER)->on_mouse_over = [] (gui_control_t * control, int terminal_x, int terminal_y) {
 		auto static_text = static_cast<gui_static_text_t *>(control);
 		static_text->background = RED;
 		static_text->text = "Why Hello There!        ";
 	};
 
 	// A checkbox
-	layer(RETAINED_TEST_LAYER)->add_checkbox(TEST_CHECKBOX, 1, 3, "I'm a checkbox - click me!", false, LIGHT_GREEN, BLACK);
+	retained->add_checkbox(TEST_CHECKBOX, 1, 3, "I'm a checkbox - click me!", false, LIGHT_GREEN, BLACK);
 
 	// A radioset
-	layer(RETAINED_TEST_LAYER)->add_radioset(TEST_RADIOSET, 1, 5, "Test radio buttons", CYAN, BLACK, {
+	retained->add_radioset(TEST_RADIOSET, 1, 5, "Test radio buttons", CYAN, BLACK, {
 		{true, "Option A", 0}, {false, "Option B", 1}, {false, "Option C", 2}
 	});
 
