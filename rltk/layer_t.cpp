@@ -23,8 +23,8 @@ void layer_t::on_resize(const int width, const int height) {
 
 void layer_t::render(sf::RenderWindow &window) {
 	if (console) {
-		for (gui_control_t &control : controls) {
-			control.render(console.get());
+		for (auto it=controls.begin(); it != controls.end(); ++it) {
+			it->second->render(console.get());
 		}
 		console->render(window);
 	} else {

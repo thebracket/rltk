@@ -40,6 +40,11 @@ private:
 	int render_order = 0;
 
 	std::unordered_map<int, layer_t> layers;
+
+	inline void check_handle_uniqueness(const int handle) {
+		auto finder = layers.find(handle);
+		if (finder != layers.end()) throw std::runtime_error("Adding a duplicate layer handle: " + std::to_string(handle));
+	}
 };
 
 }
