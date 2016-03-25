@@ -46,6 +46,7 @@ public:
 	inline void set_alpha(const uint8_t new_alpha) { alpha = new_alpha; }
 	inline void set_tint(const color_t new_tint) { tint = new_tint; }
 	inline void set_offset(int x, int y) { offset_x = x; offset_y = y; };
+	inline std::pair<int,int> get_font_size() { return font->character_size; }
 
 	int term_width;
 	int term_height;
