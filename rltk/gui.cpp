@@ -45,7 +45,7 @@ void gui_t::add_layer(const int handle, const int X, const int Y, const int W, c
 }
 
 void gui_t::add_owner_layer(const int handle, const int X, const int Y, const int W, const int H, 
-	std::function<void(layer_t *,int,int)> resize_fun, std::function<void(layer_t *, sf::RenderWindow &)> owner_draw_fun, int order) 
+	std::function<void(layer_t *,int,int)> resize_fun, std::function<void(layer_t *, sf::RenderTexture &)> owner_draw_fun, int order) 
 {
 	layers.emplace(std::make_pair(handle, layer_t(X, Y, W, H, resize_fun, owner_draw_fun)));
 	if (order == -1) {
