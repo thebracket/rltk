@@ -22,9 +22,9 @@ struct gui_control_t {
 
 	// Callbacks
 	boost::optional<std::function<void(gui_control_t *)>> on_render_start;
-	boost::optional<std::function<void(gui_control_t *)>> on_mouse_over;
-	boost::optional<std::function<void(gui_control_t *)>> on_mouse_down;
-	boost::optional<std::function<void(gui_control_t *)>> on_mouse_up;
+	boost::optional<std::function<void(gui_control_t *, int, int)>> on_mouse_over;
+	boost::optional<std::function<void(gui_control_t *, int, int)>> on_mouse_down;
+	boost::optional<std::function<void(gui_control_t *, int, int)>> on_mouse_up;
 };
 
 struct gui_static_text_t : public gui_control_t {
@@ -55,11 +55,11 @@ struct gui_border_box_t : public gui_control_t {
 struct gui_checkbox_t : public gui_control_t {
 	gui_checkbox_t(const int X, const int Y, const bool is_checked, const std::string text, const color_t fg, const color_t bg) :
 		checked(is_checked), label(text), foreground(fg), background(bg), x(X), y(Y) {
-			on_mouse_down = [] (gui_control_t * ctrl) {
+			on_mouse_down = [] (gui_control_t * ctrl, int tx, int ty) {
 				gui_checkbox_t * me = static_cast<gui_checkbox_t *>(ctrl);
 				me->click_started = true;
 			};
-			on_mouse_up = [] (gui_control_t * ctrl) {
+			on_mouse_up = [] (gui_control_t * ctrl, int tx, int ty) {
 				gui_checkbox_t * me = static_cast<gui_checkbox_t *>(ctrl);
 				if (me->click_started) {
 					me->checked = !me->checked;
