@@ -52,7 +52,7 @@ cursor. Click and he goes there.
 
 [Example 7](https://github.com/thebracket/rltk/blob/master/examples/ex7/main.cpp): A complex GUI with multiple fonts and layers, dynamically resizable.
 
-### Example 7: Owner draw, and retained-mode GUI elements
+### Example 8: Owner draw, and retained-mode GUI elements
 ![RetainedMode](https://raw.githubusercontent.com/thebracket/rltk/master/tutorial_images/example8.gif "Retained MOde")
 
 [Example 8](https://github.com/thebracket/rltk/blob/master/examples/ex8/main.cpp): Demonstrates an "owner draw" panel (with SFML render target callback), drawing a background image. Some ASCII consoles are spawned, and one is populated with a mouse-over, a checkbox and radio-button set. The other panel displays the results.
