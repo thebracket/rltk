@@ -17,10 +17,16 @@
 
 namespace rltk {
 
+/*
+ * Base type for retained-mode GUI controls.
+ */
 struct gui_control_t {
 	virtual void render(virtual_terminal * console)=0;
 };
 
+/*
+ * A renderable layer. You won't use this type directly.
+ */
 struct layer_t {
 	/* This specialization is for generic consoles */
 	layer_t(const int X, const int Y, const int W, const int H, std::string font_name, std::function<void(layer_t *,int,int)> resize_fun, bool render_background=true) :
@@ -49,43 +55,14 @@ struct layer_t {
 	std::vector<gui_control_t> controls;
 	std::unique_ptr<sf::RenderTexture> backing; // Used for owner-draw layers
 
-	void make_owner_draw_backing() {
-		if (!backing) {
-			backing = std::make_unique<sf::RenderTexture>();
-		}
-		backing->create(w, h);
-	}
-
-	void on_resize(const int width, const int height) {
-		resize_func(this, width, height);
-		if (console) {
-			if (console->visible) {
-				console->set_offset(x,y);
-				console->resize_pixels(w, h);
-			} else {
-				make_owner_draw_backing();
-			}
-		}
-	}
-
-	void render(sf::RenderWindow &window) {
-		if (console) {
-			for (gui_control_t &control : controls) {
-				control.render(console.get());
-			}
-			console->render(window);
-		} else {
-			if (!backing) make_owner_draw_backing();
-			backing->clear(sf::Color(0,0,0,0));
-			owner_draw_func(this, *backing);
-			backing->display();
-			sf::Sprite compositor(backing->getTexture());
-			compositor.move(x, y);
-			window.draw(sf::Sprite(compositor));
-		}
-	}
+	void make_owner_draw_backing();
+	void on_resize(const int width, const int height);
+	void render(sf::RenderWindow &window);
 };
 
+/*
+ * The overall GUI - holds layers and handles render calls. Access via rltk::gui
+ */
 struct gui_t {
 public:
 	gui_t(const int w, const int h) : screen_width(w), screen_height(h) {}
