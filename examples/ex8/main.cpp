@@ -17,6 +17,10 @@ using namespace rltk::colors;
 
 constexpr int BACKDROP_LAYER = 1;
 constexpr int LOG_LAYER = 2;
+constexpr int RETAINED_TEST_LAYER = 3;
+
+constexpr int TEST_BOUNDARY_BOX = 1;
+constexpr int TEST_STATIC_TEST = 2;
 
 void resize_bg(layer_t * l, int w, int h) {
 	// Use the whole window
@@ -42,6 +46,14 @@ void resize_log(layer_t * l, int w, int h) {
 		l->console->visible = true;
 	}
 	l->x = w - 160;
+}
+
+void resize_retained(layer_t * l, int w, int h) {
+	// Do nothing - we'll just keep on rendering away.
+	l->x = 100;
+	l->y = 100;
+	l->w = 400;
+	l->h = 200;
 }
 
 // Tick is called every frame. The parameter specifies how many ms have elapsed
@@ -75,6 +87,14 @@ int main()
 	gui->add_owner_layer(BACKDROP_LAYER, 0, 0, 1024, 768, resize_bg, draw_bg);
 	gui->add_layer(LOG_LAYER, 864, 32, 160, 768-32, "8x16", resize_log);
 	term(LOG_LAYER)->set_alpha(196); // Make the overlay translucent
+	gui->add_layer(RETAINED_TEST_LAYER, 100, 100, 400, 200, "8x16", resize_retained);
+
+	// Now we build some retained-mode controls. These don't require additional work during rendering
+	// Note that we are providing a handle to the control. That lets us access it later with 
+	// layer(layerhandle)->control(controlhandle). It's up to you to store the handles; they can be any
+	// int.
+	layer(RETAINED_TEST_LAYER)->add_boundary_box(TEST_BOUNDARY_BOX, true, DARK_GREY, BLACK);
+	layer(RETAINED_TEST_LAYER)->add_static_text(TEST_STATIC_TEST, 1, 1, "Retained Mode Static Text", YELLOW, BLACK);
 
 	// Main loop - calls the 'tick' function you defined for each frame.
 	run(tick);

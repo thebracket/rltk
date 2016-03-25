@@ -30,6 +30,7 @@ void gui_t::add_layer(const int handle, const int X, const int Y, const int W, c
 	std::string font_name, std::function<void(layer_t *,int,int)> resize_fun, bool has_background,
 	int order) 
 {
+	check_handle_uniqueness(handle);
 	layers.emplace(std::make_pair(handle, layer_t(X, Y, W, H, font_name, resize_fun, has_background)));
 	if (order == -1) {
 		order = render_order;
@@ -47,6 +48,7 @@ void gui_t::add_layer(const int handle, const int X, const int Y, const int W, c
 void gui_t::add_owner_layer(const int handle, const int X, const int Y, const int W, const int H, 
 	std::function<void(layer_t *,int,int)> resize_fun, std::function<void(layer_t *, sf::RenderTexture &)> owner_draw_fun, int order) 
 {
+	check_handle_uniqueness(handle);
 	layers.emplace(std::make_pair(handle, layer_t(X, Y, W, H, resize_fun, owner_draw_fun)));
 	if (order == -1) {
 		order = render_order;

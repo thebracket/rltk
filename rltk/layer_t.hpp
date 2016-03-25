@@ -8,6 +8,7 @@
 
 #include "virtual_terminal.hpp"
 #include "gui_control_t.hpp"
+#include <unordered_map>
 
 namespace rltk {
 
@@ -53,7 +54,7 @@ struct layer_t {
 	std::unique_ptr<virtual_terminal> console;
 
 	// If retained-mode controls are present, they are in here.
-	std::vector<gui_control_t> controls;
+	std::unordered_map<int, std::unique_ptr<gui_control_t>> controls;
 
 	// Used for owner-draw layers. We need to render to texture and then compose to:
 	// a) permit threading, should you so wish (so there is a single composite run)
@@ -68,6 +69,32 @@ struct layer_t {
 
 	// Called by GUI when a render event occurs.
 	void render(sf::RenderWindow &window);
+
+	// Retained Mode Controls
+	inline gui_control_t * control(const int handle) { 
+		auto finder = controls.find(handle);
+		if (finder == controls.end()) throw std::runtime_error("Unknown GUI control handle: " + std::to_string(handle));
+		return finder->second.get();
+	}
+
+	inline void remove_control(const int handle) {
+		controls.erase(handle);
+	}
+
+	inline void check_handle_uniqueness(const int handle) {
+		auto finder = controls.find(handle);
+		if (finder != controls.end()) throw std::runtime_error("Adding a duplicate control handle: " + std::to_string(handle));
+	}
+
+	inline void add_static_text(const int handle, const int x, const int y, const std::string text, const color_t fg, const color_t bg) {
+		check_handle_uniqueness(handle);
+		controls.emplace(handle, std::make_unique<gui_static_text_t>(x, y, text, fg, bg));
+	}
+
+	inline void add_boundary_box(const int handle, const bool double_lines, const color_t fg, const color_t bg) {
+		check_handle_uniqueness(handle);
+		controls.emplace(handle, std::make_unique<gui_border_box_t>(double_lines, fg, bg));
+	}
 };
 
 }
