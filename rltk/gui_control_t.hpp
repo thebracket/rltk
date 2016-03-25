@@ -23,6 +23,8 @@ struct gui_control_t {
 	// Callbacks
 	boost::optional<std::function<void(gui_control_t *)>> on_render_start;
 	boost::optional<std::function<void(gui_control_t *)>> on_mouse_over;
+	boost::optional<std::function<void(gui_control_t *)>> on_mouse_down;
+	boost::optional<std::function<void(gui_control_t *)>> on_mouse_up;
 };
 
 struct gui_static_text_t : public gui_control_t {
@@ -49,5 +51,34 @@ struct gui_border_box_t : public gui_control_t {
 
 	virtual void render(virtual_terminal * console) override;
 };
+
+struct gui_checkbox_t : public gui_control_t {
+	gui_checkbox_t(const int X, const int Y, const bool is_checked, const std::string text, const color_t fg, const color_t bg) :
+		checked(is_checked), label(text), foreground(fg), background(bg), x(X), y(Y) {
+			on_mouse_down = [] (gui_control_t * ctrl) {
+				gui_checkbox_t * me = static_cast<gui_checkbox_t *>(ctrl);
+				me->click_started = true;
+			};
+			on_mouse_up = [] (gui_control_t * ctrl) {
+				gui_checkbox_t * me = static_cast<gui_checkbox_t *>(ctrl);
+				if (me->click_started) {
+					me->checked = !me->checked;
+				}
+				me->click_started = false;
+			};
+		}
+
+	bool checked = false;
+	std::string label;
+	color_t foreground;
+	color_t background;
+	int x=0;
+	int y=0;
+	bool click_started = false;
+
+	virtual void render(virtual_terminal * console) override;
+	virtual bool mouse_in_control(const int tx, const int ty) override { return (tx >= x and tx <= x + (label.size()) and ty==y); }
+};
+
 
 }
