@@ -104,10 +104,12 @@ int main()
 	layer(RETAINED_TEST_LAYER)->control(TEST_MOUSE_HOVER)->on_render_start = [] (gui_control_t * control) {
 		auto static_text = static_cast<gui_static_text_t *>(control);
 		static_text->background = BLACK;
+		static_text->text = "Hover the mouse over me!";
 	};
 	layer(RETAINED_TEST_LAYER)->control(TEST_MOUSE_HOVER)->on_mouse_over = [] (gui_control_t * control) {
 		auto static_text = static_cast<gui_static_text_t *>(control);
 		static_text->background = RED;
+		static_text->text = "Why Hello There!        ";
 	};
 
 	// Main loop - calls the 'tick' function you defined for each frame.
