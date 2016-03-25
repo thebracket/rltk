@@ -95,6 +95,11 @@ struct layer_t {
 		check_handle_uniqueness(handle);
 		controls.emplace(handle, std::make_unique<gui_border_box_t>(double_lines, fg, bg));
 	}
+
+	inline void add_checkbox(const int handle, const int x, const int y, const std::string label, const bool checked, const color_t fg, const color_t bg) {
+		check_handle_uniqueness(handle);
+		controls.emplace(handle, std::make_unique<gui_checkbox_t>(x, y, checked, label, fg, bg));
+	}
 };
 
 }

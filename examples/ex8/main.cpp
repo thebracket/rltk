@@ -22,6 +22,7 @@ constexpr int RETAINED_TEST_LAYER = 3;
 constexpr int TEST_BOUNDARY_BOX = 1;
 constexpr int TEST_STATIC_TEST = 2;
 constexpr int TEST_MOUSE_HOVER = 3;
+constexpr int TEST_CHECKBOX = 4;
 
 void resize_bg(layer_t * l, int w, int h) {
 	// Use the whole window
@@ -111,6 +112,9 @@ int main()
 		static_text->background = RED;
 		static_text->text = "Why Hello There!        ";
 	};
+
+	// A checkbox
+	layer(RETAINED_TEST_LAYER)->add_checkbox(TEST_CHECKBOX, 1, 3, "I'm a checkbox - click me!", false, LIGHT_GREEN, BLACK);
 
 	// Main loop - calls the 'tick' function you defined for each frame.
 	run(tick);
