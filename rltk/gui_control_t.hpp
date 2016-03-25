@@ -8,6 +8,8 @@
 
 #include "virtual_terminal.hpp"
 #include <string>
+#include <functional>
+#include <boost/optional.hpp>
 
 namespace rltk {
 
@@ -16,6 +18,11 @@ namespace rltk {
  */
 struct gui_control_t {
 	virtual void render(virtual_terminal * console)=0;
+	virtual bool mouse_in_control(const int tx, const int ty) { return false; }
+
+	// Callbacks
+	boost::optional<std::function<void(gui_control_t *)>> on_render_start;
+	boost::optional<std::function<void(gui_control_t *)>> on_mouse_over;
 };
 
 struct gui_static_text_t : public gui_control_t {
@@ -29,6 +36,7 @@ struct gui_static_text_t : public gui_control_t {
 	color_t background;
 
 	virtual void render(virtual_terminal * console) override;
+	virtual bool mouse_in_control(const int tx, const int ty) override { return (tx >= x and tx <= x + (text.size()) and ty==y); }
 };
 
 struct gui_border_box_t : public gui_control_t {

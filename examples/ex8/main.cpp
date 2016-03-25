@@ -21,6 +21,7 @@ constexpr int RETAINED_TEST_LAYER = 3;
 
 constexpr int TEST_BOUNDARY_BOX = 1;
 constexpr int TEST_STATIC_TEST = 2;
+constexpr int TEST_MOUSE_HOVER = 3;
 
 void resize_bg(layer_t * l, int w, int h) {
 	// Use the whole window
@@ -95,6 +96,19 @@ int main()
 	// int.
 	layer(RETAINED_TEST_LAYER)->add_boundary_box(TEST_BOUNDARY_BOX, true, DARK_GREY, BLACK);
 	layer(RETAINED_TEST_LAYER)->add_static_text(TEST_STATIC_TEST, 1, 1, "Retained Mode Static Text", YELLOW, BLACK);
+
+	// For this control, we'll define an on-mouse-over. We're using a lambda, but it could be any function
+	// with that takes a gui_control_t * as a parameter. We'll also use "on render start" to define a function
+	// run when the control rendering starts.
+	layer(RETAINED_TEST_LAYER)->add_static_text(TEST_MOUSE_HOVER, 1, 2, "Hover the mouse over me!", WHITE, BLACK);
+	layer(RETAINED_TEST_LAYER)->control(TEST_MOUSE_HOVER)->on_render_start = [] (gui_control_t * control) {
+		auto static_text = static_cast<gui_static_text_t *>(control);
+		static_text->background = BLACK;
+	};
+	layer(RETAINED_TEST_LAYER)->control(TEST_MOUSE_HOVER)->on_mouse_over = [] (gui_control_t * control) {
+		auto static_text = static_cast<gui_static_text_t *>(control);
+		static_text->background = RED;
+	};
 
 	// Main loop - calls the 'tick' function you defined for each frame.
 	run(tick);
