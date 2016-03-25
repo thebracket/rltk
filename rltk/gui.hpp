@@ -42,21 +42,44 @@ struct layer_t {
 	{
 	}
 
+	// The bounding box of the layer
 	int x;
 	int y;
 	int w;
 	int h;
+
+	// Font tag - used only if there is a console
 	std::string font;
 
+	// Callbacks:
+	// resize_func is called when the window changes size. It receives the WINDOW dimensions - it's up to you to
+	// determine how to lay things out.
 	std::function<void(layer_t *,int,int)> resize_func;
-	std::function<void(layer_t *, sf::RenderTexture &)> owner_draw_func;
-	std::unique_ptr<virtual_terminal> console;
-	bool has_background;
-	std::vector<gui_control_t> controls;
-	std::unique_ptr<sf::RenderTexture> backing; // Used for owner-draw layers
 
+	// Passed through to virtual console; if false then no background will be rendered (helpful for text overlays)
+	bool has_background;
+	
+	// owner_draw_func is used only for owner draw layers, and is called at render time.
+	std::function<void(layer_t *, sf::RenderTexture &)> owner_draw_func;
+
+	// If a console is present, this is it.
+	std::unique_ptr<virtual_terminal> console;
+
+	// If retained-mode controls are present, they are in here.
+	std::vector<gui_control_t> controls;
+
+	// Used for owner-draw layers. We need to render to texture and then compose to:
+	// a) permit threading, should you so wish (so there is a single composite run)
+	// b) allow the future "effects" engine to run.
+	std::unique_ptr<sf::RenderTexture> backing;
+
+	// Used by the owner-draw code to ensure that a texture is available for use
 	void make_owner_draw_backing();
+
+	// Called by GUI when a resize event occurs.
 	void on_resize(const int width, const int height);
+
+	// Called by GUI when a render event occurs.
 	void render(sf::RenderWindow &window);
 };
 
