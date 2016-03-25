@@ -31,7 +31,7 @@ struct layer_t {
 	}
 
 	/* This specialization is for owner-draw panels */
-	layer_t(const int X, const int Y, const int W, const int H, std::function<void(layer_t *,int,int)> resize_fun, std::function<void(layer_t *, sf::RenderWindow &)> owner_draw_fun) :
+	layer_t(const int X, const int Y, const int W, const int H, std::function<void(layer_t *,int,int)> resize_fun, std::function<void(layer_t *, sf::RenderTexture &)> owner_draw_fun) :
 		x(X), y(Y), w(W), h(H), resize_func(resize_fun), owner_draw_func(owner_draw_fun)
 	{
 	}
@@ -43,16 +43,28 @@ struct layer_t {
 	std::string font;
 
 	std::function<void(layer_t *,int,int)> resize_func;
-	std::function<void(layer_t *, sf::RenderWindow &)> owner_draw_func;
+	std::function<void(layer_t *, sf::RenderTexture &)> owner_draw_func;
 	std::unique_ptr<virtual_terminal> console;
 	bool has_background;
 	std::vector<gui_control_t> controls;
+	std::unique_ptr<sf::RenderTexture> backing; // Used for owner-draw layers
+
+	void make_owner_draw_backing() {
+		if (!backing) {
+			backing = std::make_unique<sf::RenderTexture>();
+		}
+		backing->create(w, h);
+	}
 
 	void on_resize(const int width, const int height) {
 		resize_func(this, width, height);
-		if (console and console->visible) {
-			console->set_offset(x,y);
-			console->resize_pixels(w, h);
+		if (console) {
+			if (console->visible) {
+				console->set_offset(x,y);
+				console->resize_pixels(w, h);
+			} else {
+				make_owner_draw_backing();
+			}
 		}
 	}
 
@@ -63,7 +75,13 @@ struct layer_t {
 			}
 			console->render(window);
 		} else {
-			owner_draw_func(this, window);
+			if (!backing) make_owner_draw_backing();
+			backing->clear(sf::Color(0,0,0,0));
+			owner_draw_func(this, *backing);
+			backing->display();
+			sf::Sprite compositor(backing->getTexture());
+			compositor.move(x, y);
+			window.draw(sf::Sprite(compositor));
 		}
 	}
 };
@@ -78,7 +96,7 @@ public:
 	void add_layer(const int handle, const int X, const int Y, const int W, const int H, std::string font_name, std::function<void(layer_t *,int,int)> resize_fun, bool has_background=true, int order=-1);
 	
 	// Specialization for adding owner-draw layers
-	void add_owner_layer(const int handle, const int X, const int Y, const int W, const int H, std::function<void(layer_t *,int,int)> resize_fun, std::function<void(layer_t *, sf::RenderWindow &)> owner_draw_fun, int order=-1);
+	void add_owner_layer(const int handle, const int X, const int Y, const int W, const int H, std::function<void(layer_t *,int,int)> resize_fun, std::function<void(layer_t *, sf::RenderTexture &)> owner_draw_fun, int order=-1);
 	void delete_layer(const int handle);
 	layer_t * get_layer(const int handle);
 

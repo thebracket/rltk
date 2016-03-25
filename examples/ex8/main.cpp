@@ -24,7 +24,7 @@ void resize_bg(layer_t * l, int w, int h) {
 	l->h = h;
 }
 
-void draw_bg(layer_t * l, sf::RenderWindow &window) {
+void draw_bg(layer_t * l, sf::RenderTexture &window) {
 	sf::Texture * bg = get_texture("backdrop");
 	sf::Sprite backdrop(*bg);
 	window.draw(backdrop);
