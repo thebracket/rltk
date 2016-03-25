@@ -16,6 +16,8 @@ add_library(rltk 	rltk/rltk.cpp
 					rltk/input_handler.cpp
 					rltk/font_manager.cpp
 					rltk/gui.cpp
+					rltk/layer_t.cpp
+					rltk/gui_control_t.cpp
 )
 
 # Require SFML
