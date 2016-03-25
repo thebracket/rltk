@@ -23,6 +23,7 @@ constexpr int TEST_BOUNDARY_BOX = 1;
 constexpr int TEST_STATIC_TEST = 2;
 constexpr int TEST_MOUSE_HOVER = 3;
 constexpr int TEST_CHECKBOX = 4;
+constexpr int TEST_RADIOSET = 5;
 
 void resize_bg(layer_t * l, int w, int h) {
 	// Use the whole window
@@ -115,6 +116,11 @@ int main()
 
 	// A checkbox
 	layer(RETAINED_TEST_LAYER)->add_checkbox(TEST_CHECKBOX, 1, 3, "I'm a checkbox - click me!", false, LIGHT_GREEN, BLACK);
+
+	// A radioset
+	layer(RETAINED_TEST_LAYER)->add_radioset(TEST_RADIOSET, 1, 5, "Test radio buttons", CYAN, BLACK, {
+		{true, "Option A", 0}, {false, "Option B", 1}, {false, "Option C", 2}
+	});
 
 	// Main loop - calls the 'tick' function you defined for each frame.
 	run(tick);

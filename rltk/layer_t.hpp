@@ -100,6 +100,11 @@ struct layer_t {
 		check_handle_uniqueness(handle);
 		controls.emplace(handle, std::make_unique<gui_checkbox_t>(x, y, checked, label, fg, bg));
 	}
+
+	inline void add_radioset(const int handle, const int x, const int y, const std::string caption, const color_t fg, const color_t bg, std::vector<radio> opts) {
+		check_handle_uniqueness(handle);
+		controls.emplace(handle, std::make_unique<gui_radiobuttons_t>(x, y, caption, fg, bg, opts));
+	}
 };
 
 }
