@@ -107,7 +107,7 @@ int main()
 		static_text->background = BLACK;
 		static_text->text = "Hover the mouse over me!";
 	};
-	layer(RETAINED_TEST_LAYER)->control(TEST_MOUSE_HOVER)->on_mouse_over = [] (gui_control_t * control) {
+	layer(RETAINED_TEST_LAYER)->control(TEST_MOUSE_HOVER)->on_mouse_over = [] (gui_control_t * control, int terminal_x, int terminal_y) {
 		auto static_text = static_cast<gui_static_text_t *>(control);
 		static_text->background = RED;
 		static_text->text = "Why Hello There!        ";
