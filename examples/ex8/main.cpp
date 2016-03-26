@@ -27,6 +27,7 @@ constexpr int TEST_MOUSE_HOVER = 3;
 constexpr int TEST_CHECKBOX = 4;
 constexpr int TEST_RADIOSET = 5;
 constexpr int TEST_HBAR = 6;
+constexpr int TEST_VBAR = 7;
 
 void resize_bg(layer_t * l, int w, int h) {
 	// Use the whole window
@@ -88,6 +89,7 @@ void tick(double duration_ms) {
 
 	if (rng.roll_dice(1,20)==1) {
 		retained->control<gui_hbar_t>(TEST_HBAR)->value = rng.roll_dice(1,100);
+		retained->control<gui_vbar_t>(TEST_VBAR)->value = rng.roll_dice(1,100);
 	}
 }
 
@@ -142,8 +144,9 @@ int main()
 		{true, "Option A", 0}, {false, "Option B", 1}, {false, "Option C", 2}
 	});
 
-	// Add a horizontal color bar (e.g. health)
+	// Add a horizontal and vertical color bar (e.g. health)
 	retained->add_hbar(TEST_HBAR, 1, 9, 48, 0, 100, 50, color_t(128,0,0), color_t(255,0,0), color_t(128,128,128), color_t(64,64,64), WHITE, "Health: ");
+	retained->add_vbar(TEST_VBAR, 48, 1, 7, 0, 100, 50, color_t(0,0,128), color_t(0,0,128), color_t(128,128,128), color_t(64,64,64), CYAN, "");
 
 	// Main loop - calls the 'tick' function you defined for each frame.
 	run(tick);
