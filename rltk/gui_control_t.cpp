@@ -1,6 +1,6 @@
 #include "gui_control_t.hpp"
 #include <sstream>
-#include <iostream>
+#include <algorithm>
 
 namespace rltk {
 
@@ -52,7 +52,7 @@ void gui_hbar_t::render(virtual_terminal * console) {
 	display << prefix << value << "/" << max;
 	std::string tmp = display.str();
 	const int start = (w/2) - (tmp.size() / 2);
-	for (int i=0; i<tmp.size(); ++i) {
+	for (int i=0; i < std::min(tmp.size(),w); ++i) {
 		s[i + start] = tmp[i];
 	}
 
@@ -62,6 +62,35 @@ void gui_hbar_t::render(virtual_terminal * console) {
 			console->set_char(x+i, y, vchar{s[i], text_color, lerp(full_start, full_end, pct)});
 		} else {
 			console->set_char(x+i, y, vchar{s[i], text_color, lerp(empty_start, empty_end, pct)});
+		}
+	}
+}
+
+void gui_vbar_t::render(virtual_terminal * console) {
+	float fullness = (float)(value - min) / (float)max;
+	float full_h_f = fullness * (float)h;
+	int full_h = full_h_f;
+
+	std::stringstream ss;
+	for (int i=0; i<h; ++i) {
+		ss << ' ';
+	}
+	std::string s = ss.str();
+	
+	std::stringstream display;
+	display << prefix << value << "/" << max;
+	std::string tmp = display.str();
+	const int start = (h/2) - (tmp.size() / 2);
+	for (int i=0; i < std::min(tmp.size(), h); ++i) {
+		s[i + start] = tmp[i];
+	}
+
+	for (int i=0; i<h; ++i) {
+		const float pct = (float)i / (float)h;
+		if (i <= full_h) {
+			console->set_char(x, y+i, vchar{s[i], text_color, lerp(full_start, full_end, pct)});
+		} else {
+			console->set_char(x, y+i, vchar{s[i], text_color, lerp(empty_start, empty_end, pct)});
 		}
 	}
 }
