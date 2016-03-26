@@ -15,6 +15,8 @@
 using namespace rltk;
 using namespace rltk::colors;
 
+random_number_generator rng;
+
 constexpr int BACKDROP_LAYER = 1;
 constexpr int LOG_LAYER = 2;
 constexpr int RETAINED_TEST_LAYER = 3;
@@ -24,6 +26,7 @@ constexpr int TEST_STATIC_TEST = 2;
 constexpr int TEST_MOUSE_HOVER = 3;
 constexpr int TEST_CHECKBOX = 4;
 constexpr int TEST_RADIOSET = 5;
+constexpr int TEST_HBAR = 6;
 
 void resize_bg(layer_t * l, int w, int h) {
 	// Use the whole window
@@ -82,6 +85,10 @@ void tick(double duration_ms) {
 	std::stringstream ss;
 	ss << std::setiosflags(std::ios::fixed) << std::setprecision(0) << (1000.0/duration_ms) << " FPS";
 	term(LOG_LAYER)->print(1,6, ss.str(), WHITE, DARKEST_GREEN);
+
+	if (rng.roll_dice(1,20)==1) {
+		retained->control<gui_hbar_t>(TEST_HBAR)->value = rng.roll_dice(1,100);
+	}
 }
 
 // Your main function
@@ -134,6 +141,9 @@ int main()
 	retained->add_radioset(TEST_RADIOSET, 1, 5, "Test radio buttons", CYAN, BLACK, {
 		{true, "Option A", 0}, {false, "Option B", 1}, {false, "Option C", 2}
 	});
+
+	// Add a horizontal color bar (e.g. health)
+	retained->add_hbar(TEST_HBAR, 1, 9, 48, 0, 100, 50, color_t(128,0,0), color_t(255,0,0), color_t(128,128,128), color_t(64,64,64), WHITE, "Health: ");
 
 	// Main loop - calls the 'tick' function you defined for each frame.
 	run(tick);
