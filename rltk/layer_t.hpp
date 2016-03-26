@@ -112,6 +112,13 @@ struct layer_t {
 		check_handle_uniqueness(handle);
 		controls.emplace(handle, std::make_unique<gui_radiobuttons_t>(x, y, caption, fg, bg, opts));
 	}
+
+	inline void add_hbar(const int handle, const int X, const int Y, const int W, const int MIN, const int MAX, const int VAL, 
+		const color_t FULL_START, const color_t FULL_END, const color_t EMPTY_START, const color_t EMPTY_END, const color_t TEXT_COL, const std::string prefix="")
+	{
+		check_handle_uniqueness(handle);
+		controls.emplace(handle, std::make_unique<gui_hbar_t>(X, Y, W, MIN, MAX, VAL, FULL_START, FULL_END, EMPTY_START, EMPTY_END, TEXT_COL, prefix));
+	}
 };
 
 }

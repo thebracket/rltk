@@ -13,6 +13,8 @@
 #include <vector>
 #include <iostream>
 
+// TODO: Text box, display rich text, list box, combo box, slider, vbar
+
 namespace rltk {
 
 /*
@@ -142,6 +144,30 @@ struct gui_radiobuttons_t : public gui_control_t {
 		}
 		return false;
 	}
+};
+
+struct gui_hbar_t : public gui_control_t {
+	gui_hbar_t(const int X, const int Y, const int W, const int MIN, const int MAX, const int VAL, 
+		const color_t FULL_START, const color_t FULL_END, const color_t EMPTY_START, const color_t EMPTY_END,
+		const color_t TEXT_COL, std::string PREFIX = "") :
+		x(X), y(Y), w(W), min(MIN), max(MAX), value(VAL), full_start(FULL_START), full_end(FULL_END),
+		empty_start(EMPTY_START), empty_end(EMPTY_END), text_color(TEXT_COL), prefix(PREFIX)
+	{}
+
+	int x;
+	int y;
+	int w;
+	int min;
+	int max;
+	int value;
+	color_t full_start;
+	color_t full_end;
+	color_t empty_start;
+	color_t empty_end;
+	color_t text_color;
+	std::string prefix;
+
+	virtual void render(virtual_terminal * console) override;
 };
 
 }
