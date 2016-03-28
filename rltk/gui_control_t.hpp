@@ -194,4 +194,61 @@ struct gui_vbar_t : public gui_control_t {
 	virtual void render(virtual_terminal * console) override;
 };
 
+struct list_item {
+	int value;
+	std::string label;
+};
+
+struct gui_listbox_t : public gui_control_t {
+	gui_listbox_t(const int X, const int Y, const int VAL, std::vector<list_item> options, std::string label,
+		const color_t label_fg, const color_t label_bg, const color_t ITEM_FG, const color_t ITEM_BG,
+		const color_t sel_fg, const color_t sel_bg) :
+		x(X), y(Y), selected_value(VAL), items(options), caption_fg(label_fg), caption_bg(label_bg),
+		item_fg(ITEM_FG), item_bg(ITEM_BG), selected_fg(sel_fg), selected_bg(sel_bg) 
+	{
+		caption = label;
+		w = caption.size() + 2;
+		for (const list_item &item : items) {
+			if (w < item.label.size()) w = item.label.size();
+		}
+
+		on_mouse_down = [] (gui_control_t * ctrl, int tx, int ty) {
+			gui_listbox_t * me = static_cast<gui_listbox_t *>(ctrl);
+			me->click_started = true;
+		};
+		on_mouse_up = [] (gui_control_t * ctrl, int tx, int ty) {
+			gui_listbox_t * me = static_cast<gui_listbox_t *>(ctrl);
+			if (me->click_started) {
+				const int option_number = (ty - me->y) -1;
+				if (option_number >= 0 and option_number <= me->items.size()) {
+					me->selected_value = me->items[option_number].value;
+				}
+			}
+			me->click_started = false;
+		};
+	}
+
+	int x;
+	int y;
+	int selected_value;
+	std::vector<list_item> items;
+	std::string caption;
+	color_t caption_fg;
+	color_t caption_bg;
+	color_t item_fg;
+	color_t item_bg;
+	color_t selected_fg;
+	color_t selected_bg;
+	int w = 0;
+	bool click_started = false;
+
+	virtual void render(virtual_terminal * console) override;
+	virtual bool mouse_in_control(const int tx, const int ty) override { 
+		if (tx >= x and tx <= (x + w) and ty >= y and ty <= (y + items.size()+1)) {
+			return true;
+		}
+		return false;
+	}
+};
+
 }

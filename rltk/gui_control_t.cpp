@@ -95,4 +95,22 @@ void gui_vbar_t::render(virtual_terminal * console) {
 	}
 }
 
+void gui_listbox_t::render(virtual_terminal * console) {
+	console->box(x, y, w+3, items.size()+1, caption_fg, caption_bg, false);
+	console->print(x+3, y, caption, caption_fg, caption_bg);
+	console->set_char(x+1, y, vchar{180, caption_fg, caption_bg});
+	console->set_char(x+2, y, vchar{' ', caption_fg, caption_bg});
+	console->set_char(x+w, y, vchar{' ', caption_fg, caption_bg});
+	console->set_char(x+w+1, y, vchar{195, caption_fg, caption_bg});
+	int current_y = y+1;
+	for (const list_item &item : items) {
+		if (item.value == selected_value) {
+			console->print(x+2, current_y, item.label, selected_fg, selected_bg);
+		} else {
+			console->print(x+2, current_y, item.label, item_fg, item_bg);			
+		}
+		++current_y;
+	}
+}
+
 }
