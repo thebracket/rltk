@@ -109,7 +109,7 @@ int main()
 	gui->add_owner_layer(BACKDROP_LAYER, 0, 0, 1024, 768, resize_bg, draw_bg);
 	gui->add_layer(LOG_LAYER, 864, 32, 160, 768-32, "8x16", resize_log);
 	term(LOG_LAYER)->set_alpha(196); // Make the overlay translucent
-	gui->add_layer(RETAINED_TEST_LAYER, 100, 100, 400, 200, "8x16", resize_retained);
+	gui->add_layer(RETAINED_TEST_LAYER, 100, 100, 400, 400, "8x16", resize_retained);
 
 	// To reduce typing, grab a pointer to the retained layer:
 	layer_t * retained = layer(RETAINED_TEST_LAYER);
@@ -145,8 +145,8 @@ int main()
 	});
 
 	// Add a horizontal and vertical color bar (e.g. health)
-	retained->add_hbar(TEST_HBAR, 1, 9, 48, 0, 100, 50, color_t(128,0,0), color_t(255,0,0), color_t(128,128,128), color_t(64,64,64), WHITE, "Health: ");
-	retained->add_vbar(TEST_VBAR, 48, 1, 7, 0, 100, 50, color_t(0,0,128), color_t(0,0,128), color_t(128,128,128), color_t(64,64,64), CYAN, "");
+	retained->add_hbar(TEST_HBAR, 1, 9, 46, 0, 100, 50, color_t(128,0,0), color_t(255,0,0), color_t(128,128,128), color_t(64,64,64), WHITE, "Health: ");
+	retained->add_vbar(TEST_VBAR, 48, 1, 20, 0, 100, 50, color_t(0,0,128), color_t(0,0,128), color_t(128,128,128), color_t(64,64,64), CYAN, "Mana: ");
 
 	// Main loop - calls the 'tick' function you defined for each frame.
 	run(tick);

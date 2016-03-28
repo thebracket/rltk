@@ -13,7 +13,7 @@
 #include <vector>
 #include <iostream>
 
-// TODO: Text box, display rich text, list box, combo box, slider, vbar
+// TODO: Text box, display rich text, list box, combo box, slider, spinner
 
 namespace rltk {
 
