@@ -126,6 +126,14 @@ struct layer_t {
 		check_handle_uniqueness(handle);
 		controls.emplace(handle, std::make_unique<gui_vbar_t>(X, Y, H, MIN, MAX, VAL, FULL_START, FULL_END, EMPTY_START, EMPTY_END, TEXT_COL, prefix));
 	}
+
+	inline void add_listbox(const int handle, const int X, const int Y, const int VAL, std::vector<list_item> options, std::string label,
+		const color_t label_fg, const color_t label_bg, const color_t ITEM_FG, const color_t ITEM_BG,
+		const color_t sel_fg, const color_t sel_bg)
+	{
+		check_handle_uniqueness(handle);
+		controls.emplace(handle, std::make_unique<gui_listbox_t>(X, Y, VAL, options, label, label_fg, label_bg, ITEM_FG, ITEM_BG, sel_fg, sel_bg));
+	}
 };
 
 }

@@ -28,6 +28,7 @@ constexpr int TEST_CHECKBOX = 4;
 constexpr int TEST_RADIOSET = 5;
 constexpr int TEST_HBAR = 6;
 constexpr int TEST_VBAR = 7;
+constexpr int TEST_LISTBOX = 8;
 
 void resize_bg(layer_t * l, int w, int h) {
 	// Use the whole window
@@ -80,7 +81,10 @@ void tick(double duration_ms) {
 	std::stringstream radio_ss;
 	radio_ss << "Option: " << retained->control<gui_radiobuttons_t>(TEST_RADIOSET)->selected_value;
 	term(LOG_LAYER)->print(1,2, radio_ss.str(), LIGHT_GREEN, DARKEST_GREEN);
-	term(LOG_LAYER)->print(1,3, "Even more...", LIGHT_GREEN, DARKEST_GREEN);
+
+	std::stringstream list_ss;
+	list_ss << "List: " << retained->control<gui_listbox_t>(TEST_LISTBOX)->selected_value;
+	term(LOG_LAYER)->print(1,3, list_ss.str(), LIGHT_GREEN, DARKEST_GREEN);
 	term(LOG_LAYER)->print(1,4, "... goes here", LIGHT_GREEN, DARKEST_GREEN);
 
 	std::stringstream ss;
@@ -147,6 +151,9 @@ int main()
 	// Add a horizontal and vertical color bar (e.g. health)
 	retained->add_hbar(TEST_HBAR, 1, 9, 46, 0, 100, 50, color_t(128,0,0), color_t(255,0,0), color_t(128,128,128), color_t(64,64,64), WHITE, "Health: ");
 	retained->add_vbar(TEST_VBAR, 48, 1, 20, 0, 100, 50, color_t(0,0,128), color_t(0,0,128), color_t(128,128,128), color_t(64,64,64), CYAN, "Mana: ");
+
+	// Listbox
+	retained->add_listbox(TEST_LISTBOX, 1, 11, 1, { {1, "Option 1"}, {2, "Option 2"}, {3, "Option 3"} }, "Listbox Options", WHITE, BLACK, WHITE, BLACK, WHITE, BLUE);
 
 	// Main loop - calls the 'tick' function you defined for each frame.
 	run(tick);
