@@ -130,6 +130,7 @@
     <ClInclude Include="..\..\rltk\gui.hpp" />
     <ClInclude Include="..\..\rltk\gui_control_t.hpp" />
     <ClInclude Include="..\..\rltk\input_handler.hpp" />
+    <ClInclude Include="..\..\rltk\layer_t.hpp" />
     <ClInclude Include="..\..\rltk\path_finding.hpp" />
     <ClInclude Include="..\..\rltk\rltk.hpp" />
     <ClInclude Include="..\..\rltk\rng.hpp" />
@@ -145,6 +146,7 @@
     <ClCompile Include="..\..\rltk\gui.cpp" />
     <ClCompile Include="..\..\rltk\gui_control_t.cpp" />
     <ClCompile Include="..\..\rltk\input_handler.cpp" />
+    <ClCompile Include="..\..\rltk\layer_t.cpp" />
     <ClCompile Include="..\..\rltk\rltk.cpp" />
     <ClCompile Include="..\..\rltk\rng.cpp" />
     <ClCompile Include="..\..\rltk\texture_resources.cpp" />
@@ -162,6 +164,8 @@
     <Import Project="..\packages\sfml-window.redist.2.3.2.0\build\native\sfml-window.redist.targets" Condition="Exists('..\packages\sfml-window.redist.2.3.2.0\build\native\sfml-window.redist.targets')" />
     <Import Project="..\packages\sfml-window.2.3.2.0\build\native\sfml-window.targets" Condition="Exists('..\packages\sfml-window.2.3.2.0\build\native\sfml-window.targets')" />
     <Import Project="..\packages\sfml-graphics.2.3.2.0\build\native\sfml-graphics.targets" Condition="Exists('..\packages\sfml-graphics.2.3.2.0\build\native\sfml-graphics.targets')" />
+    <Import Project="..\packages\boost_filesystem.1.60.0.0\build\native\boost_filesystem.targets" Condition="Exists('..\packages\boost_filesystem.1.60.0.0\build\native\boost_filesystem.targets')" />
+    <Import Project="..\packages\boost_system.1.60.0.0\build\native\boost_system.targets" Condition="Exists('..\packages\boost_system.1.60.0.0\build\native\boost_system.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -174,5 +178,7 @@
     <Error Condition="!Exists('..\packages\sfml-window.redist.2.3.2.0\build\native\sfml-window.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\sfml-window.redist.2.3.2.0\build\native\sfml-window.redist.targets'))" />
     <Error Condition="!Exists('..\packages\sfml-window.2.3.2.0\build\native\sfml-window.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\sfml-window.2.3.2.0\build\native\sfml-window.targets'))" />
     <Error Condition="!Exists('..\packages\sfml-graphics.2.3.2.0\build\native\sfml-graphics.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\sfml-graphics.2.3.2.0\build\native\sfml-graphics.targets'))" />
+    <Error Condition="!Exists('..\packages\boost_filesystem.1.60.0.0\build\native\boost_filesystem.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\boost_filesystem.1.60.0.0\build\native\boost_filesystem.targets'))" />
+    <Error Condition="!Exists('..\packages\boost_system.1.60.0.0\build\native\boost_system.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\boost_system.1.60.0.0\build\native\boost_system.targets'))" />
   </Target>
 </Project>

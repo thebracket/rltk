@@ -37,7 +37,7 @@ void layer_t::render(sf::RenderWindow &window) {
 			int mouse_x, mouse_y;
 			std::tie(mouse_x, mouse_y) = get_mouse_position();
 
-			if (mouse_x >= x and mouse_x <= (x+w) and mouse_y >= y and mouse_y <= (y+h)) {
+			if (mouse_x >= x && mouse_x <= (x+w) && mouse_y >= y && mouse_y <= (y+h)) {
 				// Mouse over in here is possible.
 				auto font_dimensions = console->get_font_size();
 				const int terminal_x = (mouse_x - x) / font_dimensions.first;
@@ -52,11 +52,11 @@ void layer_t::render(sf::RenderWindow &window) {
 						}
 
 						// Mouse down and up
-						if (get_mouse_button_state(button::LEFT) and it->second->on_mouse_down) {
+						if (get_mouse_button_state(button::LEFT) && it->second->on_mouse_down) {
 							auto callfunc = it->second->on_mouse_down.get();
 							callfunc(it->second.get(), terminal_x, terminal_y);
 						}
-						if (!get_mouse_button_state(button::LEFT) and it->second->on_mouse_up) {
+						if (!get_mouse_button_state(button::LEFT) && it->second->on_mouse_up) {
 							auto callfunc = it->second->on_mouse_up.get();
 							callfunc(it->second.get(), terminal_x, terminal_y);
 						}
