@@ -66,6 +66,9 @@
     <ClInclude Include="..\..\rltk\font_manager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\rltk\layer_t.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\rltk\color_t.cpp">
@@ -96,6 +99,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\rltk\font_manager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\rltk\layer_t.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
