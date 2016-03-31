@@ -77,7 +77,7 @@ void virtual_terminal::clear(const vchar &target) {
 }
 
 void virtual_terminal::set_char(const int idx, const vchar &target) {
-	if (idx < 0 or idx > buffer.size()) throw std::runtime_error("Out of screen range");
+	if (idx < 0 || idx > buffer.size()) throw std::runtime_error("Out of screen range");
 	buffer[idx] = target;
 }
 
@@ -152,7 +152,7 @@ void virtual_terminal::render(sf::RenderWindow &window) {
 
 			if (has_background) {
 				sf::Color bgsfml = color_to_sfml(target.background);
-				if (alpha != 255 and target.background.r == 0 and target.background.g == 0 and target.background.b == 0) {
+				if (alpha != 255 && target.background.r == 0 && target.background.g == 0 && target.background.b == 0) {
 					bgsfml.a = 0;
 				}
 				vertices[bg_idx].color = bgsfml;
