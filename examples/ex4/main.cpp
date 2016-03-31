@@ -45,7 +45,7 @@ struct location_t {
 
 	// For convenience, we're overriding the quality operator. This gives a very
 	// quick and natural looking way to say "are these locations the same?"
-	bool operator==(location_t &rhs) { return (x==rhs.x and y==rhs.y); }
+	bool operator==(location_t &rhs) { return (x==rhs.x && y==rhs.y); }
 
 	location_t() {}
 	location_t(const int X, const int Y) : x(X), y(Y) {}
@@ -74,7 +74,7 @@ struct map_t {
 		// Every tile other than 10,10 (starting) has a 16% chance of being solid		
 		for (int y=1; y<height-2; ++y) {
 			for (int x=1; x<width-2; ++x) {
-				if ((x != 10 and y != 10) and rng.roll_dice(1,6)==1) walkable[at(x,y)] = false;
+				if ((x != 10 && y != 10) && rng.roll_dice(1,6)==1) walkable[at(x,y)] = false;
 			}
 		}
 	}

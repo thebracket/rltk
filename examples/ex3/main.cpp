@@ -62,7 +62,7 @@ void tick(double duration_ms) {
 	if (tick_time > tick_duration) {
 
 		// If we're at our destination, we need a new one!
-		if ((destination_x == dude_x and destination_y == dude_y) or path.empty()) {
+		if ((destination_x == dude_x && destination_y == dude_y) || path.empty()) {
 			// We use the RNG to determine where we want to go
 			destination_x = rng.roll_dice(1, console->term_width)-1;
 			destination_y = rng.roll_dice(1, console->term_height)-1;

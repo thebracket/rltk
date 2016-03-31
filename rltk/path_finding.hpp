@@ -156,7 +156,7 @@ std::shared_ptr<navigation_path<location_t>> find_path_2d(const location_t start
 		result->success = true;
 		line_func(navigator_t::get_x(start), navigator_t::get_y(start), navigator_t::get_x(end), navigator_t::get_y(end), [result] (int X, int Y) {
 			location_t step = navigator_t::get_xy(X,Y);
-			if (result->success and navigator_t::is_walkable(step)) {
+			if (result->success && navigator_t::is_walkable(step)) {
 				result->steps.push_back(step);
 			} else {
 				result->success = false;
