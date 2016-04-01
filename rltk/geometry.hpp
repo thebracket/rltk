@@ -34,6 +34,22 @@ void line_func(int x1, int y1, const int x2, const int y2, std::function<void(in
 void line_func_3d(int x1, int y1, int z1, const int x2, const int y2, const int z2, std::function<void(int, int, int)> func);
 
 /*
+ * Perform a function for each line element between x1/y1 and x2/y2. Uses Bresenham's
+ * algorithm; initial implementation from
+ * http://www.roguebasin.com/index.php?title=Bresenham%27s_Line_Algorithm
+ * Cancellable version: the function can return "false" to stop traversing the line.
+ */
+void line_func_cancellable(int x1, int y1, const int x2, const int y2, std::function<bool(int, int)> func);
+
+/*
+ * Perform a function for each line element between x1/y1/z1 and x2/y2/z2. Uses a 3D
+ * implementation of Bresenham's line algorithm.
+ * https://gist.github.com/yamamushi/5823518
+ * Cancellable version: the function can return "false" to stop traversing the line.
+ */
+void line_func_3d_cancellable(int x1, int y1, int z1, const int x2, const int y2, const int z2, std::function<bool(int, int, int)> func);
+
+/*
  * Provides a correct 2D distance between two points.
  */
 inline float distance2d(int x1, int y1, int x2, int y2) {

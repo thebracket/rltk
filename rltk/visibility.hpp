@@ -23,13 +23,15 @@ void internal_2d_sweep(const location_t_ &position, const int &range, std::funct
 	const int end_x = start_x + offset.first;
 	const int end_y = start_y + offset.second;
 	
-	line_func(start_x, start_y, end_x, end_y, [&blocked, &is_opaque, &set_visible, &range, &position] (int X, int Y) {
+	line_func_cancellable(start_x, start_y, end_x, end_y, [&blocked, &is_opaque, &set_visible, &range, &position] (int X, int Y) {
+		if (blocked) return false;
 		float distance = distance2d(position.x, position.y, X, Y);
 		if (distance <= range) {
 			location_t_ pos = navigator_t::get_xy(X,Y);
 			if (!blocked) set_visible(pos);
 			if (!is_opaque(pos)) blocked = true;
 		}
+		return true;
 	});	
 }
 
