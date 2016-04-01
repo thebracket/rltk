@@ -1,0 +1,12 @@
+﻿  main.cpp
+c:\users\herbert\source\repos\rltk\rltk\geometry.hpp(40): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+c:\users\herbert\source\repos\rltk\rltk\geometry.hpp(48): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+c:\users\herbert\source\repos\rltk\rltk\geometry.hpp(56): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+c:\users\herbert\source\repos\rltk\rltk\geometry.hpp(65): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+c:\users\herbert\source\repos\rltk\rltk\gui_control_t.hpp(99): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+c:\users\herbert\source\repos\rltk\rltk\gui_control_t.hpp(101): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+c:\users\herbert\source\repos\rltk\rltk\gui_control_t.hpp(104): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+c:\users\herbert\source\repos\rltk\rltk\gui_control_t.hpp(210): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+c:\users\herbert\source\repos\rltk\rltk\gui_control_t.hpp(212): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+  ex1.vcxproj -> C:\Users\Herbert\Source\Repos\rltk\RltkMaster\x64\Debug\ex1.exe
+  ex1.vcxproj -> C:\Users\Herbert\Source\Repos\rltk\RltkMaster\x64\Debug\ex1.pdb (Partial PDB)

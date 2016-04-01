@@ -1,0 +1,26 @@
+﻿  main.cpp
+c:\users\herbert\source\repos\rltk\rltk\geometry.hpp(40): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+c:\users\herbert\source\repos\rltk\rltk\geometry.hpp(48): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+c:\users\herbert\source\repos\rltk\rltk\geometry.hpp(56): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+c:\users\herbert\source\repos\rltk\rltk\geometry.hpp(65): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+c:\users\herbert\source\repos\rltk\rltk\gui_control_t.hpp(99): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+c:\users\herbert\source\repos\rltk\rltk\gui_control_t.hpp(101): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+c:\users\herbert\source\repos\rltk\rltk\gui_control_t.hpp(104): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+c:\users\herbert\source\repos\rltk\rltk\gui_control_t.hpp(210): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+c:\users\herbert\source\repos\rltk\rltk\gui_control_t.hpp(212): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+  boost_filesystem.codecvt_error_category.cpp
+  boost_filesystem.operations.cpp
+  boost_filesystem.path.cpp
+  boost_filesystem.path_traits.cpp
+  boost_filesystem.portability.cpp
+  boost_filesystem.unique_path.cpp
+c:\users\herbert\source\repos\rltk\rltkmaster\packages\boost_filesystem.1.60.0.0\lib\native\src\unique_path.cpp(112): warning C4267: 'argument': conversion from 'size_t' to 'DWORD', possible loss of data
+  boost_filesystem.utf8_codecvt_facet.cpp
+  boost_filesystem.windows_file_codecvt.cpp
+  boost_system.error_code.cpp
+  Generating code
+c:\users\herbert\source\repos\rltk\rltkmaster\packages\boost.1.60.0.0\lib\native\include\boost\property_tree\detail\json_parser\standard_callbacks.hpp(132): warning C4715: 'boost::property_tree::json_parser::detail::standard_callbacks<boost::property_tree::basic_ptree<std::basic_string<char,std::char_traits<char>,std::allocator<char> >,std::basic_string<char,std::char_traits<char>,std::allocator<char> >,std::less<std::basic_string<char,std::char_traits<char>,std::allocator<char> > > > >::new_tree': not all control paths return a value
+  All 2713 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  ex1.vcxproj -> C:\Users\Herbert\Source\Repos\rltk\RltkMaster\x64\Release\ex1.exe
+  ex1.vcxproj -> C:\Users\Herbert\Source\Repos\rltk\RltkMaster\x64\Release\ex1.pdb (Full PDB)
