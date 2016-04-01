@@ -9,11 +9,11 @@ namespace rltk {
 
 // Credit: https://gist.github.com/fairlight1337/4935ae72bcbcc1ba5c72
 std::tuple<float, float, float> color_to_hsv(const color_t &col) {
-	float fR = (col.r / 255.0);
-	float fG = (col.g / 255.0);
-	float fB = (col.b / 255.0);
+	float fR = (col.r / 255.0f);
+	float fG = (col.g / 255.0f);
+	float fB = (col.b / 255.0f);
 
-	float fH=0.0, fS=0.0, fV=0.0;
+	float fH=0.0f, fS=0.0f, fV=0.0f;
 
 	float fCMax = max(max(fR, fG), fB);
 	float fCMin = min(min(fR, fG), fB);
@@ -21,11 +21,11 @@ std::tuple<float, float, float> color_to_hsv(const color_t &col) {
 
 	if(fDelta > 0) {
 		if(fCMax == fR) {
-	  		fH = 60 * (fmod(((fG - fB) / fDelta), 6));
+	  		fH = 60.0f * (fmodf(((fG - fB) / fDelta), 6.0f));
 		} else if(fCMax == fG) {
-	  		fH = 60 * (((fB - fR) / fDelta) + 2);
+	  		fH = 60.0f * (((fB - fR) / fDelta) + 2.0f);
 		} else if(fCMax == fB) {
-	  		fH = 60 * (((fR - fG) / fDelta) + 4);
+	  		fH = 60.0f * (((fR - fG) / fDelta) + 4.0f);
 		}
 
 		if(fCMax > 0) {
@@ -57,8 +57,8 @@ std::tuple<uint8_t, uint8_t, uint8_t> color_from_hsv(const float hue, const floa
 	float fR, fG, fB;
 
 	float fC = fV * fS; // Chroma
-	float fHPrime = fmod(fH / 60.0, 6);
-	float fX = fC * (1 - fabs(fmod(fHPrime, 2) - 1));
+	float fHPrime = fmodf(fH / 60.0f, 6.0f);
+	float fX = fC * (1.0f - fabsf(fmodf(fHPrime, 2.0f) - 1.0f));
 	float fM = fV - fC;
 
 	if(0 <= fHPrime && fHPrime < 1) {
@@ -110,11 +110,11 @@ color_t greyscale(const color_t &col)
 	float RED = red / 255.0F;
 	float GREEN = green / 255.0F;
 	float BLUE = blue / 255.0F;
-	float luminance = 0.299 * RED + 0.587 * GREEN + 0.114 * BLUE;
+	float luminance = 0.299f * RED + 0.587f * GREEN + 0.114f * BLUE;
 
-	red = (luminance * 255.0F);
-	green = (luminance * 255.0F);
-	blue = (luminance * 255.0F);
+	red = static_cast<unsigned char>(luminance * 255.0F);
+	green = static_cast<unsigned char>(luminance * 255.0F);
+	blue = static_cast<unsigned char>(luminance * 255.0F);
 
 	return color_t(red, green, blue);
 }
@@ -177,9 +177,9 @@ color_t apply_colored_light(const color_t &col, const std::tuple<float,float,flo
 	if (BLUE > 1.0) BLUE = 1.0;
 	if (BLUE < 0.0) BLUE = 0.0;
 
-	red = (RED * 255.0F);
-	green = (GREEN * 255.0F);
-	blue = (BLUE * 255.0F);
+	red = static_cast<unsigned char>(RED * 255.0F);
+	green = static_cast<unsigned char>(GREEN * 255.0F);
+	blue = static_cast<unsigned char>(BLUE * 255.0F);
 
 	return color_t(red, green, blue);
 }
@@ -201,9 +201,9 @@ color_t lerp(const color_t &first, const color_t &second, float amount) {
 	const float green = g1 + (gdiff * amount);
 	const float blue = b1 + (bdiff * amount);
 
-	const int r = red;
-	const int g = green;
-	const int b = blue;
+	const int r = static_cast<const int>(red);
+	const int g = static_cast<const int>(green);
+	const int b = static_cast<const int>(blue);
 
 	return color_t(r,g,b);
 }
