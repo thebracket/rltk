@@ -20,36 +20,6 @@ namespace rltk {
 std::pair<int, int> project_angle(const int x, const int y, const double radius, const double degrees_radians);
 
 /*
- * Perform a function for each line element between x1/y1 and x2/y2. Uses Bresenham's
- * algorithm; initial implementation from
- * http://www.roguebasin.com/index.php?title=Bresenham%27s_Line_Algorithm
- */
-void line_func(int x1, int y1, const int x2, const int y2, std::function<void(int, int)> func);
-
-/*
- * Perform a function for each line element between x1/y1/z1 and x2/y2/z2. Uses a 3D
- * implementation of Bresenham's line algorithm.
- * https://gist.github.com/yamamushi/5823518
- */
-void line_func_3d(int x1, int y1, int z1, const int x2, const int y2, const int z2, std::function<void(int, int, int)> func);
-
-/*
- * Perform a function for each line element between x1/y1 and x2/y2. Uses Bresenham's
- * algorithm; initial implementation from
- * http://www.roguebasin.com/index.php?title=Bresenham%27s_Line_Algorithm
- * Cancellable version: the function can return "false" to stop traversing the line.
- */
-void line_func_cancellable(int x1, int y1, const int x2, const int y2, std::function<bool(int, int)> func);
-
-/*
- * Perform a function for each line element between x1/y1/z1 and x2/y2/z2. Uses a 3D
- * implementation of Bresenham's line algorithm.
- * https://gist.github.com/yamamushi/5823518
- * Cancellable version: the function can return "false" to stop traversing the line.
- */
-void line_func_3d_cancellable(int x1, int y1, int z1, const int x2, const int y2, const int z2, std::function<bool(int, int, int)> func);
-
-/*
  * Provides a correct 2D distance between two points.
  */
 inline float distance2d(int x1, int y1, int x2, int y2) {
@@ -80,5 +50,63 @@ inline float distance3d_squared(int x1, int y1, int z1, int x2,	int y2, int z2)
 {
 	return std::pow(x1 - x2, 2.0) + std::pow(y1 - y2, 2.0) + std::pow(z1 - z2, 2.0);
 }
+
+/*
+ * Perform a function for each line element between x1/y1 and x2/y2. We used to use Bresenham's line,
+ * but benchmarking showed a simple float-based setup to be faster.
+ */
+inline void line_func(int x1, int y1, const int x2, const int y2, std::function<void(int, int)> func)
+{
+	float x = static_cast<float>(x1);
+    float y = static_cast<float>(y1);
+    const float dest_x = static_cast<float>(x2);
+    const float dest_y = static_cast<float>(y2);
+    const float n_steps = distance2d(x1,y1,x2,y2);
+    const int steps = std::floor(n_steps) + 1;
+    const float slope_x = (dest_x - x) / n_steps;
+    const float slope_y = (dest_y - y) / n_steps;
+
+    for (int i = 0; i < steps; ++i) {
+        func(static_cast<int>(x), static_cast<int>(y));
+        x += slope_x;
+        y += slope_y;
+    }
+}
+
+/*
+ * Perform a function for each line element between x1/y1/z1 and x2/y2/z2. Uses a 3D
+ * implementation of Bresenham's line algorithm.
+ * https://gist.github.com/yamamushi/5823518
+ */
+void line_func_3d(int x1, int y1, int z1, const int x2, const int y2, const int z2, std::function<void(int, int, int)> func);
+
+/*
+ * Perform a function for each line element between x1/y1 and x2/y2. We used to use Bresenham's algorithm,
+ * but benchmarking showed that a simple float based vector was faster.
+ */
+inline void line_func_cancellable(int x1, int y1, const int x2, const int y2, std::function<bool(int, int)> func) {
+    float x = static_cast<float>(x1);
+    float y = static_cast<float>(y1);
+    const float dest_x = static_cast<float>(x2);
+    const float dest_y = static_cast<float>(y2);
+    const float n_steps = distance2d(x1,y1,x2,y2);
+    const int steps = std::floor(n_steps) + 1;
+    const float slope_x = (dest_x - x) / n_steps;
+    const float slope_y = (dest_y - y) / n_steps;
+
+    for (int i = 0; i < steps; ++i) {
+        if (!func(static_cast<int>(x), static_cast<int>(y))) return;
+        x += slope_x;
+        y += slope_y;
+    }
+}
+
+/*
+ * Perform a function for each line element between x1/y1/z1 and x2/y2/z2. Uses a 3D
+ * implementation of Bresenham's line algorithm.
+ * https://gist.github.com/yamamushi/5823518
+ * Cancellable version: the function can return "false" to stop traversing the line.
+ */
+void line_func_3d_cancellable(int x1, int y1, int z1, const int x2, const int y2, const int z2, std::function<bool(int, int, int)> func);
 
 }
