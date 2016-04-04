@@ -13,6 +13,13 @@ namespace rltk {
 
 namespace visibility_private {
 
+/*
+ * Benchmark results from example 6 (on my desktop):
+ * - Using line_func, it averages 0.3625 uS per line.
+ * - Using line_func_cancellable, it averages 0.25 uS per line.
+ * - Using a naieve float based slope, it averages 0.2 uS per line.
+ */
+
 template<class location_t_, class navigator_t>
 void internal_2d_sweep(const location_t_ &position, const int &range, std::function<void(location_t_)> set_visible, 
 	std::function<bool(location_t_)> is_opaque, const std::pair<int,int> offset)
@@ -32,7 +39,7 @@ void internal_2d_sweep(const location_t_ &position, const int &range, std::funct
 			if (!is_opaque(pos)) blocked = true;
 		}
 		return true;
-	});	
+	});
 }
 
 }
