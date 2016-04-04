@@ -57,6 +57,13 @@ cursor. Click and he goes there.
 
 [Example 8](https://github.com/thebracket/rltk/blob/master/examples/ex8/main.cpp): Demonstrates an "owner draw" panel (with SFML render target callback), drawing a background image. Some ASCII consoles are spawned, and one is populated with a mouse-over, a checkbox, radio-button set, a list-box and some status bars. The other panel displays the results.
 
+### Example 9: Sparse layer with effects
+![Sparse](https://raw.githubusercontent.com/thebracket/rltk/master/tutorial_images/example9.gif "Sparse")
+
+[Example 9](https://github.com/thebracket/rltk/blob/master/examples/ex9/main.cpp): This demo uses a regular console layer to draw the map,
+and a "sparse" console layer for the character and traversal path. It uses sub-character alignment to smoothly move the @ around, and
+demonstrates rotation of the @ by leaning left or right as he travels (not an effect I recommend for a game, but it works as a demo!).
+
 ## Example
 The goal is to keep it simple from the user's point of view. The following code is enough to setup an ASCII terminal,
 and display **Hello World** with a frame-rate displayed (around 100 FPS on my workstation):
