@@ -45,6 +45,24 @@ void gui_t::add_layer(const int handle, const int X, const int Y, const int W, c
 	);
 }
 
+void gui_t::add_sparse_layer(const int handle, const int X, const int Y, const int W, const int H, 
+	std::string font_name, std::function<void(layer_t *,int,int)> resize_fun, int order) 
+{
+	check_handle_uniqueness(handle);
+	layers.emplace(std::make_pair(handle, layer_t(true, X, Y, W, H, font_name, resize_fun)));
+	if (order == -1) {
+		order = render_order;
+		++render_order;
+	}
+	gui_detail::render_order.push_back(std::make_pair(order, get_layer(handle)));
+	std::sort(gui_detail::render_order.begin(), gui_detail::render_order.end(), 
+		[] (std::pair<int, layer_t *> a, std::pair<int, layer_t *> b) 
+		{
+		return a.first < b.first;
+		}
+	);
+}
+
 void gui_t::add_owner_layer(const int handle, const int X, const int Y, const int W, const int H, 
 	std::function<void(layer_t *,int,int)> resize_fun, std::function<void(layer_t *, sf::RenderTexture &)> owner_draw_fun, int order) 
 {

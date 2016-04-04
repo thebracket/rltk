@@ -29,6 +29,9 @@ public:
 	// Specialization for adding console layers
 	void add_layer(const int handle, const int X, const int Y, const int W, const int H, std::string font_name, std::function<void(layer_t *,int,int)> resize_fun, bool has_background=true, int order=-1);
 	
+	// Specialization for sparse layers
+	void add_sparse_layer(const int handle, const int X, const int Y, const int W, const int H, std::string font_name, std::function<void(layer_t *,int,int)> resize_fun, int order=-1);
+	
 	// Specialization for adding owner-draw layers
 	void add_owner_layer(const int handle, const int X, const int Y, const int W, const int H, std::function<void(layer_t *,int,int)> resize_fun, std::function<void(layer_t *, sf::RenderTexture &)> owner_draw_fun, int order=-1);
 	void delete_layer(const int handle);

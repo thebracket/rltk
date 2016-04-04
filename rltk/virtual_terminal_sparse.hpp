@@ -26,9 +26,9 @@ namespace rltk {
 struct xchar {
 	int glyph; // Glyph to render
 	color_t foreground; // Foreground color
-	int angle = 0; // Rotation angle in degrees, defaults to 0 - not rotated
 	float x = 0.0f; // Provided as floats to allow for partial character movement/sliding
 	float y = 0.0f;
+	int angle = 0; // Rotation angle in degrees, defaults to 0 - not rotated
 	unsigned char opacity = 255;
 	boost::optional<color_t> background; // If provided, a background is drawn
 };

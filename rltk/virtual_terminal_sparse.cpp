@@ -38,6 +38,7 @@ void virtual_terminal_sparse::render(sf::RenderWindow &window) {
 		const int space_y = (219 / 16) * font_height;
 
 		// We want to iterate the display vector, and put sprites on the screen for each entry
+		backing.clear(sf::Color(0,0,0,0));
 		for (const xchar &target : buffer) {
 
 			const int texture_x = (target.glyph % 16) * font_width;
@@ -53,7 +54,7 @@ void virtual_terminal_sparse::render(sf::RenderWindow &window) {
 				sprite.setOrigin(origin);
 				sprite.setPosition(position);
 				sprite.setRotation(target.angle);
-				window.draw(sprite);
+				backing.draw(sprite);
 			}
 			sf::Color fgsfml = color_to_sfml(target.foreground);
 			sf::Sprite sprite;
@@ -63,7 +64,7 @@ void virtual_terminal_sparse::render(sf::RenderWindow &window) {
 			sprite.setOrigin(origin);
 			sprite.setPosition(position);
 			sprite.setRotation(target.angle);
-			window.draw(sprite);
+			backing.draw(sprite);
 
 		}
 	}
