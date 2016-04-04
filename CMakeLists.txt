@@ -18,6 +18,7 @@ add_library(rltk 	rltk/rltk.cpp
 					rltk/gui.cpp
 					rltk/layer_t.cpp
 					rltk/gui_control_t.cpp
+					rltk/virtual_terminal_sparse.cpp
 )
 
 # Require SFML

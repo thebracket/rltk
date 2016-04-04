@@ -7,6 +7,7 @@
 #pragma once
 
 #include "virtual_terminal.hpp"
+#include "virtual_terminal_sparse.hpp"
 #include "gui_control_t.hpp"
 #include <unordered_map>
 
@@ -22,6 +23,15 @@ struct layer_t {
 	{
 		console = std::make_unique<virtual_terminal>(font_name, x, y, has_background);
 	    console->resize_pixels(w, h);
+	}
+
+	/* This specialization is for sparse consoles */
+	layer_t(bool sparse, const int X, const int Y, const int W, const int H, std::string font_name, std::function<void(layer_t *,int,int)> resize_fun) :
+		x(X), y(Y), w(W), h(H), font(font_name), resize_func(resize_fun)
+	{
+		// Sparse is unusued, but is there to differentiate the signature.
+		sconsole = std::make_unique<virtual_terminal_sparse>(font_name, x, y);
+	    sconsole->resize_pixels(w, h);
 	}
 
 	/* This specialization is for owner-draw panels */
@@ -52,6 +62,9 @@ struct layer_t {
 
 	// If a console is present, this is it.
 	std::unique_ptr<virtual_terminal> console;
+
+	// If it has a sparse console, this is it.
+	std::unique_ptr<virtual_terminal_sparse> sconsole;
 
 	// If retained-mode controls are present, they are in here.
 	std::unordered_map<int, std::unique_ptr<gui_control_t>> controls;
