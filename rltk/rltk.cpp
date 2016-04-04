@@ -87,7 +87,7 @@ void run(std::function<void(double)> on_tick) {
         }
 
         main_window->clear();
-        if (main_detail::use_root_console) console->clear();
+        //if (main_detail::use_root_console) console->clear();
 
         on_tick(duration_ms);
 

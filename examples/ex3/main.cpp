@@ -47,7 +47,7 @@ random_number_generator rng;
 // Most roguelikes are turn-based and won't actually use this, but that's
 // for a later example when we get to input.
 // Note that this is faster than previous examples; I liked it better that way!
-constexpr double tick_duration = 30.0;
+constexpr double tick_duration = 5.0;
 double tick_time = 0.0;
 
 // Tick is called every frame. The parameter specifies how many ms have elapsed

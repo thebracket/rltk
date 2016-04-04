@@ -21,10 +21,10 @@ using namespace rltk::colors;
 // since the last time it was called.
 void tick(double duration_ms) {
 	// In this case, we just want to print "Hello World" in white on black.
-	std::stringstream ss;
-	ss << "Frame duration: " << duration_ms << " ms (" << (1000.0/duration_ms) << " FPS).";
-	console->print(1,1,"Hello World", WHITE, BLACK);
-	console->print(1,2,ss.str(), YELLOW, BLUE);
+	if (console->dirty) {
+		console->clear();
+		console->print(1,1,"Hello World", WHITE, BLACK);
+	}
 }
 
 // Your main function
