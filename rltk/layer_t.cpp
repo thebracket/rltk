@@ -69,6 +69,8 @@ void layer_t::render(sf::RenderWindow &window) {
 			}
 		}
 		console->render(window);
+	} else if (sconsole) {
+		sconsole->render(window);
 	} else {
 		if (!backing) make_owner_draw_backing();
 		backing->clear(sf::Color(0,0,0,0));
