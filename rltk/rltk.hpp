@@ -105,5 +105,6 @@ extern std::unique_ptr<gui_t> gui;
  */
 inline layer_t * layer(const int &handle) { return gui->get_layer(handle); }
 inline virtual_terminal * term(const int &handle) { return gui->get_layer(handle)->console.get(); }
+inline virtual_terminal_sparse * sterm(const int &handle) { return gui->get_layer(handle)->sconsole.get(); }
 
 }
