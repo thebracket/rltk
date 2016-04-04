@@ -17,6 +17,7 @@
 #include "input_handler.hpp"
 #include "visibility.hpp"
 #include "gui.hpp"
+#include "ecs/ecs.hpp"
 
 namespace rltk {
 
