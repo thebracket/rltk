@@ -51,6 +51,7 @@ public:
 	int term_width;
 	int term_height;
 	bool visible = true;
+	bool dirty = true; // Flag for requiring a re-draw
 
 private:
 	sf::RenderTexture backing;

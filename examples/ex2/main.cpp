@@ -30,14 +30,15 @@ random_number_generator rng;
 // duration for a "tick" and only process after that much time has elapsed.
 // Most roguelikes are turn-based and won't actually use this, but that's
 // for a later example when we get to input.
-constexpr double tick_duration = 100.0;
+constexpr double tick_duration = 5.0;
 double tick_time = 0.0;
 
 // Tick is called every frame. The parameter specifies how many ms have elapsed
 // since the last time it was called.
 void tick(double duration_ms) {
-	// Rather than clearing the screen to black, we set it to all white dots.
-	console->clear(vchar{'.', GREY, BLACK});
+	// Rather than clearing the screen to black, we set it to all white dots. We only want
+	// to do this if something has forced the screen to re-render (such as re-sizing)
+	if (console->dirty) console->clear(vchar{'.', GREY, BLACK});
 
 	// Increase the tick time by the frame duration. If it has exceeded
 	// the tick duration, then we move the @.
@@ -58,18 +59,21 @@ void tick(double duration_ms) {
 
 		// Important: we clear the tick count after the update.
 		tick_time = 0.0;
+
+		// Clear the console, which has the nice side effect of setting the terminal
+		// to dirty.
+		console->clear(vchar{'.', GREY, BLACK});
+		// Clipping: keep the dude on the screen. Why are we doing this here, and not
+		// after an update? For now, we aren't handling the concept of a map that is larger
+		// than the screen - so if the window resizes, the @ gets clipped to a visible area.
+		if (dude_x < 0) dude_x = 0;
+		if (dude_x > console->term_width) dude_x = console->term_width;
+		if (dude_y < 0) dude_y = 0;
+		if (dude_y > console->term_height) dude_x = console->term_height;
+
+		// Finally, we render the @ symbol. dude_x and dude_y are in terminal coordinates.
+		console->set_char(console->at(dude_x, dude_y), dude);
 	}
-
-	// Clipping: keep the dude on the screen. Why are we doing this here, and not
-	// after an update? For now, we aren't handling the concept of a map that is larger
-	// than the screen - so if the window resizes, the @ gets clipped to a visible area.
-	if (dude_x < 0) dude_x = 0;
-	if (dude_x > console->term_width) dude_x = console->term_width;
-	if (dude_y < 0) dude_y = 0;
-	if (dude_y > console->term_height) dude_x = console->term_height;
-
-	// Finally, we render the @ symbol. dude_x and dude_y are in terminal coordinates.
-	console->set_char(console->at(dude_x, dude_y), dude);
 }
 
 // Your main function
