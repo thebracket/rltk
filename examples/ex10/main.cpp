@@ -46,14 +46,31 @@ int main()
 	// The final parameter says that we'd like the default console to use an 8x16 VGA font. Not so great for games, but easy to read!
 	init(config_simple("../assets", 80, 25, "RLTK Hello World", "8x16"));
 
-	entity_t test;
-	test.assign(position_component{1,1});
-	test.assign(position_component{1,1});
-	test.assign(position_component2{1,1});
+	auto entity1 = create_entity()
+		->assign(position_component{1,1})
+		->assign(position_component2{2,2});
 
+	auto entity2 = create_entity()
+		->assign(position_component{3,3});
 
+	each([] (entity_t &e) { std::cout << "Hi, I am Entity #" << e.id.id << "\n"; });
+	
+	each<position_component>([] (entity_t &e, position_component &p) { 
+		std::cout << "Hi, I am Entity #" << e.id.id << " and I have a position component (" << p.x << "/" << p.y << ")!\n"; 
+	});
+
+	each<position_component, position_component2>([] (entity_t &e, position_component &p, position_component2 &p2) {
+		std::cout << "Hi< I am Entity #" << e.id.id << " and I have two types of position component.\n";
+		std::cout << "   - Position 1: " << p.x << "/" << p.y << "\n";
+		std::cout << "   - Position 2: " << p2.x << "/" << p2.y << "\n";
+	});
+
+	all_components<position_component>([] (entity_t &e, position_component &p) {
+		std::cout << "Hi, I'm position_component at " << p.x << "/" << p.y << ", and I belong to Entity #" << e.id.id << "\n";
+	});
+	
 	// Enter the main loop. "tick" is the function we wrote above.
-	run(tick);
+	//run(tick);
 
     return 0;
 }
