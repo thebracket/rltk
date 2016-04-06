@@ -21,6 +21,7 @@ constexpr std::size_t MAX_COMPONENTS = 64;
 struct base_component_t {
 	static std::size_t type_counter;
 	std::size_t entity_id;
+	bool deleted = false;
 };
 
 /*
@@ -86,7 +87,7 @@ struct entity_t {
 	 */
 	entity_t(const std::size_t ID) {
 		entity_t::entity_counter = ID+1;
-		id = {ID};
+		id = ID;
 	}
 
 	/*
@@ -106,6 +107,8 @@ struct entity_t {
 	bool operator == (const entity_t &other) const { return other.id == id; }
 	bool operator != (const entity_t &other) const { return other.id != id; }
 
+	bool deleted = false;
+
 	/*
 	 * A bitset storing whether or not an entity has each component type. These are set with the family_id
 	 * determined in the component_t system above.
@@ -119,6 +122,7 @@ struct entity_t {
 	 */
 	template<class C>
 	inline entity_t * assign(C &&component) {
+		if (deleted) throw std::runtime_error("Cannot assign to a deleted entity");
 		component_t<C> temp(component);
 		temp.entity_id = id;
 		if (component_store.size() < temp.family_id+1) {
@@ -134,12 +138,14 @@ struct entity_t {
 	 */
 	template <class C>
 	inline C * component() {
+		if (deleted) throw std::runtime_error("Entity is deleted");
 		C empty_component;
 		component_t<C> temp(empty_component);
 		if (!component_mask.test(temp.family_id)) throw std::runtime_error("Entity #" + std::to_string(id) + " does not have the requested component.");
 		for (component_t<C> &component : static_cast<component_store_t<component_t<C>> *>(component_store[temp.family_id].get())->components) {
 			if (component.entity_id == id) return &component.data;
 		}
+		return nullptr;
 	}
 };
 
@@ -152,14 +158,16 @@ extern std::unordered_map<std::size_t, entity_t> entity_store;
  * entity(ID) is used to reference an entity. So you can, for example, do:
  * entity(12)->component<position_component>()->x = 3;
  */
-inline entity_t * entity(std::size_t id) {
+inline entity_t * entity(const std::size_t id) {
 	auto finder = entity_store.find(id);
 	if (finder == entity_store.end()) throw std::runtime_error("Entity with ID " + std::to_string(id) + " does not exist");
+	if (finder->second.deleted) throw std::runtime_error("Entity #" + std::to_string(id) + " is deleted");
 	return &finder->second;
 }
 
 /*
- * Creates an entity with a new ID #.
+ * Creates an entity with a new ID #. Returns a pointer to the entity, to enable
+ * call chaining. For example create_entity()->assign(foo)->assign(bar)
  */
 inline entity_t * create_entity() {
 	entity_t new_entity;
@@ -178,7 +186,7 @@ inline entity_t * create_entity(const std::size_t new_id) {
 
 /*
  * Finds all entities that have a component of the type specified, and returns a
- * vector of pointers to the entities.
+ * vector of pointers to the entities. It does not check for component deletion.
  */
 template<class C>
 inline std::vector<entity_t *> entities_with_component() {
@@ -186,7 +194,9 @@ inline std::vector<entity_t *> entities_with_component() {
 	std::vector<entity_t *> result;
 	component_t<C> temp(empty_component);
 	for (auto it=entity_store.begin(); it!=entity_store.end(); ++it) {
-		if (it->second.component_mask.test(temp.family_id)) result.push_back(&it->second);
+		if (!it->second.deleted && it->second.component_mask.test(temp.family_id)) {
+			result.push_back(&it->second);
+		}
 	}
 	return result;
 }
@@ -202,7 +212,10 @@ inline void all_components(typename std::function<void(entity_t &, C &)> func) {
 	C empty_component;
 	component_t<C> temp(empty_component);
 	for (component_t<C> &component : static_cast<component_store_t<component_t<C>> *>(component_store[temp.family_id].get())->components) {
-		func(*entity(component.entity_id), component.data);
+		entity_t e = *entity(component.entity_id);
+		if (!e.deleted && !component.deleted) {
+			func(e, component.data);
+		}
 	}
 }
 
@@ -212,7 +225,9 @@ inline void all_components(typename std::function<void(entity_t &, C &)> func) {
  */
 inline void each(std::function<void(entity_t &)> func) {
 	for (auto it=entity_store.begin(); it!=entity_store.end(); ++it) {
-		func(it->second);
+		if (!it->second.deleted) {
+			func(it->second);
+		}
 	}
 }
 
@@ -227,9 +242,9 @@ inline void each(typename std::function<void(entity_t &, C &)> func) {
 	C empty_component;
 	component_t<C> temp(empty_component);
 	for (auto it=entity_store.begin(); it!=entity_store.end(); ++it) {
-		if (it->second.component_mask.test(temp.family_id)) {
+		if (!it->second.deleted && it->second.component_mask.test(temp.family_id)) {
 			for (component_t<C> &component : static_cast<component_store_t<component_t<C>> *>(component_store[temp.family_id].get())->components) {
-				if (it->second.id == component.entity_id) {
+				if (it->second.id == component.entity_id && !component.deleted) {
 					func(it->second, component.data);
 				}
 			}
@@ -249,17 +264,45 @@ inline void each(typename std::function<void(entity_t &, C &, C2 & )> func) {
 	component_t<C2> temp2(empty_component2);
 
 	for (auto it=entity_store.begin(); it!=entity_store.end(); ++it) {
-		if (it->second.component_mask.test(temp.family_id) && it->second.component_mask.test(temp2.family_id)) {
+		if (!it->second.deleted && it->second.component_mask.test(temp.family_id) && it->second.component_mask.test(temp2.family_id)) {
 			for (component_t<C> &component : static_cast<component_store_t<component_t<C>> *>(component_store[temp.family_id].get())->components) {
-				if (it->second.id == component.entity_id) {
+				if (it->second.id == component.entity_id && !component.deleted) {
 					for (component_t<C2> &component2 : static_cast<component_store_t<component_t<C2>> *>(component_store[temp2.family_id].get())->components) {
-						if (it->second.id == component2.entity_id) {
+						if (it->second.id == component2.entity_id && !component2.deleted) {
 							func(it->second, component.data, component2.data);
 						}
 					}
 				}
 			}
 		}
+	}
+}
+
+/*
+ * Marks an entity (specified by ID#) as deleted.
+ */
+inline void delete_entity(const std::size_t id) {
+	entity(id)->deleted = true;
+}
+
+/*
+ * Marks an entity as deleted.
+ */
+inline void delete_entity(entity_t &e) {
+	e.deleted = true;
+}
+
+/*
+ * Marks an entity's component as deleted.
+ */
+template<class C>
+inline void delete_component(const std::size_t entity_id) {
+	entity_t e = *entity(entity_id);
+	C empty_component;
+	component_t<C> temp(empty_component);
+	if (!e.component_mask.test(temp.family_id)) throw std::runtime_error("Entity #" + std::to_string(entity_id) + " does not have a component to delete.");
+	for (component_t<C> &component : static_cast<component_store_t<component_t<C>> *>(component_store[temp.family_id].get())->components) {
+		if (component.entity_id == entity_id) component.deleted = true;
 	}
 }
 
