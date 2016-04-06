@@ -72,10 +72,14 @@ int main()
 		std::cout << "Hi, I'm position_component at " << p.x << "/" << p.y << ", and I belong to Entity #" << e.id << "\n";
 	});	
 	delete_component<position_component>(1);
+	delete_component<position_component>(2, true);
 	ecs_garbage_collect();
 	all_components<position_component>([] (entity_t &e, position_component &p) {
-		std::cout << "Hi, I'm position_component at " << p.x << "/" << p.y << ", and I belong to Entity #" << e.id << "\n";
+		std::cout << "Hi, I'm am error! position_component at " << p.x << "/" << p.y << ", and I belong to Entity #" << e.id << "\n";
 	});	
+	each([] (entity_t &e) { 
+		std::cout << "Hi, I am Surviving Entity #" << e.id << "!\n"; 
+	});
 	
 	// Enter the main loop. "tick" is the function we wrote above.
 	//run(tick);

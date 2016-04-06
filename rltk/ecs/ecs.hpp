@@ -54,6 +54,9 @@ struct base_component_store {
 	virtual void really_delete()=0;
 };
 
+// Forward declaration
+void unset_component_mask(const std::size_t id, const std::size_t family_id, bool delete_if_empty=true);
+
 /*
  * Component stores are just a vector of type C (the component). They inherit from
  * base_component_store, to allow for a vector of base_component_store*, with each
@@ -68,7 +71,10 @@ struct component_store_t : public base_component_store {
 	
 	virtual void erase_by_entity_id(const std::size_t &id) override {
 		for (auto item : components) {
-			if (item.entity_id == id) item.deleted=true;
+			if (item.entity_id == id) {
+				item.deleted=true;
+				unset_component_mask(id, item.family_id);
+			}
 		}
 	}
 
@@ -168,6 +174,17 @@ struct entity_t {
  * The actual storage of entities. Right now, it's a map to enable quick reference to an entity by ID.
  */
 extern std::unordered_map<std::size_t, entity_t> entity_store;
+
+/*
+ * Remove a reference to a component in an entity's bitmask
+ */
+inline void unset_component_mask(const std::size_t id, const std::size_t family_id, bool delete_if_empty) {
+	auto finder = entity_store.find(id);
+	if (finder != entity_store.end()) {
+		finder->second.component_mask.reset(family_id);
+		if (delete_if_empty && finder->second.component_mask.none()) finder->second.deleted = true;
+	}
+}
 
 /*
  * entity(ID) is used to reference an entity. So you can, for example, do:
@@ -311,13 +328,16 @@ inline void delete_entity(entity_t &e) {
  * Marks an entity's component as deleted.
  */
 template<class C>
-inline void delete_component(const std::size_t entity_id) {
+inline void delete_component(const std::size_t entity_id, bool delete_entity_if_empty=false) {
 	entity_t e = *entity(entity_id);
 	C empty_component;
 	component_t<C> temp(empty_component);
 	if (!e.component_mask.test(temp.family_id)) throw std::runtime_error("Entity #" + std::to_string(entity_id) + " does not have a component to delete.");
 	for (component_t<C> &component : static_cast<component_store_t<component_t<C>> *>(component_store[temp.family_id].get())->components) {
-		if (component.entity_id == entity_id) component.deleted = true;
+		if (component.entity_id == entity_id) {
+			component.deleted = true;
+			unset_component_mask(entity_id, temp.family_id, delete_entity_if_empty);
+		}
 	}
 }
 
