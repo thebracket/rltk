@@ -64,6 +64,11 @@ cursor. Click and he goes there.
 and a "sparse" console layer for the character and traversal path. It uses sub-character alignment to smoothly move the @ around, and
 demonstrates rotation of the @ by leaning left or right as he travels (not an effect I recommend for a game, but it works as a demo!).
 
+### Example 10: The beginnings of a roguelike
+![Sparse](https://raw.githubusercontent.com/thebracket/rltk/master/tutorial_images/example10.gif "RogueBeginnings")
+
+[Example 10](https://github.com/thebracket/rltk/blob/master/examples/ex10/main.cpp): This example generates a random map, and you can move your @ around with the arrow keys. It is the first example to use the Entity-Component-System (ECS) provided by RLTK; it makes for a relatively straightforward and modern way to design a roguelike - with very little code, we have the basics of wandering around a map.
+
 ## Example
 The goal is to keep it simple from the user's point of view. The following code is enough to setup an ASCII terminal,
 and display **Hello World** with a frame-rate displayed (around 100 FPS on my workstation):
