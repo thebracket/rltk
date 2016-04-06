@@ -7,10 +7,11 @@
 
 namespace rltk {
 
-constexpr std::size_t MAX_COMPONENTS = 128;
+constexpr std::size_t MAX_COMPONENTS = 256;
 
 struct entity_id {
 	std::size_t id;
+	bool operator == (const std::size_t &other) const { return other == id; }
 	bool operator == (const entity_id &other) const { return other.id == id; }
 	bool operator != (const entity_id &other) const { return other.id != id; }
 };
@@ -120,7 +121,7 @@ inline void each(typename std::function<void(entity_t &, C &)> func) {
 	for (auto it=entity_store.begin(); it!=entity_store.end(); ++it) {
 		if (it->second.component_mask.test(temp.family_id)) {
 			for (component_t<C> &component : static_cast<component_store_t<component_t<C>> *>(component_store[temp.family_id].get())->components) {
-				if (component.entity_id == it->second.id.id) {					
+				if (it->second.id == component.entity_id) {
 					func(it->second, component.data);
 				}
 			}
@@ -138,9 +139,11 @@ inline void each(typename std::function<void(entity_t &, C &, C2 & )> func) {
 	for (auto it=entity_store.begin(); it!=entity_store.end(); ++it) {
 		if (it->second.component_mask.test(temp.family_id) && it->second.component_mask.test(temp2.family_id)) {
 			for (component_t<C> &component : static_cast<component_store_t<component_t<C>> *>(component_store[temp.family_id].get())->components) {
-				if (component.entity_id == it->second.id.id) {					
+				if (it->second.id == component.entity_id) {
 					for (component_t<C2> &component2 : static_cast<component_store_t<component_t<C2>> *>(component_store[temp2.family_id].get())->components) {
-						func(it->second, component.data, component2.data);
+						if (it->second.id == component2.entity_id) {
+							func(it->second, component.data, component2.data);
+						}
 					}
 				}
 			}
