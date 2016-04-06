@@ -53,20 +53,20 @@ int main()
 	auto entity2 = create_entity()
 		->assign(position_component{3,3});
 
-	each([] (entity_t &e) { std::cout << "Hi, I am Entity #" << e.id.id << "\n"; });
+	each([] (entity_t &e) { std::cout << "Hi, I am Entity #" << e.id << "\n"; });
 	
 	each<position_component>([] (entity_t &e, position_component &p) { 
-		std::cout << "Hi, I am Entity #" << e.id.id << " and I have a position component (" << p.x << "/" << p.y << ")!\n"; 
+		std::cout << "Hi, I am Entity #" << e.id << " and I have a position component (" << p.x << "/" << p.y << ")!\n"; 
 	});
 
 	each<position_component, position_component2>([] (entity_t &e, position_component &p, position_component2 &p2) {
-		std::cout << "Hi< I am Entity #" << e.id.id << " and I have two types of position component.\n";
+		std::cout << "Hi< I am Entity #" << e.id << " and I have two types of position component.\n";
 		std::cout << "   - Position 1: " << p.x << "/" << p.y << "\n";
 		std::cout << "   - Position 2: " << p2.x << "/" << p2.y << "\n";
 	});
 
 	all_components<position_component>([] (entity_t &e, position_component &p) {
-		std::cout << "Hi, I'm position_component at " << p.x << "/" << p.y << ", and I belong to Entity #" << e.id.id << "\n";
+		std::cout << "Hi, I'm position_component at " << p.x << "/" << p.y << ", and I belong to Entity #" << e.id << "\n";
 	});
 	
 	// Enter the main loop. "tick" is the function we wrote above.

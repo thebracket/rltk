@@ -9,13 +9,6 @@ namespace rltk {
 
 constexpr std::size_t MAX_COMPONENTS = 256;
 
-struct entity_id {
-	std::size_t id;
-	bool operator == (const std::size_t &other) const { return other == id; }
-	bool operator == (const entity_id &other) const { return other.id == id; }
-	bool operator != (const entity_id &other) const { return other.id != id; }
-};
-
 struct base_component_t {
 	static std::size_t type_counter;
 	std::size_t entity_id;
@@ -55,7 +48,7 @@ struct entity_t {
 	}
 
 	static std::size_t entity_counter;
-	entity_id id;
+	std::size_t id;
 
 	bool operator == (const entity_t &other) const { return other.id == id; }
 	bool operator != (const entity_t &other) const { return other.id != id; }
@@ -65,7 +58,7 @@ struct entity_t {
 	template<class C>
 	inline entity_t * assign(C &&component) {
 		component_t<C> temp(component);
-		temp.entity_id = id.id;
+		temp.entity_id = id;
 		if (component_store.size() < temp.family_id+1) {
 			component_store.push_back(std::make_unique<component_store_t<component_t<C>>>());
 		}
@@ -85,8 +78,8 @@ inline entity_t * entity(std::size_t id) {
 
 inline entity_t * create_entity() {
 	entity_t new_entity;
-	entity_store.emplace(new_entity.id.id, new_entity);
-	return entity(new_entity.id.id);
+	entity_store.emplace(new_entity.id, new_entity);
+	return entity(new_entity.id);
 }
 
 template<class C>
