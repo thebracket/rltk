@@ -366,4 +366,28 @@ inline void ecs_garbage_collect() {
 	}
 }
 
+struct base_system {
+	virtual void configure() {}
+	virtual void update(const double duration_ms)=0;
+};
+
+extern std::vector<std::unique_ptr<base_system>> system_store;
+
+inline void add_system(std::unique_ptr<base_system> system) {
+	system_store.push_back(std::move(system));
+}
+
+inline void ecs_configure() {
+	for (std::unique_ptr<base_system> & sys : system_store) {
+		sys->configure();
+	}
+}
+
+inline void ecs_tick(const double duration_ms) {
+	for (std::unique_ptr<base_system> & sys : system_store) {
+		sys->update(duration_ms);
+	}
+	ecs_garbage_collect();
+}
+
 }
