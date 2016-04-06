@@ -68,10 +68,14 @@ int main()
 		std::cout << "   - Position 2: " << p2.x << "/" << p2.y << "\n";
 	});
 
-	delete_component<position_component>(1);
 	all_components<position_component>([] (entity_t &e, position_component &p) {
 		std::cout << "Hi, I'm position_component at " << p.x << "/" << p.y << ", and I belong to Entity #" << e.id << "\n";
-	});
+	});	
+	delete_component<position_component>(1);
+	ecs_garbage_collect();
+	all_components<position_component>([] (entity_t &e, position_component &p) {
+		std::cout << "Hi, I'm position_component at " << p.x << "/" << p.y << ", and I belong to Entity #" << e.id << "\n";
+	});	
 	
 	// Enter the main loop. "tick" is the function we wrote above.
 	//run(tick);
