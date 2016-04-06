@@ -115,9 +115,9 @@ struct player_system : public base_system {
 
 		// Add a pause between key presses
 		if (time_since_press > 2.0) {
+			// The whole "moved" system is destined to become a message-based system
 			if (moved) {
 				std::fill(visible.begin(), visible.end(), false);
-
 				visibility_sweep_2d<position, navigator_helper>(camera_loc_deref, 10, 
 					[] (position reveal) {
 						reveal.bounds_check();
