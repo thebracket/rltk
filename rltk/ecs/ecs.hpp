@@ -4,6 +4,7 @@
 #include <vector>
 #include <iostream>
 #include <unordered_map>
+#include <unordered_set>
 
 namespace rltk {
 
@@ -48,7 +49,9 @@ struct component_t : public base_component_t {
 /*
  * Base class for the component store. Concrete component stores derive from this.
  */
-struct base_component_store {	
+struct base_component_store {
+	virtual void erase_by_entity_id(const std::size_t &id)=0;
+	virtual void really_delete()=0;
 };
 
 /*
@@ -62,6 +65,18 @@ struct base_component_store {
 template<class C>
 struct component_store_t : public base_component_store {
 	std::vector<C> components;
+	
+	virtual void erase_by_entity_id(const std::size_t &id) override {
+		for (auto item : components) {
+			if (item.entity_id == id) item.deleted=true;
+		}
+	}
+
+	virtual void really_delete() {
+		components.erase(std::remove_if(components.begin(), components.end(),
+			[] (auto x) { return x.deleted; }), 
+			components.end());
+	}
 };
 
 /*
@@ -303,6 +318,31 @@ inline void delete_component(const std::size_t entity_id) {
 	if (!e.component_mask.test(temp.family_id)) throw std::runtime_error("Entity #" + std::to_string(entity_id) + " does not have a component to delete.");
 	for (component_t<C> &component : static_cast<component_store_t<component_t<C>> *>(component_store[temp.family_id].get())->components) {
 		if (component.entity_id == entity_id) component.deleted = true;
+	}
+}
+
+/*
+ * This should be called periodically to actually erase all entities and components that are marked as deleted.
+ */
+inline void ecs_garbage_collect() {
+	std::unordered_set<std::size_t> entities_to_delete;
+
+	// Ensure that components are marked as deleted, and list out entities for erasure
+	for (auto it=entity_store.begin(); it!=entity_store.end(); ++it) {
+		if (it->second.deleted) {
+			for (std::unique_ptr<base_component_store> &store : component_store) {
+				store->erase_by_entity_id(it->second.id);
+			}
+			entities_to_delete.insert(it->second.id);
+		}
+	}
+
+	// Actually delete entities
+	for (const std::size_t &id : entities_to_delete) entity_store.erase(id);
+
+	// Now we erase components
+	for (std::unique_ptr<base_component_store> &store : component_store) {
+		store->really_delete();
 	}
 }
 
