@@ -59,6 +59,9 @@ int main()
 		std::cout << "Hi, I am Entity #" << e.id << " and I have a position component (" << p.x << "/" << p.y << ")!\n"; 
 	});
 
+	// Quick test of the helper functions
+	entity(1)->component<position_component>()->x = 10;
+
 	each<position_component, position_component2>([] (entity_t &e, position_component &p, position_component2 &p2) {
 		std::cout << "Hi< I am Entity #" << e.id << " and I have two types of position component.\n";
 		std::cout << "   - Position 1: " << p.x << "/" << p.y << "\n";
