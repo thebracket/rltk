@@ -148,7 +148,7 @@ struct visibility_system : public base_system {
 		if (moved) {
 			position * camera_loc = entity(player_id)->component<position>();
 			position camera_loc_deref = *camera_loc;
-			
+
 			std::fill(visible.begin(), visible.end(), false);
 			visibility_sweep_2d<position, navigator_helper>(camera_loc_deref, 10, 
 				[] (position reveal) {
