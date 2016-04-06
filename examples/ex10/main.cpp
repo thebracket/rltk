@@ -28,6 +28,7 @@ std::vector<bool> revealed;
 random_number_generator rng;
 
 size_t player_id;
+bool moved = true;
 
 struct position { 
 	int x, y; 
@@ -106,32 +107,14 @@ struct actor_render_system : public base_system {
 
 struct player_system : public base_system {
 	double time_since_press = 100.0;
-	bool moved = true;
 
 	virtual void update(const double duration_ms) override {
 		time_since_press += duration_ms;
 		position * camera_loc = entity(player_id)->component<position>();
-		position camera_loc_deref = *camera_loc;
 
 		// Add a pause between key presses
 		if (time_since_press > 2.0) {
-			// The whole "moved" system is destined to become a message-based system
-			if (moved) {
-				std::fill(visible.begin(), visible.end(), false);
-				visibility_sweep_2d<position, navigator_helper>(camera_loc_deref, 10, 
-					[] (position reveal) {
-						reveal.bounds_check();
-						visible[map_idx(reveal.x, reveal.y)] = true;
-						revealed[map_idx(reveal.x, reveal.y)] = true;
-					}, 
-					[] (position visibility_check) { 
-						visibility_check.bounds_check();
-						return (map_tiles[map_idx(visibility_check.x, visibility_check.y)] == 0);
-				});				
-
-				moved = false;
-			}
-
+			// The whole "moved" system is destined to become a message-based system			
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && map_tiles[map_idx(camera_loc->x-1, camera_loc->y)]==0 ) {
 				if (camera_loc->x > 0) camera_loc->x--;
 				console->dirty = true; // To be replaced with a message when we have them
@@ -157,6 +140,29 @@ struct player_system : public base_system {
 				moved = true; // Also to be a message!
 			}
 		}
+	}
+};
+
+struct visibility_system : public base_system {
+	virtual void update(const double duration_ms) override {
+		if (moved) {
+			position * camera_loc = entity(player_id)->component<position>();
+			position camera_loc_deref = *camera_loc;
+			
+			std::fill(visible.begin(), visible.end(), false);
+			visibility_sweep_2d<position, navigator_helper>(camera_loc_deref, 10, 
+				[] (position reveal) {
+					reveal.bounds_check();
+					visible[map_idx(reveal.x, reveal.y)] = true;
+					revealed[map_idx(reveal.x, reveal.y)] = true;
+				}, 
+				[] (position visibility_check) { 
+					visibility_check.bounds_check();
+					return (map_tiles[map_idx(visibility_check.x, visibility_check.y)] == 0);
+			});				
+
+			moved = false;
+		}	
 	}
 };
 
@@ -202,6 +208,7 @@ int main()
 
 	// Create our systems
 	add_system(std::make_unique<player_system>());
+	add_system(std::make_unique<visibility_system>());
 	add_system(std::make_unique<camera_system>());
 	add_system(std::make_unique<actor_render_system>());
 
