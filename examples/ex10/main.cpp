@@ -23,12 +23,28 @@ constexpr int map_height = 100;
 constexpr int map_size = map_width * map_height;
 int map_idx(const int x, const int y) { return (y * map_width) + x; }
 std::vector<int> map_tiles;
+std::vector<bool> visible;
+std::vector<bool> revealed;
 random_number_generator rng;
 
 size_t player_id;
 
-struct position { int x, y; };
+struct position { 
+	int x, y; 
+	void bounds_check() {
+		if (x < 0) x = 0;
+		if (x > map_width) x = map_width;
+		if (y < 0) y = 0;
+		if (y > map_height) y = map_height;
+	}
+};
 struct renderable { int glyph; color_t fg=colors::WHITE; color_t bg=colors::BLACK; };
+
+struct navigator_helper {
+	static int get_x(const position &loc) { return loc.x; }
+	static int get_y(const position &loc) { return loc.y; }
+	static position get_xy(const int &x, const int &y) { return position{x,y}; }
+};
 
 // Clipping info
 int left_x, right_x, top_y, bottom_y;
@@ -57,13 +73,18 @@ struct camera_system : public base_system {
 			for (int y=top_y; y<bottom_y; ++y) {
 				for (int x=left_x; x<right_x; ++x) {
 					if (x >= 0 && x < map_width && y >= 0 && y < map_height) {
-						vchar map_char{'.', colors::DARK_GREY, colors::BLACK};
+						vchar map_char{'.', colors::DARKEST_GREY, colors::BLACK};
 						const int map_index = map_idx(x,y);
-						switch (map_tiles[map_index]) {
-							case 0 : map_char.glyph = '.'; break;
-							case 1 : map_char.glyph = '#'; break;
-							default : map_char.glyph = 'E'; // This shouldn't happen
+
+						if (revealed[map_index]) {
+							switch (map_tiles[map_index]) {
+								case 0 : map_char.glyph = '.'; break;
+								case 1 : map_char.glyph = '#'; break;
+								default : map_char.glyph = 'E'; // This shouldn't happen
+							}
+							map_char.foreground = colors::GREY;
 						}
+						if (visible[map_index]) map_char.foreground = colors::WHITE;
 						console->set_char(x-left_x, y-top_y, map_char);
 					}
 				}
@@ -75,29 +96,66 @@ struct camera_system : public base_system {
 struct actor_render_system : public base_system {
 	virtual void update(const double duration_ms) override {
 		each<position, renderable>([] (entity_t &entity, position &pos, renderable &render) {
-			console->set_char(pos.x-left_x, pos.y-top_y, vchar{ render.glyph, render.fg, render.bg });
+			const int map_index = map_idx(pos.x, pos.y);
+			if (visible[map_index]) {
+				console->set_char(pos.x-left_x, pos.y-top_y, vchar{ render.glyph, render.fg, render.bg });
+			}
 		});
 	}
 };
 
 struct player_system : public base_system {
+	double time_since_press = 100.0;
+	bool moved = true;
+
 	virtual void update(const double duration_ms) override {
+		time_since_press += duration_ms;
 		position * camera_loc = entity(player_id)->component<position>();
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && map_tiles[map_idx(camera_loc->x-1, camera_loc->y)]==0 ) {
-			if (camera_loc->x > 0) camera_loc->x--;
-			console->dirty = true; // To be replaced with a message when we have them
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && map_tiles[map_idx(camera_loc->x+1, camera_loc->y)]==0 ) {
-			if (camera_loc->x < map_width) camera_loc->x++;
-			console->dirty = true;
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && map_tiles[map_idx(camera_loc->x, camera_loc->y-1)]==0 ) {
-			if (camera_loc->y > 0) camera_loc->y--;
-			console->dirty = true;
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && map_tiles[map_idx(camera_loc->x, camera_loc->y+1)]==0 ) {
-			if (camera_loc->y < map_width) camera_loc->y++;
-			console->dirty = true;
+		position camera_loc_deref = *camera_loc;
+
+		// Add a pause between key presses
+		if (time_since_press > 2.0) {
+			if (moved) {
+				std::fill(visible.begin(), visible.end(), false);
+
+				visibility_sweep_2d<position, navigator_helper>(camera_loc_deref, 10, 
+					[] (position reveal) {
+						reveal.bounds_check();
+						visible[map_idx(reveal.x, reveal.y)] = true;
+						revealed[map_idx(reveal.x, reveal.y)] = true;
+					}, 
+					[] (position visibility_check) { 
+						visibility_check.bounds_check();
+						return (map_tiles[map_idx(visibility_check.x, visibility_check.y)] == 0);
+				});				
+
+				moved = false;
+			}
+
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && map_tiles[map_idx(camera_loc->x-1, camera_loc->y)]==0 ) {
+				if (camera_loc->x > 0) camera_loc->x--;
+				console->dirty = true; // To be replaced with a message when we have them
+				time_since_press = 0.0;
+				moved = true; // Also to be a message!
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && map_tiles[map_idx(camera_loc->x+1, camera_loc->y)]==0 ) {
+				if (camera_loc->x < map_width) camera_loc->x++;
+				console->dirty = true;
+				time_since_press = 0.0;
+				moved = true; // Also to be a message!
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && map_tiles[map_idx(camera_loc->x, camera_loc->y-1)]==0 ) {
+				if (camera_loc->y > 0) camera_loc->y--;
+				console->dirty = true;
+				time_since_press = 0.0;
+				moved = true; // Also to be a message!
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && map_tiles[map_idx(camera_loc->x, camera_loc->y+1)]==0 ) {
+				if (camera_loc->y < map_width) camera_loc->y++;
+				console->dirty = true;
+				time_since_press = 0.0;
+				moved = true; // Also to be a message!
+			}
 		}
 	}
 };
@@ -118,11 +176,15 @@ int main()
 	// The second and third parameters specify the desired console size in screen characters (80x25).
 	// The fourth parameter is the window title.
 	// The final parameter says that we'd like the default console to use an 8x16 VGA font. Not so great for games, but easy to read!
-	init(config_simple("../assets", 80, 25, "RLTK Hello World", "8x16"));
+	init(config_simple("../assets", 80, 50, "RLTK Hello World", "8x8"));
 	
 	// Zero the map other than the edges
 	map_tiles.resize(map_size);
+	visible.resize(map_size);
+	revealed.resize(map_size);
 	std::fill(map_tiles.begin(), map_tiles.end(), 0);
+	std::fill(visible.begin(), visible.end(), false);
+	std::fill(revealed.begin(), revealed.end(), false);
 	for (int i=0; i<map_width; ++i) {
 		map_tiles[map_idx(i, 0)] = 1;
 		map_tiles[map_idx(i, map_height-1)] = 1;
