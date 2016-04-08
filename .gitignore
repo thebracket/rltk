@@ -8,3 +8,6 @@ x84
 
 /RltkMaster/packages
 /RltkMaster/rltk/Debug
+/RltkMaster/rltk/SFML-2.3.2
+*.opendb
+/RltkMaster/.vs/RltkMaster/v14/.suo
