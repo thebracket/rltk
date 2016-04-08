@@ -31,7 +31,11 @@ size_t player_id;
 bool moved = true;
 
 struct position { 
-	int x, y; 
+	position() {}
+	position(const int X, const int Y) : x(X), y(Y) {}
+
+	int x, y;
+
 	void bounds_check() {
 		if (x < 0) x = 0;
 		if (x > map_width) x = map_width;
@@ -39,7 +43,13 @@ struct position {
 		if (y > map_height) y = map_height;
 	}
 };
-struct renderable { int glyph; color_t fg=colors::WHITE; color_t bg=colors::BLACK; };
+struct renderable { 
+	renderable() {}
+	renderable(const char Glyph, const color_t foreground) : glyph(Glyph), fg(foreground) {}
+	int glyph; 
+	color_t fg=colors::WHITE; 
+	color_t bg=colors::BLACK; 
+};
 
 struct navigator_helper {
 	static int get_x(const position &loc) { return loc.x; }
@@ -55,7 +65,7 @@ struct camera_system : public base_system {
 		// Create the player
 		auto player = create_entity()
 			->assign(position{map_width/2, map_height/2})
-			->assign(renderable{'@', colors::YELLOW});
+			->assign(renderable('@', colors::YELLOW));
 		player_id = player->id;
 	}
 

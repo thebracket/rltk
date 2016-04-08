@@ -270,7 +270,7 @@ void tick(double duration_ms) {
 			} else {
 				highlight = { 177, lerp(DARK_RED, LIGHTEST_RED, lerp_amount), BLACK };				
 			}
-			sterm(2)->add(xchar{ 177, highlight.foreground, static_cast<float>(step.x), static_cast<float>(step.y) });
+			sterm(2)->add(xchar( 177, highlight.foreground, static_cast<float>(step.x), static_cast<float>(step.y) ));
 			++i;
 		}
 	}
@@ -280,9 +280,9 @@ void tick(double duration_ms) {
 
 	// Finally, we render the @ symbol. dude_x and dude_y are in terminal coordinates.
 	//term(1)->set_char(term(1)->at(dude_position.x, dude_position.y), dude);
-	sterm(2)->add(xchar{
+	sterm(2)->add(xchar(
 		'@', YELLOW, static_cast<float>(dude_position.x), static_cast<float>(dude_position.y), angle
-	});
+	));
 
 	// Iterate over the whole map, rendering as appropriate
 	if (term(1)->dirty) {
