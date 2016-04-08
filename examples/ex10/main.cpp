@@ -122,6 +122,7 @@ struct player_system : public base_system {
 		time_since_press += duration_ms;
 		position * camera_loc = entity(player_id)->component<position>();
 
+		// TODO: This will change when the keyboard code is done on the library-side.
 		// Add a pause between key presses
 		if (time_since_press > 2.0) {
 			// The whole "moved" system is destined to become a message-based system			

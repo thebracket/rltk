@@ -124,6 +124,7 @@
     <ClInclude Include="..\..\rltk\bitmap_font.hpp" />
     <ClInclude Include="..\..\rltk\colors.hpp" />
     <ClInclude Include="..\..\rltk\color_t.hpp" />
+    <ClInclude Include="..\..\rltk\ecs\ecs.hpp" />
     <ClInclude Include="..\..\rltk\font_manager.hpp" />
     <ClInclude Include="..\..\rltk\fsa.hpp" />
     <ClInclude Include="..\..\rltk\geometry.hpp" />
@@ -137,10 +138,12 @@
     <ClInclude Include="..\..\rltk\texture.hpp" />
     <ClInclude Include="..\..\rltk\texture_resources.hpp" />
     <ClInclude Include="..\..\rltk\virtual_terminal.hpp" />
+    <ClInclude Include="..\..\rltk\virtual_terminal_sparse.hpp" />
     <ClInclude Include="..\..\rltk\visibility.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\rltk\color_t.cpp" />
+    <ClCompile Include="..\..\rltk\ecs\ecs.cpp" />
     <ClCompile Include="..\..\rltk\font_manager.cpp" />
     <ClCompile Include="..\..\rltk\geometry.cpp" />
     <ClCompile Include="..\..\rltk\gui.cpp" />
@@ -151,6 +154,7 @@
     <ClCompile Include="..\..\rltk\rng.cpp" />
     <ClCompile Include="..\..\rltk\texture_resources.cpp" />
     <ClCompile Include="..\..\rltk\virtual_terminal.cpp" />
+    <ClCompile Include="..\..\rltk\virtual_terminal_sparse.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
