@@ -368,15 +368,77 @@ inline void ecs_garbage_collect() {
 	}
 }
 
+/*
+ * Base class from which all messages must derive.
+ */
+struct base_message_t {
+	static std::size_t type_counter;
+};
+
+/*
+ * Handle class for messages
+ */
+template<class C>
+struct message_t : public base_message_t {
+	message_t(C comp) : data(comp) {
+		family();
+	}
+	std::size_t family_id;
+	C data;
+
+	inline void family() {
+		static std::size_t family_id_tmp = base_message_t::type_counter++;
+		family_id = family_id_tmp;
+	}
+};
+
+template <class C>
+struct pub_sub_handler {
+	std::function<void(C&message)> destination;
+};
+
+struct subscription_base_t {
+};
+
+template <class C>
+struct subscription_holder_t : subscription_base_t {
+	std::vector<std::function<void(C&message)>> subscriptions;
+};
+
+extern std::vector<std::unique_ptr<subscription_base_t>> pubsub_holder;
+
+/*
+ * Systems should inherit from this class.
+ */
 struct base_system {
 	virtual void configure() {}
 	virtual void update(const double duration_ms)=0;
+	
+	template<class MSG>
+	void subscribe(std::function<void(MSG &message)> destination) {
+		MSG empty_message{};
+		message_t<MSG> handle(empty_message);
+		if (pubsub_holder.size() < handle.family_id + 1) {
+			pubsub_holder.resize(handle.family_id + 1);
+			pubsub_holder[handle.family_id] = std::move(std::make_unique<subscription_holder_t<MSG>>());
+		}
+		static_cast<subscription_holder_t<MSG> *>(pubsub_holder[handle.family_id].get())->subscriptions.push_back(destination);
+	}
+
+	template <class MSG>
+	void emit(MSG &&message) {
+		message_t<MSG> handle(message);
+		for (auto &func : static_cast<subscription_holder_t<MSG> *>(pubsub_holder[handle.family_id].get())->subscriptions) {
+			func(message);
+		}
+	}
 };
 
 extern std::vector<std::unique_ptr<base_system>> system_store;
 
-inline void add_system(std::unique_ptr<base_system> system) {
-	system_store.push_back(std::move(system));
+template<typename S, typename ...Args>
+inline void add_system( Args && ... args ) {
+	system_store.push_back(std::make_unique<S>( std::forward<Args>(args) ... ));
 }
 
 inline void ecs_configure() {
