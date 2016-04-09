@@ -28,7 +28,6 @@ std::vector<bool> revealed;
 random_number_generator rng;
 
 size_t player_id;
-bool moved = true;
 
 struct position { 
 	position() {}
@@ -43,6 +42,7 @@ struct position {
 		if (y > map_height) y = map_height;
 	}
 };
+
 struct renderable { 
 	renderable() {}
 	renderable(const char Glyph, const color_t foreground) : glyph(Glyph), fg(foreground) {}
@@ -59,6 +59,17 @@ struct navigator_helper {
 
 // Clipping info
 int left_x, right_x, top_y, bottom_y;
+
+struct actor_moved_message : base_message_t {
+	actor_moved_message() {}
+	actor_moved_message(entity_t * ACTOR, const int fx, const int fy, const int dx, const int dy) :
+		mover(ACTOR), from_x(fx), from_y(fy), destination_x(dx), destination_y(dy) {}
+
+	entity_t * mover;
+	int from_x, from_y, destination_x, destination_y;
+};
+
+struct player_moved_message : base_message_t {};
 
 struct camera_system : public base_system {
 	virtual void configure() override {
@@ -118,6 +129,18 @@ struct actor_render_system : public base_system {
 struct player_system : public base_system {
 	double time_since_press = 100.0;
 
+	virtual void configure() override {
+		subscribe<actor_moved_message>([this](actor_moved_message &msg) {
+			if (map_tiles[map_idx(msg.destination_x, msg.destination_y)] == 0) {
+				msg.mover->component<position>()->x = msg.destination_x;
+				msg.mover->component<position>()->y = msg.destination_y;
+				msg.mover->component<position>()->bounds_check();
+				console->dirty = true;
+				emit(player_moved_message{});
+			}
+		});
+	}
+
 	virtual void update(const double duration_ms) override {
 		time_since_press += duration_ms;
 		position * camera_loc = entity(player_id)->component<position>();
@@ -125,55 +148,52 @@ struct player_system : public base_system {
 		// TODO: This will change when the keyboard code is done on the library-side.
 		// Add a pause between key presses
 		if (time_since_press > 2.0) {
-			// The whole "moved" system is destined to become a message-based system			
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && map_tiles[map_idx(camera_loc->x-1, camera_loc->y)]==0 ) {
-				if (camera_loc->x > 0) camera_loc->x--;
-				console->dirty = true; // To be replaced with a message when we have them
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+				emit(actor_moved_message{ entity(player_id), camera_loc->x, camera_loc->y, camera_loc->x - 1, camera_loc->y });
 				time_since_press = 0.0;
-				moved = true; // Also to be a message!
 			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && map_tiles[map_idx(camera_loc->x+1, camera_loc->y)]==0 ) {
-				if (camera_loc->x < map_width) camera_loc->x++;
-				console->dirty = true;
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+				emit(actor_moved_message{ entity(player_id), camera_loc->x, camera_loc->y, camera_loc->x + 1, camera_loc->y });
 				time_since_press = 0.0;
-				moved = true; // Also to be a message!
 			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && map_tiles[map_idx(camera_loc->x, camera_loc->y-1)]==0 ) {
-				if (camera_loc->y > 0) camera_loc->y--;
-				console->dirty = true;
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+				emit(actor_moved_message{ entity(player_id), camera_loc->x, camera_loc->y, camera_loc->x, camera_loc->y-1 });
 				time_since_press = 0.0;
-				moved = true; // Also to be a message!
 			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && map_tiles[map_idx(camera_loc->x, camera_loc->y+1)]==0 ) {
-				if (camera_loc->y < map_width) camera_loc->y++;
-				console->dirty = true;
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+				emit(actor_moved_message{ entity(player_id), camera_loc->x, camera_loc->y, camera_loc->x, camera_loc->y+1 });
 				time_since_press = 0.0;
-				moved = true; // Also to be a message!
 			}
 		}
 	}
 };
 
 struct visibility_system : public base_system {
-	virtual void update(const double duration_ms) override {
-		if (moved) {
+	virtual void configure() override {
+		subscribe<player_moved_message>([this](player_moved_message &msg) {
 			position * camera_loc = entity(player_id)->component<position>();
 			position camera_loc_deref = *camera_loc;
 
 			std::fill(visible.begin(), visible.end(), false);
-			visibility_sweep_2d<position, navigator_helper>(camera_loc_deref, 10, 
-				[] (position reveal) {
-					reveal.bounds_check();
-					visible[map_idx(reveal.x, reveal.y)] = true;
-					revealed[map_idx(reveal.x, reveal.y)] = true;
-				}, 
-				[] (position visibility_check) { 
-					visibility_check.bounds_check();
-					return (map_tiles[map_idx(visibility_check.x, visibility_check.y)] == 0);
-			});				
+			visibility_sweep_2d<position, navigator_helper>(camera_loc_deref, 10,
+				[](position reveal) {
+				reveal.bounds_check();
+				visible[map_idx(reveal.x, reveal.y)] = true;
+				revealed[map_idx(reveal.x, reveal.y)] = true;
+			},	[](position visibility_check) {
+				visibility_check.bounds_check();
+				return (map_tiles[map_idx(visibility_check.x, visibility_check.y)] == 0);
+			});
+		});
+	}
 
-			moved = false;
-		}	
+	bool firstrun = true;
+
+	virtual void update(const double duration_ms) override {
+		if (firstrun) {
+			emit(player_moved_message{});
+			firstrun = false;
+		}
 	}
 };
 
@@ -218,10 +238,10 @@ int main()
 	}
 
 	// Create our systems
-	add_system(std::make_unique<player_system>());
-	add_system(std::make_unique<visibility_system>());
-	add_system(std::make_unique<camera_system>());
-	add_system(std::make_unique<actor_render_system>());
+	add_system<player_system>();
+	add_system<visibility_system>();
+	add_system<camera_system>();
+	add_system<actor_render_system>();
 
 	// Enter the main loop. "tick" is the function we wrote above.
 	ecs_configure();
