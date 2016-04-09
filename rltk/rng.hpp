@@ -8,6 +8,7 @@
  */
 
 #include <random>
+#include <string>
 
 namespace rltk
 {
@@ -16,6 +17,8 @@ class random_number_generator
 {
 public:
 	random_number_generator();
+	random_number_generator(const uint64_t seed);
+	random_number_generator(const std::string seed);
 
 	int roll_dice(const int &n, const int &d);
 private:
