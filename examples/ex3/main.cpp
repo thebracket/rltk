@@ -1,6 +1,6 @@
 /* RLTK (RogueLike Tool Kit) 1.00
  * Copyright (c) 2016-Present, Bracket Productions.
- * Licensed under the LGPL - see LICENSE file.
+ * Licensed under the MIT license - see LICENSE file.
  *
  * Example 3: A wandering @ dude, this time using Bresenham's line functions to
  * plot his path through the world. We play around a bit, rendering the destination

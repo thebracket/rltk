@@ -1,6 +1,6 @@
 /* RLTK (RogueLike Tool Kit) 1.00
  * Copyright (c) 2016-Present, Bracket Productions.
- * Licensed under the LGPL - see LICENSE file.
+ * Licensed under the MIT license - see LICENSE file.
  *
  * Provides a virtual console, in 'sparse' mode: it doesn't assume that you have a regular grid,
  * supports off-alignment rendering, rotation and similar. It is optimized for use with a few

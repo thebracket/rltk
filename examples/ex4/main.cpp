@@ -1,7 +1,7 @@
 #include <iostream>
 /* RLTK (RogueLike Tool Kit) 1.00
  * Copyright (c) 2016-Present, Bracket Productions.
- * Licensed under the LGPL - see LICENSE file.
+ * Licensed under the MIT license - see LICENSE file.
  *
  * Example 4: Now we implement a basic map, and use A* to find our way around it.
  * This example is a bit more in-depth, since it demonstrates the library's ability

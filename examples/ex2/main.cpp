@@ -1,6 +1,6 @@
 /* RLTK (RogueLike Tool Kit) 1.00
  * Copyright (c) 2016-Present, Bracket Productions.
- * Licensed under the LGPL - see LICENSE file.
+ * Licensed under the MIT license - see LICENSE file.
  *
  * Example 2: A wandering @ dude, demonstrating the random number generator,
  * character rendering, directed screen clearing, and frame-rate independent

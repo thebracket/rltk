@@ -1,7 +1,7 @@
 #include <iostream>
 /* RLTK (RogueLike Tool Kit) 1.00
  * Copyright (c) 2016-Present, Bracket Productions.
- * Licensed under the LGPL - see LICENSE file.
+ * Licensed under the MIT license - see LICENSE file.
  *
  * Example 9: This is example 6, but using two consoles. One for the map, and one sparse. This allows
  * for some trickery to speed up map rendering (we're only redrawing when we need to). We also use smooth
