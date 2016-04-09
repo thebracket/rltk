@@ -1,7 +1,7 @@
 #include <iostream>
 /* RLTK (RogueLike Tool Kit) 1.00
  * Copyright (c) 2016-Present, Bracket Productions.
- * Licensed under the LGPL - see LICENSE file.
+ * Licensed under the MIT license - see LICENSE file.
  *
  * Example 5: Extend example 4 to use the mouse to guide player movement.
  */
