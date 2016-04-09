@@ -7,6 +7,7 @@
 #include <unordered_set>
 #include <memory>
 #include <functional>
+#include <algorithm>
 
 namespace rltk {
 
