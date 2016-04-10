@@ -23,7 +23,7 @@ constexpr int map_height = 100;
 constexpr int map_size = map_width * map_height;
 int map_idx(const int x, const int y) { return (y * map_width) + x; }
 std::vector<int> map_tiles;
-std::vector<bool> visible;
+std::vector<uint8_t> visible;
 std::vector<bool> revealed;
 random_number_generator rng;
 
@@ -95,7 +95,7 @@ struct camera_system : public base_system {
 			for (int y=top_y; y<bottom_y; ++y) {
 				for (int x=left_x; x<right_x; ++x) {
 					if (x >= 0 && x < map_width && y >= 0 && y < map_height) {
-						vchar map_char{'.', colors::DARKEST_GREY, colors::BLACK};
+						vchar map_char{'.', color_t(0,0,64), colors::BLACK};
 						const int map_index = map_idx(x,y);
 
 						if (revealed[map_index]) {
@@ -104,9 +104,14 @@ struct camera_system : public base_system {
 								case 1 : map_char.glyph = '#'; break;
 								default : map_char.glyph = 'E'; // This shouldn't happen
 							}
-							map_char.foreground = colors::GREY;
+							map_char.foreground = color_t(96,96,96);
 						}
-						if (visible[map_index]) map_char.foreground = colors::WHITE;
+						if (visible[map_index] > 0) {
+							uint8_t brightness =(visible[map_index]*16) + 127;
+							map_char.foreground = color_t(brightness, brightness, brightness);
+						} else {
+							if (map_tiles[map_index] == 0) map_char.glyph = ' ';
+						}
 						console->set_char(x-left_x, y-top_y, map_char);
 					}
 				}
@@ -174,12 +179,14 @@ struct visibility_system : public base_system {
 			position * camera_loc = entity(player_id)->component<position>();
 			position camera_loc_deref = *camera_loc;
 
-			std::fill(visible.begin(), visible.end(), false);
+			std::fill(visible.begin(), visible.end(), 0);
 			visibility_sweep_2d<position, navigator_helper>(camera_loc_deref, 10,
 				[](position reveal) {
 				reveal.bounds_check();
-				visible[map_idx(reveal.x, reveal.y)] = true;
-				revealed[map_idx(reveal.x, reveal.y)] = true;
+				const int idx = map_idx(reveal.x, reveal.y);
+				++visible[idx];
+				if (visible[idx] > 8) visible[idx] = 8;
+				revealed[idx] = true;
 			},	[](position visibility_check) {
 				visibility_check.bounds_check();
 				return (map_tiles[map_idx(visibility_check.x, visibility_check.y)] == 0);
