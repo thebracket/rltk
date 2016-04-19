@@ -18,6 +18,7 @@
 #include "visibility.hpp"
 #include "gui.hpp"
 #include "ecs/ecs.hpp"
+#include "perlin_noise.hpp"
 
 namespace rltk {
 
