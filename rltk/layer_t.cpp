@@ -12,13 +12,11 @@ void layer_t::make_owner_draw_backing() {
 
 void layer_t::on_resize(const int width, const int height) {
 	resize_func(this, width, height);
-	if (console) {
-		if (console->visible) {
-			console->set_offset(x,y);
-			console->resize_pixels(w, h);
-		} else {
-			make_owner_draw_backing();
-		}
+	if (console and console->visible) {
+		console->set_offset(x,y);
+		console->resize_pixels(w, h);
+	} else {
+		make_owner_draw_backing();
 	}
 }
 
