@@ -149,4 +149,7 @@ struct layer_t {
 	}
 };
 
+// Convenience: ready-made function to resize to use the whole screen.
+extern void resize_fullscreen(rltk::layer_t * l, int w, int h);
+
 }
