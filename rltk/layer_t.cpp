@@ -80,4 +80,10 @@ void layer_t::render(sf::RenderWindow &window) {
 	}
 }
 
+void resize_fullscreen(rltk::layer_t * l, int w, int h) {
+        // Use the whole window
+        l->w = w;
+        l->h = h;
+}
+
 }
