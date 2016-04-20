@@ -11,17 +11,20 @@ namespace rltk
 
 random_number_generator::random_number_generator()
 {
-	rng.seed(std::random_device()());
+	initial_seed = std::random_device()();
+	rng.seed(initial_seed);
 }
 
 random_number_generator::random_number_generator(const uint64_t seed)
 {
+	initial_seed = seed;
 	rng.seed(seed);
 }
 
 random_number_generator::random_number_generator(const std::string seed) {
 	std::hash<std::string> hash_func;
-	rng.seed(hash_func(seed));
+	initial_seed = hash_func(seed);
+	rng.seed(initial_seed);
 }
 
 int random_number_generator::roll_dice(const int& n, const int& d)
