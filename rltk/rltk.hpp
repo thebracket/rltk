@@ -19,6 +19,7 @@
 #include "gui.hpp"
 #include "ecs/ecs.hpp"
 #include "perlin_noise.hpp"
+#include "serialization_utils.hpp"
 
 namespace rltk {
 
