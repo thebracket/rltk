@@ -487,7 +487,7 @@ inline void ecs_save(std::ostream &lbfile) {
 	}
 }
 
-inline void ecs_load(std::istream &lbfile, std::function<void(std::size_t,std::size_t)> helper) {
+inline void ecs_load(std::istream &lbfile, std::function<void(std::istream&,std::size_t,std::size_t)> helper) {
 	entity_store.clear();
 	component_store.clear();
 
@@ -507,7 +507,7 @@ inline void ecs_load(std::istream &lbfile, std::function<void(std::size_t,std::s
 		std::size_t entity_id;
 		deserialize(lbfile, serialization_identity);
 		deserialize(lbfile, entity_id);
-		helper(serialization_identity, entity_id);
+		helper(lbfile, serialization_identity, entity_id);
 	}
 }
 
