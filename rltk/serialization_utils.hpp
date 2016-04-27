@@ -11,9 +11,9 @@ inline void serialize(std::ostream &lbfile, const T &target) {
 }
 template<>
 inline void serialize(std::ostream &lbfile, const std::string &target) {
-	unsigned int size = target.size();
+	std::size_t size = target.size();
 	serialize<std::size_t>(lbfile, size);
-	for (unsigned int i = 0; i < size; ++i)
+	for (std::size_t i = 0; i < size; ++i)
 	{
 		serialize<char>(lbfile, target[i]);
 	}
@@ -28,8 +28,8 @@ template<>
 inline void deserialize(std::istream &lbfile, std::string &target)
 {
 	std::string result;
-	unsigned int size = 0;
-	deserialize<unsigned int>(lbfile, size);
+	std::size_t size = 0;
+	deserialize<std::size_t>(lbfile, size);
 	for (std::size_t i = 0; i < size; ++i)
 	{
 		char c;
