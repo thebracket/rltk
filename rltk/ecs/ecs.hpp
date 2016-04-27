@@ -27,7 +27,6 @@ constexpr std::size_t MAX_COMPONENTS = 64;
 struct base_component_t {
 	static std::size_t type_counter;
 	std::size_t entity_id;
-	std::size_t serialization_identity;
 	bool deleted = false;
 };
 
@@ -49,6 +48,10 @@ struct component_t : public base_component_t {
 	inline void family() {
 		static std::size_t family_id_tmp = base_component_t::type_counter++;
 		family_id = family_id_tmp;
+	}
+
+	inline void save(std::ostream &lbfile) {
+		data.save(lbfile);
 	}
 };
 
@@ -93,7 +96,7 @@ struct component_store_t : public base_component_store {
 
 	virtual void save(std::ostream &lbfile) override {
 		for (auto &item : components) {
-			serialize(lbfile, item.serialization_identity);
+			serialize(lbfile, item.data.serialization_identity);
 			serialize(lbfile, item.entity_id);
 			item.save(lbfile);
 		}
