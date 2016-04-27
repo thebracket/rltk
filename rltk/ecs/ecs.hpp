@@ -8,6 +8,8 @@
 #include <memory>
 #include <functional>
 #include <algorithm>
+#include <fstream>
+#include "../serialization_utils.hpp"
 
 namespace rltk {
 
@@ -25,6 +27,7 @@ constexpr std::size_t MAX_COMPONENTS = 64;
 struct base_component_t {
 	static std::size_t type_counter;
 	std::size_t entity_id;
+	std::size_t serialization_identity;
 	bool deleted = false;
 };
 
@@ -55,6 +58,7 @@ struct component_t : public base_component_t {
 struct base_component_store {
 	virtual void erase_by_entity_id(const std::size_t &id)=0;
 	virtual void really_delete()=0;
+	virtual void save(std::ostream &lbfile)=0;
 };
 
 // Forward declaration
@@ -73,7 +77,7 @@ struct component_store_t : public base_component_store {
 	std::vector<C> components;
 	
 	virtual void erase_by_entity_id(const std::size_t &id) override {
-		for (auto item : components) {
+		for (auto &item : components) {
 			if (item.entity_id == id) {
 				item.deleted=true;
 				unset_component_mask(id, item.family_id);
@@ -85,6 +89,14 @@ struct component_store_t : public base_component_store {
 		components.erase(std::remove_if(components.begin(), components.end(),
 			[] (auto x) { return x.deleted; }), 
 			components.end());
+	}
+
+	virtual void save(std::ostream &lbfile) override {
+		for (auto &item : components) {
+			serialize(lbfile, item.serialization_identity);
+			serialize(lbfile, item.entity_id);
+			item.save(lbfile);
+		}
 	}
 };
 
@@ -453,6 +465,47 @@ inline void ecs_tick(const double duration_ms) {
 		sys->update(duration_ms);
 	}
 	ecs_garbage_collect();
+}
+
+inline void ecs_save(std::ostream &lbfile) {
+	// Store the number of entities and their ID numbers
+	serialize(lbfile, entity_store.size());
+	for (auto it=entity_store.begin(); it!=entity_store.end(); ++it) {
+		serialize(lbfile, it->first);
+	}
+
+	// Store the last entity number
+	serialize(lbfile, entity_t::entity_counter);
+
+	// For each component type
+	serialize(lbfile, component_store.size());
+	for (auto &it : component_store) {
+		it->save(lbfile);
+	}
+}
+
+inline void ecs_load(std::istream &lbfile, std::function<void(std::size_t,std::size_t)> helper) {
+	entity_store.clear();
+	component_store.clear();
+
+	std::size_t number_of_entities;
+	deserialize(lbfile, number_of_entities);
+	for (std::size_t i=0; i<number_of_entities; ++i) {
+		std::size_t entity_id;
+		deserialize(lbfile, entity_id);
+		create_entity(entity_id);
+	}
+	deserialize(lbfile, entity_t::entity_counter);
+
+	std::size_t number_of_components;
+	deserialize(lbfile, number_of_components);
+	for (std::size_t i=0; i<number_of_components; ++i) {
+		std::size_t serialization_identity;
+		std::size_t entity_id;
+		deserialize(lbfile, serialization_identity);
+		deserialize(lbfile, entity_id);
+		helper(serialization_identity, entity_id);
+	}
 }
 
 }
