@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cmath>
 #include <random>
+#include <numeric>
 #include <algorithm>
 
 namespace rltk {
