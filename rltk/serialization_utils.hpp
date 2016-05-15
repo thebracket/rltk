@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <string>
+#include <rltk.hpp>
 
 namespace rltk {
 
@@ -17,6 +18,12 @@ inline void serialize(std::ostream &lbfile, const std::string &target) {
 	{
 		serialize<char>(lbfile, target[i]);
 	}
+}
+template<>
+inline void serialize(std::ostream &lbfile, const rltk::color_t &col) {
+	serialize<uint8_t>(lbfile, col.r);
+	serialize<uint8_t>(lbfile, col.g);
+	serialize<uint8_t>(lbfile, col.b);
 }
 
 template<typename T>
@@ -37,6 +44,12 @@ inline void deserialize(std::istream &lbfile, std::string &target)
 		result += c;
 	}
 	target = result;
+}
+template<>
+inline void deserialize(std::istream &lbfile, rltk::color_t &target) {
+	deserialize(lbfile, target.r);
+	deserialize(lbfile, target.g);
+	deserialize(lbfile, target.b);
 }
 
 }
