@@ -62,6 +62,7 @@ struct base_component_store {
 	virtual void erase_by_entity_id(const std::size_t &id)=0;
 	virtual void really_delete()=0;
 	virtual void save(std::ostream &lbfile)=0;
+	virtual std::size_t size()=0;
 };
 
 // Forward declaration
@@ -100,6 +101,10 @@ struct component_store_t : public base_component_store {
 			serialize(lbfile, item.entity_id);
 			item.save(lbfile);
 		}
+	}
+
+	virtual std::size_t size() {
+		return components.size();
 	}
 };
 
@@ -481,7 +486,11 @@ inline void ecs_save(std::ostream &lbfile) {
 	serialize(lbfile, entity_t::entity_counter);
 
 	// For each component type
-	serialize(lbfile, component_store.size());
+	std::size_t number_of_components = 0;
+	for (auto &it : component_store) {
+		number_of_components += it->size();
+	}
+	serialize(lbfile, number_of_components);
 	for (auto &it : component_store) {
 		it->save(lbfile);
 	}
