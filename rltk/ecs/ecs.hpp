@@ -381,7 +381,7 @@ inline void each(typename std::function<void(entity_t &, C &, C2 &, C3 &, C4 & )
 	component_t<C4> temp4(empty_component4);
 
 	for (auto it=entity_store.begin(); it!=entity_store.end(); ++it) {
-		if (!it->second.deleted && it->second.component_mask.test(temp.family_id) && it->second.component_mask.test(temp2.family_id) && it->second.component_mask.test(temp3.family_id)) {
+		if (!it->second.deleted && it->second.component_mask.test(temp.family_id) && it->second.component_mask.test(temp2.family_id) && it->second.component_mask.test(temp3.family_id) && it->second.component_mask.test(temp4.family_id)) {
 			for (component_t<C> &component : static_cast<component_store_t<component_t<C>> *>(component_store[temp.family_id].get())->components) {
 				if (it->second.id == component.entity_id && !component.deleted) {
 					for (component_t<C2> &component2 : static_cast<component_store_t<component_t<C2>> *>(component_store[temp2.family_id].get())->components) {
@@ -421,7 +421,7 @@ inline void each(typename std::function<void(entity_t &, C &, C2 &, C3 &, C4 &, 
 	component_t<C5> temp5(empty_component5);
 
 	for (auto it=entity_store.begin(); it!=entity_store.end(); ++it) {
-		if (!it->second.deleted && it->second.component_mask.test(temp.family_id) && it->second.component_mask.test(temp2.family_id) && it->second.component_mask.test(temp3.family_id)) {
+		if (!it->second.deleted && it->second.component_mask.test(temp.family_id) && it->second.component_mask.test(temp2.family_id) && it->second.component_mask.test(temp3.family_id) && it->second.component_mask.test(temp4.family_id) && it->second.component_mask.test(temp5.family_id)) {
 			for (component_t<C> &component : static_cast<component_store_t<component_t<C>> *>(component_store[temp.family_id].get())->components) {
 				if (it->second.id == component.entity_id && !component.deleted) {
 					for (component_t<C2> &component2 : static_cast<component_store_t<component_t<C2>> *>(component_store[temp2.family_id].get())->components) {
