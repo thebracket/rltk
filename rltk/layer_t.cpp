@@ -15,6 +15,7 @@ void layer_t::on_resize(const int width, const int height) {
 	if (console && console->visible) {
 		console->set_offset(x,y);
 		console->resize_pixels(w, h);
+		console->dirty = true;
 	} else {
 		make_owner_draw_backing();
 	}
@@ -81,9 +82,9 @@ void layer_t::render(sf::RenderWindow &window) {
 }
 
 void resize_fullscreen(rltk::layer_t * l, int w, int h) {
-        // Use the whole window
-        l->w = w;
-        l->h = h;
+    // Use the whole window
+    l->w = w;
+    l->h = h;
 }
 
 }
