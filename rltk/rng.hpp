@@ -21,6 +21,7 @@ public:
 	random_number_generator(const std::string seed);
 
 	int roll_dice(const int &n, const int &d);
+	int initial_seed;
 private:
 	std::mt19937 rng;
 };

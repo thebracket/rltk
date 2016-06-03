@@ -20,6 +20,7 @@ add_library(rltk 	rltk/rltk.cpp
 					rltk/gui_control_t.cpp
 					rltk/virtual_terminal_sparse.cpp
 					rltk/ecs/ecs.cpp
+					rltk/perlin_noise.cpp
 )
 
 # Require SFML
