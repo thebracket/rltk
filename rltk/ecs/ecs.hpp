@@ -8,6 +8,8 @@
 #include <memory>
 #include <functional>
 #include <algorithm>
+#include <fstream>
+#include "../serialization_utils.hpp"
 
 namespace rltk {
 
@@ -47,6 +49,10 @@ struct component_t : public base_component_t {
 		static std::size_t family_id_tmp = base_component_t::type_counter++;
 		family_id = family_id_tmp;
 	}
+
+	inline void save(std::ostream &lbfile) {
+		data.save(lbfile);
+	}
 };
 
 /*
@@ -55,6 +61,8 @@ struct component_t : public base_component_t {
 struct base_component_store {
 	virtual void erase_by_entity_id(const std::size_t &id)=0;
 	virtual void really_delete()=0;
+	virtual void save(std::ostream &lbfile)=0;
+	virtual std::size_t size()=0;
 };
 
 // Forward declaration
@@ -73,7 +81,7 @@ struct component_store_t : public base_component_store {
 	std::vector<C> components;
 	
 	virtual void erase_by_entity_id(const std::size_t &id) override {
-		for (auto item : components) {
+		for (auto &item : components) {
 			if (item.entity_id == id) {
 				item.deleted=true;
 				unset_component_mask(id, item.family_id);
@@ -85,6 +93,18 @@ struct component_store_t : public base_component_store {
 		components.erase(std::remove_if(components.begin(), components.end(),
 			[] (auto x) { return x.deleted; }), 
 			components.end());
+	}
+
+	virtual void save(std::ostream &lbfile) override {
+		for (auto &item : components) {
+			serialize(lbfile, item.data.serialization_identity);
+			serialize(lbfile, item.entity_id);
+			item.save(lbfile);
+		}
+	}
+
+	virtual std::size_t size() {
+		return components.size();
 	}
 };
 
@@ -314,6 +334,120 @@ inline void each(typename std::function<void(entity_t &, C &, C2 & )> func) {
 }
 
 /*
+ * each, overloaded with three classes, calls-back for entities that have BOTH component types,
+ * calling with the entity and both components.
+ */
+template <class C, class C2, class C3>
+inline void each(typename std::function<void(entity_t &, C &, C2 &, C3 & )> func) {
+	C empty_component;
+	C2 empty_component2;
+	C3 empty_component3;
+	component_t<C> temp(empty_component);
+	component_t<C2> temp2(empty_component2);
+	component_t<C3> temp3(empty_component3);
+
+	for (auto it=entity_store.begin(); it!=entity_store.end(); ++it) {
+		if (!it->second.deleted && it->second.component_mask.test(temp.family_id) && it->second.component_mask.test(temp2.family_id) && it->second.component_mask.test(temp3.family_id)) {
+			for (component_t<C> &component : static_cast<component_store_t<component_t<C>> *>(component_store[temp.family_id].get())->components) {
+				if (it->second.id == component.entity_id && !component.deleted) {
+					for (component_t<C2> &component2 : static_cast<component_store_t<component_t<C2>> *>(component_store[temp2.family_id].get())->components) {
+						if (it->second.id == component2.entity_id && !component2.deleted) {
+							for (component_t<C3> &component3 : static_cast<component_store_t<component_t<C3>> *>(component_store[temp3.family_id].get())->components) {
+								if (it->second.id == component3.entity_id && !component3.deleted) {
+									func(it->second, component.data, component2.data, component3.data);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+/*
+ * each, overloaded with four classes, calls-back for entities that have BOTH component types,
+ * calling with the entity and both components.
+ */
+template <class C, class C2, class C3, class C4>
+inline void each(typename std::function<void(entity_t &, C &, C2 &, C3 &, C4 & )> func) {
+	C empty_component;
+	C2 empty_component2;
+	C3 empty_component3;
+	C4 empty_component4;
+	component_t<C> temp(empty_component);
+	component_t<C2> temp2(empty_component2);
+	component_t<C3> temp3(empty_component3);
+	component_t<C4> temp4(empty_component4);
+
+	for (auto it=entity_store.begin(); it!=entity_store.end(); ++it) {
+		if (!it->second.deleted && it->second.component_mask.test(temp.family_id) && it->second.component_mask.test(temp2.family_id) && it->second.component_mask.test(temp3.family_id) && it->second.component_mask.test(temp4.family_id)) {
+			for (component_t<C> &component : static_cast<component_store_t<component_t<C>> *>(component_store[temp.family_id].get())->components) {
+				if (it->second.id == component.entity_id && !component.deleted) {
+					for (component_t<C2> &component2 : static_cast<component_store_t<component_t<C2>> *>(component_store[temp2.family_id].get())->components) {
+						if (it->second.id == component2.entity_id && !component2.deleted) {
+							for (component_t<C3> &component3 : static_cast<component_store_t<component_t<C3>> *>(component_store[temp3.family_id].get())->components) {
+								if (it->second.id == component3.entity_id && !component3.deleted) {
+									for (component_t<C4> &component4 : static_cast<component_store_t<component_t<C4>> *>(component_store[temp4.family_id].get())->components) {
+										if (it->second.id == component4.entity_id && !component4.deleted) {
+											func(it->second, component.data, component2.data, component3.data, component4.data);
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+/*
+ * each, overloaded with five classes, calls-back for entities that have BOTH component types,
+ * calling with the entity and both components.
+ */
+template <class C, class C2, class C3, class C4, class C5>
+inline void each(typename std::function<void(entity_t &, C &, C2 &, C3 &, C4 &, C5 & )> func) {
+	C empty_component;
+	C2 empty_component2;
+	C3 empty_component3;
+	C4 empty_component4;
+	C5 empty_component5;
+	component_t<C> temp(empty_component);
+	component_t<C2> temp2(empty_component2);
+	component_t<C3> temp3(empty_component3);
+	component_t<C4> temp4(empty_component4);
+	component_t<C5> temp5(empty_component5);
+
+	for (auto it=entity_store.begin(); it!=entity_store.end(); ++it) {
+		if (!it->second.deleted && it->second.component_mask.test(temp.family_id) && it->second.component_mask.test(temp2.family_id) && it->second.component_mask.test(temp3.family_id) && it->second.component_mask.test(temp4.family_id) && it->second.component_mask.test(temp5.family_id)) {
+			for (component_t<C> &component : static_cast<component_store_t<component_t<C>> *>(component_store[temp.family_id].get())->components) {
+				if (it->second.id == component.entity_id && !component.deleted) {
+					for (component_t<C2> &component2 : static_cast<component_store_t<component_t<C2>> *>(component_store[temp2.family_id].get())->components) {
+						if (it->second.id == component2.entity_id && !component2.deleted) {
+							for (component_t<C3> &component3 : static_cast<component_store_t<component_t<C3>> *>(component_store[temp3.family_id].get())->components) {
+								if (it->second.id == component3.entity_id && !component3.deleted) {
+									for (component_t<C4> &component4 : static_cast<component_store_t<component_t<C4>> *>(component_store[temp4.family_id].get())->components) {
+										if (it->second.id == component4.entity_id && !component4.deleted) {
+											for (component_t<C5> &component5 : static_cast<component_store_t<component_t<C5>> *>(component_store[temp5.family_id].get())->components) {
+												if (it->second.id == component5.entity_id && !component5.deleted) {
+													func(it->second, component.data, component2.data, component3.data, component4.data, component5.data);
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+/*
  * Marks an entity (specified by ID#) as deleted.
  */
 inline void delete_entity(const std::size_t id) {
@@ -453,6 +587,51 @@ inline void ecs_tick(const double duration_ms) {
 		sys->update(duration_ms);
 	}
 	ecs_garbage_collect();
+}
+
+inline void ecs_save(std::ostream &lbfile) {
+	// Store the number of entities and their ID numbers
+	serialize(lbfile, entity_store.size());
+	for (auto it=entity_store.begin(); it!=entity_store.end(); ++it) {
+		serialize(lbfile, it->first);
+	}
+
+	// Store the last entity number
+	serialize(lbfile, entity_t::entity_counter);
+
+	// For each component type
+	std::size_t number_of_components = 0;
+	for (auto &it : component_store) {
+		number_of_components += it->size();
+	}
+	serialize(lbfile, number_of_components);
+	for (auto &it : component_store) {
+		it->save(lbfile);
+	}
+}
+
+inline void ecs_load(std::istream &lbfile, std::function<void(std::istream&,std::size_t,std::size_t)> helper) {
+	entity_store.clear();
+	component_store.clear();
+
+	std::size_t number_of_entities;
+	deserialize(lbfile, number_of_entities);
+	for (std::size_t i=0; i<number_of_entities; ++i) {
+		std::size_t entity_id;
+		deserialize(lbfile, entity_id);
+		create_entity(entity_id);
+	}
+	deserialize(lbfile, entity_t::entity_counter);
+
+	std::size_t number_of_components;
+	deserialize(lbfile, number_of_components);
+	for (std::size_t i=0; i<number_of_components; ++i) {
+		std::size_t serialization_identity;
+		std::size_t entity_id;
+		deserialize(lbfile, serialization_identity);
+		deserialize(lbfile, entity_id);
+		helper(lbfile, serialization_identity, entity_id);
+	}
 }
 
 }

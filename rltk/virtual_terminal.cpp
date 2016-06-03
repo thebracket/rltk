@@ -6,13 +6,13 @@
 
 namespace rltk {
 
-void virtual_terminal::resize_pixels(const int width, const int height) {
+void virtual_terminal::resize_pixels(const int width, const int height) noexcept {
 	int w = width/font->character_size.first;
 	int h = height/font->character_size.second;
 	resize_chars(w,h);
 }
 
-void virtual_terminal::resize_chars(const int width, const int height) {
+void virtual_terminal::resize_chars(const int width, const int height) noexcept {
 	dirty = true;
 	const int num_chars = width*(height+1);
 	buffer.resize(num_chars);
@@ -69,23 +69,24 @@ void virtual_terminal::resize_chars(const int width, const int height) {
 	}
 }
 
-void virtual_terminal::clear() {
+void virtual_terminal::clear() noexcept {
 	dirty = true;
 	std::fill(buffer.begin(), buffer.end(), vchar{ 32, {255,255,255}, {0,0,0} });
 }
 
-void virtual_terminal::clear(const vchar &target) {
+void virtual_terminal::clear(const vchar &target) noexcept {
 	dirty = true;
 	std::fill(buffer.begin(), buffer.end(), target);
 }
 
-void virtual_terminal::set_char(const int idx, const vchar &target) {
+void virtual_terminal::set_char(const int idx, const vchar &target) noexcept {
 	dirty = true;
-	if (idx < 0 || idx > buffer.size()) throw std::runtime_error("Out of screen range");
-	buffer[idx] = target;
+	if (!(idx < 0 || idx > buffer.size())) {
+		buffer[idx] = target;
+	}
 }
 
-void virtual_terminal::print(const int x, const int y, const std::string &s, const color_t &fg, const color_t &bg) {
+void virtual_terminal::print(const int x, const int y, const std::string &s, const color_t &fg, const color_t &bg) noexcept {
 	int idx = at(x,y);
 	for (std::size_t i=0; i<s.size(); ++i) {
 		buffer[idx] = { s[i], fg, bg };
@@ -93,11 +94,11 @@ void virtual_terminal::print(const int x, const int y, const std::string &s, con
 	}
 }
 
-void virtual_terminal::print_center(const int y, const std::string &s, const color_t &fg, const color_t &bg) {
+void virtual_terminal::print_center(const int y, const std::string &s, const color_t &fg, const color_t &bg) noexcept {
 	print((term_width/2) - (s.size()/2), y, s, fg, bg);
 }
 
-void virtual_terminal::box(const int x, const int y, const int w, const int h, const color_t &fg, const color_t &bg, bool double_lines) {
+void virtual_terminal::box(const int x, const int y, const int w, const int h, const color_t &fg, const color_t &bg, bool double_lines) noexcept {
 	//std::cout << h << "\n";
 	for (int i=1; i<w; ++i) {
 		if (!double_lines) {
@@ -132,7 +133,7 @@ void virtual_terminal::box(const int x, const int y, const int w, const int h, c
 	}
 }
 
-void virtual_terminal::render(sf::RenderWindow &window) {
+void virtual_terminal::render(sf::RenderWindow &window) noexcept {
 	if (!visible) return;
 
 	if (dirty) {
