@@ -58,3 +58,10 @@ if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
   target_link_libraries(rltk ${Boost_LIBRARIES})
 endif()
+
+# We depend upon zlib
+find_package(ZLIB REQUIRED)
+if (ZLIB_FOUND)
+	include_directories(${ZLIB_INCLUDE_DIRS})
+	target_link_libraries(rltk ${ZLIB_LIBRARIES})
+endif()
