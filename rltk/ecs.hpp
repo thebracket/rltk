@@ -9,7 +9,7 @@
 #include <functional>
 #include <algorithm>
 #include <fstream>
-#include "../serialization_utils.hpp"
+#include "serialization_utils.hpp"
 
 namespace rltk {
 

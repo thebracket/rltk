@@ -19,7 +19,7 @@ add_library(rltk 	rltk/rltk.cpp
 					rltk/layer_t.cpp
 					rltk/gui_control_t.cpp
 					rltk/virtual_terminal_sparse.cpp
-					rltk/ecs/ecs.cpp
+					rltk/ecs.cpp
 					rltk/perlin_noise.cpp
 )
 
