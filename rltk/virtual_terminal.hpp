@@ -20,7 +20,11 @@ namespace rltk {
  * Represents a character on a virtual terminal. 
  */
 struct vchar {
-	int glyph;
+	vchar() {}
+	vchar(const uint32_t &g, const color_t &f, const color_t &b) : glyph(g), foreground(f), background(b) {}
+	vchar(const int &g, const color_t &f, const color_t &b) : glyph(static_cast<uint32_t>(g)), foreground(f), background(b) {}
+
+	uint32_t glyph;
 	color_t foreground;
 	color_t background;
 };
