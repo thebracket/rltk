@@ -1,9 +1,18 @@
-/*For version 1.02 of REXPaint*/
 #pragma once
+/* RLTK (RogueLike Tool Kit) 1.00
+ * Copyright (c) 2016-Present, Bracket Productions.
+ * Licensed under the MIT license - see LICENSE file.
+ *
+ * REXPaint 1.02 file reader. Credit to https://github.com/pyridine/REXSpeeder for the original.
+ */
+
+/*For version 1.02 of REXPaint*/
 #include <iostream>
 #include <stdint.h>
 #include <array>
 #include <vector>
+
+namespace rltk {
 
 //There is a maximum of four layers in an .xp file
 constexpr int REXPAINT_MAX_NUM_LAYERS=4;
@@ -109,4 +118,5 @@ namespace xp {
 	constexpr int ERR_FILE_DOES_NOT_EXIST = 20202;
 	//The error code thrown when a RexImage is found to not have a number of layers i, 1 <= i <= 4.
 	constexpr int ERR_INVALID_NUMBER_OF_LAYERS = 20203;
+}
 }

@@ -1,6 +1,8 @@
 #include "rexspeeder.hpp"
 #include <zlib.h>
 
+namespace rltk {
+
 //===========================================================================================================//
 //    Safe I/O (where "safe" means "will throw errors")                                                      //
 //                                                                                                           //
@@ -190,4 +192,6 @@ namespace xp {
 	{
 		tiles.clear();
 	}
+}
+
 }
