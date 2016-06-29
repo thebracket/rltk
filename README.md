@@ -7,6 +7,8 @@ Right now, it's a very fast ASCII (code-page 437) terminal renderer compatible w
 Eventually, it will provide assistance with a number of game-related topics including path-finding, line-plotting,
 and probably some of the entity-component-system I've been enjoying.
 
+**Credit to Pyridine for the REXPaint format code. Original located at: [https://github.com/pyridine/REXSpeeder](https://github.com/pyridine/REXSpeeder)**
+
 ## Building from source
 
 You need SFML for your platform, Boost, and cmake. Make a "build" folder, and use CMake to generate build files for your platform (I'll expand upon this later, when this is a more useful library).

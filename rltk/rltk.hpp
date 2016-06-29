@@ -20,6 +20,7 @@
 #include "ecs.hpp"
 #include "perlin_noise.hpp"
 #include "serialization_utils.hpp"
+#include "rexspeeder.hpp"
 
 namespace rltk {
 
