@@ -13,21 +13,10 @@
 #include "texture.hpp"
 #include "color_t.hpp"
 #include "colors.hpp"
+#include "rexspeeder.hpp"
+#include "vchar.hpp"
 
 namespace rltk {
-
-/* 
- * Represents a character on a virtual terminal. 
- */
-struct vchar {
-	vchar() {}
-	vchar(const uint32_t &g, const color_t &f, const color_t &b) : glyph(g), foreground(f), background(b) {}
-	vchar(const int &g, const color_t &f, const color_t &b) : glyph(static_cast<uint32_t>(g)), foreground(f), background(b) {}
-
-	uint32_t glyph;
-	color_t foreground;
-	color_t background;
-};
 
 /*
  * Combines the functions/data required to render a virtual terminal, either as root or
@@ -107,6 +96,11 @@ public:
 	 * it will use the two-line/thick box characters.
 	 */
 	void box(const int x, const int y, const int w, const int h, const color_t &fg = colors::WHITE, const color_t &bg = colors::BLACK, bool double_lines=false) noexcept;
+
+	/*
+	 * Draw a REX sprite at the specified location.
+	 */
+	void draw_sprite(const int x, const int y, xp::rex_sprite &sprite);
 
 	/*
 	 * Renders the terminal to the specified renderable. Don't call this directly - the toolkit will take care of it.

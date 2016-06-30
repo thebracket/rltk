@@ -1,5 +1,6 @@
 #include "rexspeeder.hpp"
 #include <zlib.h>
+#include <stdexcept>
 
 namespace rltk {
 
@@ -9,12 +10,11 @@ namespace rltk {
 //   These functions will throw an error message from gzerror, and set errno to the error code.              //
 //===========================================================================================================//
 
-static xp::Rexception makeRexception(gzFile g) {
+inline std::runtime_error make_rexception(gzFile g) {
 	/*The exception creation is a bit verbose.*/
 	int errnum = 0;
 	const char* errstr = gzerror(g, &errnum);
-	xp::Rexception e(errstr,errnum);
-	return e;
+	return std::runtime_error(std::to_string(errnum) + std::string(" ") + std::string(errstr));
 }
 
 static void s_gzread(gzFile g, voidp buf, unsigned int len)
@@ -26,7 +26,7 @@ static void s_gzread(gzFile g, voidp buf, unsigned int len)
 	if (gzeof(g))
 		return;
 	
-	throw makeRexception(g);
+	throw make_rexception(g);
 }
 
 static void s_gzwrite(gzFile g, voidp buf, unsigned int len)
@@ -34,7 +34,7 @@ static void s_gzwrite(gzFile g, voidp buf, unsigned int len)
 	if (gzwrite(g, buf, len) > 0)
 		return;
 
-	throw makeRexception(g);
+	throw make_rexception(g);
 }
 
 static gzFile s_gzopen(const std::string filename, const char* permissions)
@@ -49,25 +49,23 @@ static gzFile s_gzopen(const std::string filename, const char* permissions)
 	if (err == 0) {
 		/*Assume the file simply didn't exist.*/
 		std::string s("File " + filename + " does not exist.");
-		xp::Rexception e(s, xp::ERR_FILE_DOES_NOT_EXIST);
-		throw e;
+		throw std::runtime_error(s);
 	}
-	xp::Rexception e(errstr, err);
-	throw e;
+	throw std::runtime_error(std::string(errstr));
 }
 
 
 namespace xp {
 	//General method for ensuring an image has the correct number of layers.
-	static void enforceValidLayerCount(xp::RexImage& img) {
-		if (img.getNumLayers() < 1 || img.getNumLayers() > 4)
-			throw xp::Rexception("Invalid number of layers.", xp::ERR_INVALID_NUMBER_OF_LAYERS);
+	static void enforce_valid_layer_count(xp::rex_sprite& img) {
+		if (img.get_num_layers() < 1 || img.get_num_layers() > 4)
+			throw std::runtime_error("Invalid number of layers.");
 	}
 
 //===========================================================================================================//
 //    Loading an xp file                                                                                     //
 //===========================================================================================================//
-	RexImage::RexImage(std::string const & filename)
+	rex_sprite::rex_sprite(std::string const & filename)
 	{
 		typedef void* vp;
 		//Number of bytes in a tile. Not equal to sizeof(RexTile) due to padding.
@@ -82,14 +80,14 @@ namespace xp {
 			s_gzread(gz, (vp)&width, sizeof(width));
 			s_gzread(gz, (vp)&height, sizeof(height));
 
-			enforceValidLayerCount(*this);
+			enforce_valid_layer_count(*this);
 
 			for (int i = 0; i < num_layers; i++)
-				layers[i] = RexLayer(width, height);
+				layers[i] = rex_layer(width, height);
 
 			for (int layer_index = 0; layer_index < num_layers; layer_index++) {
 				for (int i = 0; i < width*height; ++i)
-					s_gzread(gz, getTile(layer_index, i), tileLen);
+					s_gzread(gz, get_tile(layer_index, i), tileLen);
 
 				//The layer and height information is repeated.
 				//This is expected to read off the end after the last layer.
@@ -105,7 +103,7 @@ namespace xp {
 //===========================================================================================================//
 //    Saving an xp file                                                                                      //
 //===========================================================================================================//
-	void RexImage::save(std::string const & filename)
+	void rex_sprite::save(std::string const & filename)
 	{
 		typedef void* vp;
 		//Number of bytes in a tile. Not equal to sizeof(RexTile) due to padding.
@@ -123,7 +121,7 @@ namespace xp {
 
 				for (int i = 0; i < width*height; ++i) 
 					//Note: not "sizeof(RexTile)" because of padding.
-					s_gzwrite(gz, (vp)getTile(layer,i), tileLen);
+					s_gzwrite(gz, (vp)get_tile(layer,i), tileLen);
 				
 			}
 
@@ -136,16 +134,16 @@ namespace xp {
 //===========================================================================================================//
 //    Constructors / Destructors                                                                             //
 //===========================================================================================================//
-	RexImage::RexImage(int _version, int _width, int _height, int _num_layers)
+	rex_sprite::rex_sprite(int _version, int _width, int _height, int _num_layers)
 		:version(_version), width(_width), height(_height), num_layers(_num_layers)
 	{
-		enforceValidLayerCount(*this);
+		enforce_valid_layer_count(*this);
 
 		//All layers above the first are set transparent.
 		for (int l = 1; l < num_layers; l++) {
 			for (int i = 0; i < width*height; ++i) {
-				RexTile t = transparentTile();
-				setTile(l, i, t);
+				rltk::vchar t = transparent_tile();
+				set_tile(l, i, t);
 			}
 		}
 	}
@@ -153,15 +151,15 @@ namespace xp {
 //===========================================================================================================//
 //    Utility Functions                                                                                      //
 //===========================================================================================================//
-	void RexImage::flatten() {
+	void rex_sprite::flatten() {
 		if (num_layers == 1)
 			return;
 
 		//Paint the last layer onto the second-to-last
 		for (int i = 0; i < width*height; ++i) {
-			RexTile* overlay = getTile(num_layers - 1, i);
-			if (!isTransparent(overlay)) {
-				*getTile(num_layers - 2, i) = *overlay;
+			rltk::vchar* overlay = get_tile(num_layers - 1, i);
+			if (!is_transparent(overlay)) {
+				*get_tile(num_layers - 2, i) = *overlay;
 			}
 		}
 
@@ -170,28 +168,8 @@ namespace xp {
 
 		//Recurse
 		flatten();
-	}
-
-
-	bool isTransparent(RexTile * tile)
-	{
-		//This might be faster than comparing with transparentTile(), despite it being a constexpr
-		return (tile->back_red == 255 && tile->back_green == 0 && tile->back_blue == 255);
 	}	
 
-//===========================================================================================================//
-//    RexLayer constructor/destructor                                                                        //
-//===========================================================================================================//
-
-	RexLayer::RexLayer(int width, int height) 
-	{
-		tiles.resize(width * height);
-	} 
-
-	RexLayer::~RexLayer()
-	{
-		tiles.clear();
-	}
 }
 
 }

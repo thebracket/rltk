@@ -133,6 +133,14 @@ void virtual_terminal::box(const int x, const int y, const int w, const int h, c
 	}
 }
 
+void virtual_terminal::draw_sprite(const int x, const int y, xp::rex_sprite &sprite) {
+	for (int Y=0; Y<sprite.get_height(); ++Y) {
+		for (int X=0; X<sprite.get_width(); ++X) {
+			set_char(x+X, y+Y, *sprite.get_tile(X,Y,0));
+		}
+	}
+}
+
 void virtual_terminal::render(sf::RenderWindow &window) noexcept {
 	if (!visible) return;
 
