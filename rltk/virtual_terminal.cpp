@@ -134,9 +134,15 @@ void virtual_terminal::box(const int x, const int y, const int w, const int h, c
 }
 
 void virtual_terminal::draw_sprite(const int x, const int y, xp::rex_sprite &sprite) {
-	for (int Y=0; Y<sprite.get_height(); ++Y) {
-		for (int X=0; X<sprite.get_width(); ++X) {
-			set_char(x+X, y+Y, *sprite.get_tile(X,Y,0));
+	const int width = sprite.get_width();
+	const int height = sprite.get_height();
+
+	for (int Y=0; Y<height; ++Y) {
+		const int screen_y = y+Y;
+		for (int X=0; X<width; ++X) {
+			const int screen_x = x+X;
+			const vchar * output = sprite.get_tile(0,X,Y);
+			if (output != nullptr) set_char(screen_x, screen_y, *output);
 		}
 	}
 }
