@@ -81,6 +81,7 @@ struct player_moved_message : base_message_t {};
 
 struct camera_system : public base_system {
 	virtual void configure() override {
+		system_name = "Camera System";
 		// Create the player
 		auto player = create_entity()
 			->assign(position{map_width/2, map_height/2})
@@ -129,6 +130,10 @@ struct camera_system : public base_system {
 };
 
 struct actor_render_system : public base_system {
+	virtual void configure() override {
+		system_name = "Actor Render System";
+	}
+
 	virtual void update(const double duration_ms) override {
 		each<position, renderable>([] (entity_t &entity, position &pos, renderable &render) {
 			const int map_index = map_idx(pos.x, pos.y);
@@ -143,6 +148,7 @@ struct player_system : public base_system {
 	double time_since_press = 100.0;
 
 	virtual void configure() override {
+		system_name = "Player System";
 		subscribe<actor_moved_message>([this](actor_moved_message &msg) {
 			if (map_tiles[map_idx(msg.destination_x, msg.destination_y)] == 0) {
 				msg.mover->component<position>()->x = msg.destination_x;
@@ -177,12 +183,20 @@ struct player_system : public base_system {
 				emit(actor_moved_message{ entity(player_id), camera_loc->x, camera_loc->y, camera_loc->x, camera_loc->y+1 });
 				time_since_press = 0.0;
 			}
+
+			// Support pressing F1 for a performance dump
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::F1)) {
+				std::string timings = ecs_profile_dump();
+				std::cout << timings << "\n";
+				time_since_press = 0.0;
+			}
 		}
 	}
 };
 
 struct visibility_system : public base_system {
 	virtual void configure() override {
+		system_name = "Visibility System";
 		subscribe<player_moved_message>([this](player_moved_message &msg) {
 			position * camera_loc = entity(player_id)->component<position>();
 			position camera_loc_deref = *camera_loc;

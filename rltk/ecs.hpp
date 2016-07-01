@@ -9,6 +9,9 @@
 #include <functional>
 #include <algorithm>
 #include <fstream>
+#include <chrono>
+#include <sstream>
+#include <iomanip>
 #include "serialization_utils.hpp"
 
 namespace rltk {
@@ -548,6 +551,7 @@ extern std::vector<std::unique_ptr<subscription_base_t>> pubsub_holder;
 struct base_system {
 	virtual void configure() {}
 	virtual void update(const double duration_ms)=0;
+	std::string system_name = "Unnamed System";
 	
 	template<class MSG>
 	void subscribe(std::function<void(MSG &message)> destination) {
@@ -571,9 +575,18 @@ struct base_system {
 
 extern std::vector<std::unique_ptr<base_system>> system_store;
 
+struct system_profiling_t {
+	double last = 0.0;
+	double best = 1000000.0;
+	double worst = 0.0;
+};
+
+extern std::vector<system_profiling_t> system_profiling;
+
 template<typename S, typename ...Args>
 inline void add_system( Args && ... args ) {
 	system_store.push_back(std::make_unique<S>( std::forward<Args>(args) ... ));
+	system_profiling.push_back(system_profiling_t{});
 }
 
 inline void ecs_configure() {
@@ -583,8 +596,17 @@ inline void ecs_configure() {
 }
 
 inline void ecs_tick(const double duration_ms) {
+	std::size_t count = 0;
 	for (std::unique_ptr<base_system> & sys : system_store) {
+		std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 		sys->update(duration_ms);
+		std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+		auto duration = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
+
+		system_profiling[count].last = duration;
+		if (duration > system_profiling[count].worst) system_profiling[count].worst = duration;
+		if (duration < system_profiling[count].best) system_profiling[count].best = duration;
+		++count;
 	}
 	ecs_garbage_collect();
 }
@@ -632,6 +654,21 @@ inline void ecs_load(std::istream &lbfile, std::function<void(std::istream&,std:
 		deserialize(lbfile, entity_id);
 		helper(lbfile, serialization_identity, entity_id);
 	}
+}
+
+inline std::string ecs_profile_dump() {
+	std::stringstream ss;
+	ss.precision(3);
+	ss << std::fixed;
+	ss << "SYSTEMS PERFORMANCE IN MICROSECONDS:\n";
+	ss << std::setw(20) << "System" << std::setw(20) << "Last" << std::setw(20) << "Best" << std::setw(20) << "Worst\n";
+	for (std::size_t i=0; i<system_profiling.size(); ++i) {
+		ss << std::setw(20) << system_store[i]->system_name 
+			<< std::setw(20) << system_profiling[i].last 
+			<< std::setw(20) << system_profiling[i].best 
+			<< std::setw(20) << system_profiling[i].worst << "\n";
+	}
+	return ss.str();
 }
 
 }

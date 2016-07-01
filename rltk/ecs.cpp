@@ -9,5 +9,6 @@ std::vector<std::unique_ptr<base_component_store>> component_store;
 std::unordered_map<std::size_t, entity_t> entity_store;
 std::vector<std::unique_ptr<base_system>> system_store;
 std::vector<std::unique_ptr<subscription_base_t>> pubsub_holder;
+std::vector<system_profiling_t> system_profiling;
 
 }
