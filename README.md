@@ -74,7 +74,7 @@ demonstrates rotation of the @ by leaning left or right as he travels (not an ef
 ### Example 11: REXPaint support (http://www.gridsagegames.com/rexpaint/)
 ![RexPaint](https://raw.githubusercontent.com/thebracket/rltk/master/tutorial_images/example11.png "RexPaint")
 
-[Example 10](https://github.com/thebracket/rltk/blob/master/examples/ex11/main.cpp): This example is basically Hello World, but with a REX Paint image loaded (Nyan Cat) and displayed.
+[Example 11](https://github.com/thebracket/rltk/blob/master/examples/ex11/main.cpp): This example is basically Hello World, but with a REX Paint image loaded (Nyan Cat) and displayed.
 
 
 ## Example
