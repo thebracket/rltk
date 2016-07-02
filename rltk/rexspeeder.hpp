@@ -17,9 +17,6 @@ namespace rltk {
 
 namespace xp {
 
-	//There is a maximum of four layers in an .xp file
-	constexpr int REXPAINT_MAX_NUM_LAYERS=4;
-
 	//REXpaint identifies transparent tiles by setting their background color to 255,0,255.
 	//You may want to check this for each tile before drawing or converting a RexFile.
 	//(By default, no tile in the first layer is transaprent).
@@ -95,7 +92,7 @@ namespace xp {
 		//Image properties
 		int version;
 		int width, height, num_layers;
-		std::array<rex_layer, REXPAINT_MAX_NUM_LAYERS> layers; //layers[0] is the first layer.
+		std::vector<rex_layer> layers; //layers[0] is the first layer.
 
 		//Forbid default construction.
 		rex_sprite();

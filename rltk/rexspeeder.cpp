@@ -56,11 +56,6 @@ static gzFile s_gzopen(const std::string filename, const char* permissions)
 
 
 namespace xp {
-	//General method for ensuring an image has the correct number of layers.
-	static void enforce_valid_layer_count(xp::rex_sprite& img) {
-		if (img.get_num_layers() < 1 || img.get_num_layers() > 4)
-			throw std::runtime_error("Invalid number of layers.");
-	}
 
 //===========================================================================================================//
 //    Loading an xp file                                                                                     //
@@ -80,7 +75,7 @@ namespace xp {
 			s_gzread(gz, (vp)&width, sizeof(width));
 			s_gzread(gz, (vp)&height, sizeof(height));
 
-			enforce_valid_layer_count(*this);
+			layers.resize(num_layers);
 
 			for (int i = 0; i < num_layers; i++)
 				layers[i] = rex_layer(width, height);
@@ -137,8 +132,6 @@ namespace xp {
 	rex_sprite::rex_sprite(int _version, int _width, int _height, int _num_layers)
 		:version(_version), width(_width), height(_height), num_layers(_num_layers)
 	{
-		enforce_valid_layer_count(*this);
-
 		//All layers above the first are set transparent.
 		for (int l = 1; l < num_layers; l++) {
 			for (int i = 0; i < width*height; ++i) {
