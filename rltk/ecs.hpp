@@ -285,7 +285,7 @@ inline void all_components(typename std::function<void(entity_t &, C &)> func) {
  * each, overloaded with a function/lambda that accepts an entity, will call the provided
  * function on _every_ entity in the system.
  */
-inline void each(std::function<void(entity_t &)> func) {
+inline void each(std::function<void(entity_t &)> &&func) {
 	for (auto it=entity_store.begin(); it!=entity_store.end(); ++it) {
 		if (!it->second.deleted) {
 			func(it->second);

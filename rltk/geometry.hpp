@@ -55,7 +55,7 @@ inline float distance3d_squared(int x1, int y1, int z1, int x2,	int y2, int z2)
  * Perform a function for each line element between x1/y1 and x2/y2. We used to use Bresenham's line,
  * but benchmarking showed a simple float-based setup to be faster.
  */
-inline void line_func(int x1, int y1, const int x2, const int y2, std::function<void(int, int)> func)
+inline void line_func(int x1, int y1, const int x2, const int y2, std::function<void(int, int)> &&func)
 {
 	float x = static_cast<float>(x1);
     float y = static_cast<float>(y1);
@@ -78,13 +78,13 @@ inline void line_func(int x1, int y1, const int x2, const int y2, std::function<
  * implementation of Bresenham's line algorithm.
  * https://gist.github.com/yamamushi/5823518
  */
-void line_func_3d(int x1, int y1, int z1, const int x2, const int y2, const int z2, std::function<void(int, int, int)> func);
+void line_func_3d(int x1, int y1, int z1, const int x2, const int y2, const int z2, std::function<void(int, int, int)> &&func);
 
 /*
  * Perform a function for each line element between x1/y1 and x2/y2. We used to use Bresenham's algorithm,
  * but benchmarking showed that a simple float based vector was faster.
  */
-inline void line_func_cancellable(int x1, int y1, const int x2, const int y2, std::function<bool(int, int)> func) {
+inline void line_func_cancellable(int x1, int y1, const int x2, const int y2, std::function<bool(int, int)> &&func) {
     float x = static_cast<float>(x1);
     float y = static_cast<float>(y1);
     const float dest_x = static_cast<float>(x2);
@@ -107,6 +107,6 @@ inline void line_func_cancellable(int x1, int y1, const int x2, const int y2, st
  * https://gist.github.com/yamamushi/5823518
  * Cancellable version: the function can return "false" to stop traversing the line.
  */
-void line_func_3d_cancellable(int x1, int y1, int z1, const int x2, const int y2, const int z2, std::function<bool(int, int, int)> func);
+void line_func_3d_cancellable(int x1, int y1, int z1, const int x2, const int y2, const int z2, std::function<bool(int, int, int)> &&func);
 
 }

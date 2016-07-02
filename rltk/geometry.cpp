@@ -20,7 +20,7 @@ std::pair<int, int> project_angle(const int x, const int y, const double radius,
  * implementation of Bresenham's line algorithm.
  * https://gist.github.com/yamamushi/5823518
  */
-void line_func_3d(int x1, int y1, int z1, const int x2, const int y2, const int z2, std::function<void(int, int, int)> func)
+void line_func_3d(int x1, int y1, int z1, const int x2, const int y2, const int z2, std::function<void(int, int, int)> &&func)
 {
 	float x = x1;
 	float y = y1;
@@ -45,7 +45,7 @@ void line_func_3d(int x1, int y1, int z1, const int x2, const int y2, const int 
  * implementation of Bresenham's line algorithm.
  * https://gist.github.com/yamamushi/5823518
  */
-void line_func_3d_cancellable(int x1, int y1, int z1, const int x2, const int y2, const int z2, std::function<bool(int, int, int)> func)
+void line_func_3d_cancellable(int x1, int y1, int z1, const int x2, const int y2, const int z2, std::function<bool(int, int, int)> &&func)
 {
 	float x = x1;
 	float y = y1;
