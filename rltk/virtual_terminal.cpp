@@ -137,12 +137,14 @@ void virtual_terminal::draw_sprite(const int x, const int y, xp::rex_sprite &spr
 	const int width = sprite.get_width();
 	const int height = sprite.get_height();
 
-	for (int Y=0; Y<height; ++Y) {
-		const int screen_y = y+Y;
-		for (int X=0; X<width; ++X) {
-			const int screen_x = x+X;
-			const vchar * output = sprite.get_tile(0,X,Y);
-			if (output != nullptr) set_char(screen_x, screen_y, *output);
+	for (int layer=0; layer<sprite.get_num_layers(); ++layer) {
+		for (int Y=0; Y<height; ++Y) {
+			const int screen_y = y+Y;
+			for (int X=0; X<width; ++X) {
+				const int screen_x = x+X;
+				const vchar * output = sprite.get_tile(layer,X,Y);
+				if (output != nullptr && !xp::is_transparent(output)) set_char(screen_x, screen_y, *output);
+			}
 		}
 	}
 }

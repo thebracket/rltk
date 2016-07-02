@@ -40,7 +40,6 @@ int main()
 	// The fourth parameter is the window title.
 	// The final parameter says that we'd like the default console to use an 8x16 VGA font. Not so great for games, but easy to read!
 	init(config_simple("../assets", 80, 25, "RLTK Hello World", "8x16"));
-	nyan_cat.flatten();
 
 	// Enter the main loop. "tick" is the function we wrote above.
 	run(tick);
