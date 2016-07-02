@@ -132,6 +132,8 @@ namespace xp {
 	rex_sprite::rex_sprite(int _version, int _width, int _height, int _num_layers)
 		:version(_version), width(_width), height(_height), num_layers(_num_layers)
 	{
+		layers.resize(num_layers);
+
 		//All layers above the first are set transparent.
 		for (int l = 1; l < num_layers; l++) {
 			for (int i = 0; i < width*height; ++i) {
