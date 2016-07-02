@@ -42,6 +42,10 @@ struct base_component_t {
  */
 template<class C>
 struct component_t : public base_component_t {
+	component_t() {
+		data = C{};
+		family();
+	}
 	component_t(C comp) : data(comp) {
 		family();
 	}
@@ -289,162 +293,21 @@ inline void each(std::function<void(entity_t &)> func) {
 	}
 }
 
-/*
- * each, overloaded with a component class and a function that accepts an entity_id and a
- * function/lambda that accepts an entity/component combination calls the provided function
- * on each entity/component that matches. This is very similar to all_components, but is
- * entity-first: it cares about the bitmask. all_components is probably faster.
- */
-template <class C>
-inline void each(typename std::function<void(entity_t &, C &)> func) {
-	C empty_component;
-	component_t<C> temp(empty_component);
+template <typename... Cs, typename F>
+inline void each(F&& callback) {
+	std::array<size_t, sizeof...(Cs)> family_ids{ component_t<Cs>{}.family_id... };
 	for (auto it=entity_store.begin(); it!=entity_store.end(); ++it) {
-		if (!it->second.deleted && it->second.component_mask.test(temp.family_id)) {
-			for (component_t<C> &component : static_cast<component_store_t<component_t<C>> *>(component_store[temp.family_id].get())->components) {
-				if (it->second.id == component.entity_id && !component.deleted) {
-					func(it->second, component.data);
+		if (!it->second.deleted) {
+			bool matches = true;
+			for (const std::size_t &compare : family_ids) {
+				if (!it->second.component_mask.test(compare)) {
+					matches = false;
+					break;
 				}
 			}
-		}
-	}
-}
-
-/*
- * each, overloaded with two classes, calls-back for entities that have BOTH component types,
- * calling with the entity and both components.
- */
-template <class C, class C2>
-inline void each(typename std::function<void(entity_t &, C &, C2 & )> func) {
-	C empty_component;
-	C2 empty_component2;
-	component_t<C> temp(empty_component);
-	component_t<C2> temp2(empty_component2);
-
-	for (auto it=entity_store.begin(); it!=entity_store.end(); ++it) {
-		if (!it->second.deleted && it->second.component_mask.test(temp.family_id) && it->second.component_mask.test(temp2.family_id)) {
-			for (component_t<C> &component : static_cast<component_store_t<component_t<C>> *>(component_store[temp.family_id].get())->components) {
-				if (it->second.id == component.entity_id && !component.deleted) {
-					for (component_t<C2> &component2 : static_cast<component_store_t<component_t<C2>> *>(component_store[temp2.family_id].get())->components) {
-						if (it->second.id == component2.entity_id && !component2.deleted) {
-							func(it->second, component.data, component2.data);
-						}
-					}
-				}
-			}
-		}
-	}
-}
-
-/*
- * each, overloaded with three classes, calls-back for entities that have BOTH component types,
- * calling with the entity and both components.
- */
-template <class C, class C2, class C3>
-inline void each(typename std::function<void(entity_t &, C &, C2 &, C3 & )> func) {
-	C empty_component;
-	C2 empty_component2;
-	C3 empty_component3;
-	component_t<C> temp(empty_component);
-	component_t<C2> temp2(empty_component2);
-	component_t<C3> temp3(empty_component3);
-
-	for (auto it=entity_store.begin(); it!=entity_store.end(); ++it) {
-		if (!it->second.deleted && it->second.component_mask.test(temp.family_id) && it->second.component_mask.test(temp2.family_id) && it->second.component_mask.test(temp3.family_id)) {
-			for (component_t<C> &component : static_cast<component_store_t<component_t<C>> *>(component_store[temp.family_id].get())->components) {
-				if (it->second.id == component.entity_id && !component.deleted) {
-					for (component_t<C2> &component2 : static_cast<component_store_t<component_t<C2>> *>(component_store[temp2.family_id].get())->components) {
-						if (it->second.id == component2.entity_id && !component2.deleted) {
-							for (component_t<C3> &component3 : static_cast<component_store_t<component_t<C3>> *>(component_store[temp3.family_id].get())->components) {
-								if (it->second.id == component3.entity_id && !component3.deleted) {
-									func(it->second, component.data, component2.data, component3.data);
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-}
-
-/*
- * each, overloaded with four classes, calls-back for entities that have BOTH component types,
- * calling with the entity and both components.
- */
-template <class C, class C2, class C3, class C4>
-inline void each(typename std::function<void(entity_t &, C &, C2 &, C3 &, C4 & )> func) {
-	C empty_component;
-	C2 empty_component2;
-	C3 empty_component3;
-	C4 empty_component4;
-	component_t<C> temp(empty_component);
-	component_t<C2> temp2(empty_component2);
-	component_t<C3> temp3(empty_component3);
-	component_t<C4> temp4(empty_component4);
-
-	for (auto it=entity_store.begin(); it!=entity_store.end(); ++it) {
-		if (!it->second.deleted && it->second.component_mask.test(temp.family_id) && it->second.component_mask.test(temp2.family_id) && it->second.component_mask.test(temp3.family_id) && it->second.component_mask.test(temp4.family_id)) {
-			for (component_t<C> &component : static_cast<component_store_t<component_t<C>> *>(component_store[temp.family_id].get())->components) {
-				if (it->second.id == component.entity_id && !component.deleted) {
-					for (component_t<C2> &component2 : static_cast<component_store_t<component_t<C2>> *>(component_store[temp2.family_id].get())->components) {
-						if (it->second.id == component2.entity_id && !component2.deleted) {
-							for (component_t<C3> &component3 : static_cast<component_store_t<component_t<C3>> *>(component_store[temp3.family_id].get())->components) {
-								if (it->second.id == component3.entity_id && !component3.deleted) {
-									for (component_t<C4> &component4 : static_cast<component_store_t<component_t<C4>> *>(component_store[temp4.family_id].get())->components) {
-										if (it->second.id == component4.entity_id && !component4.deleted) {
-											func(it->second, component.data, component2.data, component3.data, component4.data);
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-}
-
-/*
- * each, overloaded with five classes, calls-back for entities that have BOTH component types,
- * calling with the entity and both components.
- */
-template <class C, class C2, class C3, class C4, class C5>
-inline void each(typename std::function<void(entity_t &, C &, C2 &, C3 &, C4 &, C5 & )> func) {
-	C empty_component;
-	C2 empty_component2;
-	C3 empty_component3;
-	C4 empty_component4;
-	C5 empty_component5;
-	component_t<C> temp(empty_component);
-	component_t<C2> temp2(empty_component2);
-	component_t<C3> temp3(empty_component3);
-	component_t<C4> temp4(empty_component4);
-	component_t<C5> temp5(empty_component5);
-
-	for (auto it=entity_store.begin(); it!=entity_store.end(); ++it) {
-		if (!it->second.deleted && it->second.component_mask.test(temp.family_id) && it->second.component_mask.test(temp2.family_id) && it->second.component_mask.test(temp3.family_id) && it->second.component_mask.test(temp4.family_id) && it->second.component_mask.test(temp5.family_id)) {
-			for (component_t<C> &component : static_cast<component_store_t<component_t<C>> *>(component_store[temp.family_id].get())->components) {
-				if (it->second.id == component.entity_id && !component.deleted) {
-					for (component_t<C2> &component2 : static_cast<component_store_t<component_t<C2>> *>(component_store[temp2.family_id].get())->components) {
-						if (it->second.id == component2.entity_id && !component2.deleted) {
-							for (component_t<C3> &component3 : static_cast<component_store_t<component_t<C3>> *>(component_store[temp3.family_id].get())->components) {
-								if (it->second.id == component3.entity_id && !component3.deleted) {
-									for (component_t<C4> &component4 : static_cast<component_store_t<component_t<C4>> *>(component_store[temp4.family_id].get())->components) {
-										if (it->second.id == component4.entity_id && !component4.deleted) {
-											for (component_t<C5> &component5 : static_cast<component_store_t<component_t<C5>> *>(component_store[temp5.family_id].get())->components) {
-												if (it->second.id == component5.entity_id && !component5.deleted) {
-													func(it->second, component.data, component2.data, component3.data, component4.data, component5.data);
-												}
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
+			if (matches) {
+				// Call the functor
+				callback(it->second, *it->second.component<Cs>()...);
 			}
 		}
 	}
