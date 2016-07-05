@@ -145,8 +145,6 @@ struct actor_render_system : public base_system {
 };
 
 struct player_system : public base_system {
-	double time_since_press = 100.0;
-
 	virtual void configure() override {
 		system_name = "Player System";
 		subscribe<actor_moved_message>([this](actor_moved_message &msg) {
@@ -163,7 +161,6 @@ struct player_system : public base_system {
 	}
 
 	virtual void update(const double duration_ms) override {
-		time_since_press += duration_ms;
 		position * camera_loc = entity(player_id)->component<position>();
 
 		// Loop through the keyboard input list
@@ -171,34 +168,14 @@ struct player_system : public base_system {
 		while (!messages->empty()) {
 			key_pressed_t e = messages->front();
 			messages->pop();
-			std::cout << "Message!\n";
-		}
-
-		// TODO: This will change when the keyboard code is done on the library-side.
-		// Add a pause between key presses
-		if (time_since_press > 2.0) {
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-				emit(actor_moved_message{ entity(player_id), camera_loc->x, camera_loc->y, camera_loc->x - 1, camera_loc->y });
-				time_since_press = 0.0;
-			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-				emit(actor_moved_message{ entity(player_id), camera_loc->x, camera_loc->y, camera_loc->x + 1, camera_loc->y });
-				time_since_press = 0.0;
-			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-				emit(actor_moved_message{ entity(player_id), camera_loc->x, camera_loc->y, camera_loc->x, camera_loc->y-1 });
-				time_since_press = 0.0;
-			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
-				emit(actor_moved_message{ entity(player_id), camera_loc->x, camera_loc->y, camera_loc->x, camera_loc->y+1 });
-				time_since_press = 0.0;
-			}
-
-			// Support pressing F1 for a performance dump
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::F1)) {
+			
+			if (e.event.key.code == sf::Keyboard::Left) emit(actor_moved_message{ entity(player_id), camera_loc->x, camera_loc->y, camera_loc->x - 1, camera_loc->y });
+			if (e.event.key.code == sf::Keyboard::Right) emit(actor_moved_message{ entity(player_id), camera_loc->x, camera_loc->y, camera_loc->x + 1, camera_loc->y });
+			if (e.event.key.code == sf::Keyboard::Up) emit(actor_moved_message{ entity(player_id), camera_loc->x, camera_loc->y, camera_loc->x, camera_loc->y-1 });
+			if (e.event.key.code == sf::Keyboard::Down) emit(actor_moved_message{ entity(player_id), camera_loc->x, camera_loc->y, camera_loc->x, camera_loc->y+1 });
+			if (e.event.key.code == sf::Keyboard::F1) {
 				std::string timings = ecs_profile_dump();
 				std::cout << timings << "\n";
-				time_since_press = 0.0;
 			}
 		}
 	}
