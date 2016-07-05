@@ -2,7 +2,7 @@
 
 #include <fstream>
 #include <string>
-#include "rltk.hpp"
+#include "color_t.hpp"
 
 namespace rltk {
 

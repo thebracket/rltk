@@ -83,6 +83,8 @@ void run(std::function<void(double)> on_tick) {
                 set_mouse_button_state(event.mouseButton.button, false);
             } else if (event.type == sf::Event::MouseMoved) {
                 set_mouse_position(event.mouseMove.x, event.mouseMove.y);
+            } else if (event.type == sf::Event::KeyPressed) {
+                enqueue_key_pressed(event);
             }
         }
 

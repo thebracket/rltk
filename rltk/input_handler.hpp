@@ -10,6 +10,8 @@
  */
 
 #include <utility>
+#include <SFML/Graphics.hpp>
+#include "ecs.hpp"
 
 namespace rltk {
 
@@ -38,5 +40,14 @@ extern std::pair<int,int> get_mouse_position();
 /* Mouse button state */
 extern void set_mouse_button_state(const int button, const bool state);
 extern bool get_mouse_button_state(const int button);
+
+/* Keyboard queue */
+extern void enqueue_key_pressed(sf::Event &event);
+
+struct key_pressed_t : base_message_t {
+public:
+    key_pressed_t(sf::Event ev) : event(ev) {}
+    sf::Event event;
+};
 
 }

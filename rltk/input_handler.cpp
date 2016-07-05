@@ -42,4 +42,8 @@ std::pair<int,int> get_mouse_position() {
 	return std::make_pair(rltk::state::mouse_x, rltk::state::mouse_y);
 }
 
+void enqueue_key_pressed(sf::Event &event) {
+	emit(key_pressed_t{event});
+}
+
 }
