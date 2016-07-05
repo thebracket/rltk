@@ -402,9 +402,11 @@ struct message_t : public base_message_t {
 struct subscription_base_t {
 };
 
+struct base_system; // Forward declaration to avoid circles.
+
 template <class C>
 struct subscription_holder_t : subscription_base_t {
-	std::vector<std::pair<bool,std::function<void(C& message)>>> subscriptions;
+	std::vector<std::tuple<bool,std::function<void(C& message)>,base_system *>> subscriptions;
 };
 
 extern std::vector<std::unique_ptr<subscription_base_t>> pubsub_holder;
@@ -435,7 +437,7 @@ struct base_system {
 			pubsub_holder.resize(handle.family_id + 1);
 			pubsub_holder[handle.family_id] = std::move(std::make_unique<subscription_holder_t<MSG>>());
 		}
-		static_cast<subscription_holder_t<MSG> *>(pubsub_holder[handle.family_id].get())->subscriptions.push_back(std::make_pair(true,destination));
+		static_cast<subscription_holder_t<MSG> *>(pubsub_holder[handle.family_id].get())->subscriptions.push_back(std::make_tuple(true,destination,nullptr));
 	}
 
 	template<class MSG>
@@ -447,26 +449,8 @@ struct base_system {
 			pubsub_holder[handle.family_id] = std::move(std::make_unique<subscription_holder_t<MSG>>());
 		}
 		std::function<void(MSG &message)> destination; // Deliberately empty
-		static_cast<subscription_holder_t<MSG> *>(pubsub_holder[handle.family_id].get())->subscriptions.push_back(std::make_pair(false,destination));
+		static_cast<subscription_holder_t<MSG> *>(pubsub_holder[handle.family_id].get())->subscriptions.push_back(std::make_tuple(false,destination,this));
 		mailboxes[handle.family_id] = std::make_unique<mailbox_t<MSG>>();
-	}
-
-	template <class MSG>
-	void emit(MSG &&message) {
-		message_t<MSG> handle(message);
-		if (pubsub_holder.size() > handle.family_id) {
-			for (auto &func : static_cast<subscription_holder_t<MSG> *>(pubsub_holder[handle.family_id].get())->subscriptions) {
-				if (func.first && func.second) {
-					func.second(message);
-				} else {
-					// It is destined for the system's mailbox queue.
-					auto finder = mailboxes.find(handle.family_id);
-					if (finder != mailboxes.end()) {
-						static_cast<mailbox_t<MSG> *>(finder->second.get())->messages.push(message);
-					}
-				}
-			}
-		}
 	}
 
 	template<class MSG>
@@ -480,6 +464,24 @@ struct base_system {
 		}
 	}
 };
+
+template <class MSG>
+inline void emit(MSG &&message) {
+	message_t<MSG> handle(message);
+	if (pubsub_holder.size() > handle.family_id) {
+		for (auto &func : static_cast<subscription_holder_t<MSG> *>(pubsub_holder[handle.family_id].get())->subscriptions) {
+			if (std::get<0>(func) && std::get<1>(func)) {
+				std::get<1>(func)(message);
+			} else {
+				// It is destined for the system's mailbox queue.
+				auto finder = std::get<2>(func)->mailboxes.find(handle.family_id);
+				if (finder != std::get<2>(func)->mailboxes.end()) {
+					static_cast<mailbox_t<MSG> *>(finder->second.get())->messages.push(message);
+				}
+			}
+		}
+	}
+}
 
 extern std::vector<std::unique_ptr<base_system>> system_store;
 
