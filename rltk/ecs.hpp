@@ -382,6 +382,11 @@ struct base_message_t {
  */
 template<class C>
 struct message_t : public base_message_t {
+	message_t() {
+		C empty;
+		data = empty;
+		family();
+	}
 	message_t(C comp) : data(comp) {
 		family();
 	}
@@ -399,10 +404,19 @@ struct subscription_base_t {
 
 template <class C>
 struct subscription_holder_t : subscription_base_t {
-	std::vector<std::function<void(C& message)>> subscriptions;
+	std::vector<std::pair<bool,std::function<void(C& message)>>> subscriptions;
 };
 
 extern std::vector<std::unique_ptr<subscription_base_t>> pubsub_holder;
+
+/* Base class for subscription mailboxes */
+struct subscription_mailbox_t {
+};
+
+template <class C>
+struct mailbox_t : subscription_mailbox_t {
+	std::queue<C> messages;
+};
 
 /*
  * Systems should inherit from this class.
@@ -411,6 +425,7 @@ struct base_system {
 	virtual void configure() {}
 	virtual void update(const double duration_ms)=0;
 	std::string system_name = "Unnamed System";
+	std::unordered_map<std::size_t, std::unique_ptr<subscription_mailbox_t>> mailboxes;
 	
 	template<class MSG>
 	void subscribe(std::function<void(MSG &message)> &&destination) {
@@ -420,7 +435,20 @@ struct base_system {
 			pubsub_holder.resize(handle.family_id + 1);
 			pubsub_holder[handle.family_id] = std::move(std::make_unique<subscription_holder_t<MSG>>());
 		}
-		static_cast<subscription_holder_t<MSG> *>(pubsub_holder[handle.family_id].get())->subscriptions.push_back(destination);
+		static_cast<subscription_holder_t<MSG> *>(pubsub_holder[handle.family_id].get())->subscriptions.push_back(std::make_pair(true,destination));
+	}
+
+	template<class MSG>
+	void subscribe_mbox() {
+		MSG empty_message{};
+		message_t<MSG> handle(empty_message);
+		if (pubsub_holder.size() < handle.family_id + 1) {
+			pubsub_holder.resize(handle.family_id + 1);
+			pubsub_holder[handle.family_id] = std::move(std::make_unique<subscription_holder_t<MSG>>());
+		}
+		std::function<void(MSG &message)> destination; // Deliberately empty
+		static_cast<subscription_holder_t<MSG> *>(pubsub_holder[handle.family_id].get())->subscriptions.push_back(std::make_pair(false,destination));
+		mailboxes[handle.family_id] = std::make_unique<mailbox_t<MSG>>();
 	}
 
 	template <class MSG>
@@ -428,8 +456,27 @@ struct base_system {
 		message_t<MSG> handle(message);
 		if (pubsub_holder.size() > handle.family_id) {
 			for (auto &func : static_cast<subscription_holder_t<MSG> *>(pubsub_holder[handle.family_id].get())->subscriptions) {
-				func(message);
+				if (func.first && func.second) {
+					func.second(message);
+				} else {
+					// It is destined for the system's mailbox queue.
+					auto finder = mailboxes.find(handle.family_id);
+					if (finder != mailboxes.end()) {
+						static_cast<mailbox_t<MSG> *>(finder->second.get())->messages.push(message);
+					}
+				}
 			}
+		}
+	}
+
+	template<class MSG>
+	std::queue<MSG> * mbox() {
+		message_t<MSG> handle(MSG{});
+		auto finder = mailboxes.find(handle.family_id);
+		if (finder != mailboxes.end()) {
+			return static_cast<mailbox_t<MSG> *>(finder->second.get())->messages;
+		} else {
+			return nullptr;
 		}
 	}
 };
