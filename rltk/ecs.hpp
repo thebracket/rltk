@@ -12,6 +12,7 @@
 #include <chrono>
 #include <sstream>
 #include <iomanip>
+#include <queue>
 #include "serialization_utils.hpp"
 
 namespace rltk {
@@ -393,17 +394,12 @@ struct message_t : public base_message_t {
 	}
 };
 
-template <class C>
-struct pub_sub_handler {
-	std::function<void(C&message)> destination;
-};
-
 struct subscription_base_t {
 };
 
 template <class C>
 struct subscription_holder_t : subscription_base_t {
-	std::vector<std::function<void(C&message)>> subscriptions;
+	std::vector<std::function<void(C& message)>> subscriptions;
 };
 
 extern std::vector<std::unique_ptr<subscription_base_t>> pubsub_holder;
