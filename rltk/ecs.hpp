@@ -458,7 +458,7 @@ struct base_system {
 		message_t<MSG> handle(MSG{});
 		auto finder = mailboxes.find(handle.family_id);
 		if (finder != mailboxes.end()) {
-			return static_cast<mailbox_t<MSG> *>(finder->second.get())->messages;
+			return &static_cast<mailbox_t<MSG> *>(finder->second.get())->messages;
 		} else {
 			return nullptr;
 		}

@@ -158,11 +158,21 @@ struct player_system : public base_system {
 				emit(player_moved_message{});
 			}
 		});
+
+		subscribe_mbox<key_pressed_t>();
 	}
 
 	virtual void update(const double duration_ms) override {
 		time_since_press += duration_ms;
 		position * camera_loc = entity(player_id)->component<position>();
+
+		// Loop through the keyboard input list
+		std::queue<key_pressed_t> * messages = mbox<key_pressed_t>();
+		while (!messages->empty()) {
+			key_pressed_t e = messages->front();
+			messages->pop();
+			std::cout << "Message!\n";
+		}
 
 		// TODO: This will change when the keyboard code is done on the library-side.
 		// Add a pause between key presses

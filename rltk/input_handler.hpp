@@ -46,6 +46,7 @@ extern void enqueue_key_pressed(sf::Event &event);
 
 struct key_pressed_t : base_message_t {
 public:
+    key_pressed_t() {}
     key_pressed_t(sf::Event ev) : event(ev) {}
     sf::Event event;
 };
