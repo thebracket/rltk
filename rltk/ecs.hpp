@@ -426,8 +426,10 @@ struct base_system {
 	template <class MSG>
 	void emit(MSG &&message) {
 		message_t<MSG> handle(message);
-		for (auto &func : static_cast<subscription_holder_t<MSG> *>(pubsub_holder[handle.family_id].get())->subscriptions) {
-			func(message);
+		if (pubsub_holder.size() > handle.family_id) {
+			for (auto &func : static_cast<subscription_holder_t<MSG> *>(pubsub_holder[handle.family_id].get())->subscriptions) {
+				func(message);
+			}
 		}
 	}
 };
