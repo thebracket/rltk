@@ -413,7 +413,7 @@ struct base_system {
 	std::string system_name = "Unnamed System";
 	
 	template<class MSG>
-	void subscribe(std::function<void(MSG &message)> destination) {
+	void subscribe(std::function<void(MSG &message)> &&destination) {
 		MSG empty_message{};
 		message_t<MSG> handle(empty_message);
 		if (pubsub_holder.size() < handle.family_id + 1) {
