@@ -178,8 +178,10 @@ struct entity_t {
 		component_t<C> temp(component);
 		temp.entity_id = id;
 		if (component_store.size() < temp.family_id+1) {
-			component_store.push_back(std::make_unique<component_store_t<component_t<C>>>());
+			component_store.resize(temp.family_id+1);
 		}
+		if (!component_store[temp.family_id]) component_store[temp.family_id] = std::move(std::make_unique<component_store_t<component_t<C>>>());
+
 		static_cast<component_store_t<component_t<C>> *>(component_store[temp.family_id].get())->components.push_back(temp);
 		component_mask.set(temp.family_id);
 		return this;
@@ -366,7 +368,7 @@ inline void ecs_garbage_collect() {
 
 	// Now we erase components
 	for (std::unique_ptr<base_component_store> &store : component_store) {
-		store->really_delete();
+		if (store) store->really_delete();
 	}
 }
 
@@ -435,6 +437,8 @@ struct base_system {
 		message_t<MSG> handle(empty_message);
 		if (pubsub_holder.size() < handle.family_id + 1) {
 			pubsub_holder.resize(handle.family_id + 1);
+		}
+		if (!pubsub_holder[handle.family_id]) {
 			pubsub_holder[handle.family_id] = std::move(std::make_unique<subscription_holder_t<MSG>>());
 		}
 		static_cast<subscription_holder_t<MSG> *>(pubsub_holder[handle.family_id].get())->subscriptions.push_back(std::make_tuple(true,destination,nullptr));
@@ -445,7 +449,9 @@ struct base_system {
 		MSG empty_message{};
 		message_t<MSG> handle(empty_message);
 		if (pubsub_holder.size() < handle.family_id + 1) {
-			pubsub_holder.resize(handle.family_id + 1);
+			pubsub_holder.resize(handle.family_id + 1);			
+		}
+		if (!pubsub_holder[handle.family_id]) {
 			pubsub_holder[handle.family_id] = std::move(std::make_unique<subscription_holder_t<MSG>>());
 		}
 		std::function<void(MSG &message)> destination; // Deliberately empty
