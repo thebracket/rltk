@@ -357,7 +357,7 @@ inline void ecs_garbage_collect() {
 	for (auto it=entity_store.begin(); it!=entity_store.end(); ++it) {
 		if (it->second.deleted) {
 			for (std::unique_ptr<base_component_store> &store : component_store) {
-				store->erase_by_entity_id(it->second.id);
+				if (store) store->erase_by_entity_id(it->second.id);
 			}
 			entities_to_delete.insert(it->second.id);
 		}
