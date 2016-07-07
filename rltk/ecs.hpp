@@ -540,11 +540,11 @@ inline void ecs_save(std::ostream &lbfile) {
 	// For each component type
 	std::size_t number_of_components = 0;
 	for (auto &it : component_store) {
-		number_of_components += it->size();
+		if (it) number_of_components += it->size();
 	}
 	serialize(lbfile, number_of_components);
 	for (auto &it : component_store) {
-		it->save(lbfile);
+		if (it) it->save(lbfile);
 	}
 }
 
