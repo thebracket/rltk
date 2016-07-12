@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <string>
+#include <vector>
 #include "color_t.hpp"
 
 namespace rltk {
@@ -25,6 +26,14 @@ inline void serialize(std::ostream &lbfile, const rltk::color_t &col) {
 	serialize<uint8_t>(lbfile, col.g);
 	serialize<uint8_t>(lbfile, col.b);
 }
+template<class T>
+inline void serialize(std::ostream &lbfile, const std::vector<T> &vec) {
+	serialize(lbfile, vec.size());
+	for (const T &item : vec) {
+		serialize(lbfile, item);
+	}
+}
+
 
 template<typename T>
 inline void deserialize(std::istream &lbfile, T &target)
@@ -50,6 +59,17 @@ inline void deserialize(std::istream &lbfile, rltk::color_t &target) {
 	deserialize(lbfile, target.r);
 	deserialize(lbfile, target.g);
 	deserialize(lbfile, target.b);
+}
+template<class T>
+inline void deserialize(std::istream &lbfile, std::vector<T> &vec) {
+	std::size_t size;
+	deserialize(lbfile, size);
+	vec.resize(size);
+	for (std::size_t i=0; i<size; ++i) {
+		T tmp;
+		deserialize(lbfile, tmp);
+		vec[i] = tmp;
+	}
 }
 
 }
