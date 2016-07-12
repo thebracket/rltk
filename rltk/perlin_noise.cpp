@@ -74,6 +74,22 @@ double perlin_noise::noise(double x, double y, double z) {
 	return (res + 1.0)/2.0;
 }
 
+double perlin_noise::noise_octaves(double x, double y, double z, int octaves, double persistence, double frequency) {
+	double total = 0;
+    double amplitude = 1;
+    double maxValue = 0;  // Used for normalizing result to 0.0 - 1.0
+    for(int i=0;i<octaves;i++) {
+        total += noise(x * frequency, y * frequency, z * frequency) * amplitude;
+        
+        maxValue += amplitude;
+        
+        amplitude *= persistence;
+        frequency *= 2;
+    }
+    
+    return total/maxValue;
+}
+
 double perlin_noise::fade(double t) { 
 	return t * t * t * (t * (t * 6 - 15) + 10);
 }
