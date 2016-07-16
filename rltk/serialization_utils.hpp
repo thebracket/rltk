@@ -26,11 +26,22 @@ inline void serialize(std::ostream &lbfile, const rltk::color_t &col) {
 	serialize<uint8_t>(lbfile, col.g);
 	serialize<uint8_t>(lbfile, col.b);
 }
+
 template<class T>
 inline void serialize(std::ostream &lbfile, const std::vector<T> &vec) {
-	serialize(lbfile, vec.size());
-	for (const T &item : vec) {
-		serialize(lbfile, item);
+	std::size_t sz = vec.size();
+	serialize(lbfile, sz);
+	for (std::size_t i=0; i<sz; ++i) {
+		serialize(lbfile, vec[i]);
+	}
+}
+template<>
+inline void serialize(std::ostream &lbfile, const std::vector<bool> &vec) {
+	std::size_t sz = vec.size();
+	serialize(lbfile, sz);
+	for (std::size_t i=0; i<sz; ++i) {
+		bool b = vec[i];
+		serialize(lbfile, b);
 	}
 }
 
