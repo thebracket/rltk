@@ -197,9 +197,15 @@ color_t lerp(const color_t &first, const color_t &second, float amount) {
 	const float gdiff = g2 - g1;
 	const float bdiff = b2 - b1;
 
-	const float red = r1 + (rdiff * amount);
-	const float green = g1 + (gdiff * amount);
-	const float blue = b1 + (bdiff * amount);
+	float red = r1 + (rdiff * amount);
+	float green = g1 + (gdiff * amount);
+	float blue = b1 + (bdiff * amount);
+	if (red > 255.0F) red = 255.0F;
+	if (green > 255.0F) green = 255.0F;
+	if (blue > 255.0F) blue = 255.0F;
+	if (red < 0.0F) red = 0.0F;
+	if (green < 0.0F) green = 0.0F;
+	if (blue < 0.0F) blue = 0.0F;
 
 	const int r = static_cast<const int>(red);
 	const int g = static_cast<const int>(green);
