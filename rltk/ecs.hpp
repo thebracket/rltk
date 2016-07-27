@@ -321,13 +321,16 @@ inline void each(F&& callback) {
  */
 inline void delete_entity(const std::size_t id) {
 	entity(id)->deleted = true;
+	for (auto &store : component_store) {
+		if (store) store->erase_by_entity_id(id);
+	}
 }
 
 /*
  * Marks an entity as deleted.
  */
 inline void delete_entity(entity_t &e) {
-	e.deleted = true;
+	delete_entity(e.id);
 }
 
 /*
