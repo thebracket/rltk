@@ -17,12 +17,12 @@ public:
 	// Generate a new permutation vector based on the value of seed
 	perlin_noise(unsigned int seed);
 	// Get a noise value, for 2D images z can have any value
-	double noise(double x, double y, double z);
-	double noise_octaves(double x, double y, double z, int octaves, double persistence, double frequency);
+	double noise(double x, double y, double z) const noexcept;
+	double noise_octaves(double x, double y, double z, int octaves, double persistence, double frequency) const noexcept;
 private:
-	double fade(double t);
-	double lerp(double t, double a, double b);
-	double grad(int hash, double x, double y, double z);
+	double fade(double t) const noexcept;
+	double lerp(double t, double a, double b) const noexcept;
+	double grad(int hash, double x, double y, double z) const noexcept;
 };
 
 }

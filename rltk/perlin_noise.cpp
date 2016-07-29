@@ -45,7 +45,7 @@ perlin_noise::perlin_noise(unsigned int seed) {
 	p.insert(p.end(), p.begin(), p.end());
 }
 
-double perlin_noise::noise(double x, double y, double z) {
+double perlin_noise::noise(double x, double y, double z) const noexcept {
 	// Find the unit cube that contains the point
 	int X = (int) floor(x) & 255;
 	int Y = (int) floor(y) & 255;
@@ -74,7 +74,7 @@ double perlin_noise::noise(double x, double y, double z) {
 	return (res + 1.0)/2.0;
 }
 
-double perlin_noise::noise_octaves(double x, double y, double z, int octaves, double persistence, double frequency) {
+double perlin_noise::noise_octaves(double x, double y, double z, int octaves, double persistence, double frequency) const noexcept {
 	double total = 0;
     double amplitude = 1;
     double maxValue = 0;  // Used for normalizing result to 0.0 - 1.0
@@ -90,15 +90,15 @@ double perlin_noise::noise_octaves(double x, double y, double z, int octaves, do
     return total/maxValue;
 }
 
-double perlin_noise::fade(double t) { 
+double perlin_noise::fade(double t) const noexcept { 
 	return t * t * t * (t * (t * 6 - 15) + 10);
 }
 
-double perlin_noise::lerp(double t, double a, double b) { 
+double perlin_noise::lerp(double t, double a, double b) const noexcept { 
 	return a + t * (b - a); 
 }
 
-double perlin_noise::grad(int hash, double x, double y, double z) {
+double perlin_noise::grad(int hash, double x, double y, double z) const noexcept {
 	int h = hash & 15;
 	// Convert lower 4 bits of hash inot 12 gradient directions
 	double u = h < 8 ? x : y,
