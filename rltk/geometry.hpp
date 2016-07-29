@@ -23,7 +23,9 @@ std::pair<int, int> project_angle(const int x, const int y, const double radius,
  * Provides a correct 2D distance between two points.
  */
 inline float distance2d(int x1, int y1, int x2, int y2) {
-	return std::sqrt( std::pow(x1 - x2, 2.0) + std::pow(y1-y2, 2.0) );
+	float dx = (float)x1 - (float)x2;
+    float dy = (float)y1 - (float)y2;
+    return std::sqrt((dx*dx) + (dy*dy));
 }
 
 /*
@@ -31,7 +33,18 @@ inline float distance2d(int x1, int y1, int x2, int y2) {
  * with other squared distances.
  */
 inline float distance2d_squared(int x1, int y1, int x2, int y2) {
-	return std::pow(x1 - x2, 2.0) + std::pow(y1-y2, 2.0);
+    float dx = (float)x1 - (float)x2;
+    float dy = (float)y1 - (float)y2;
+    return (dx*dx) + (dy*dy);
+}
+
+/*
+ * Provides 2D Manhattan distance between two points.
+ */
+inline float distance2d_manhattan(int x1, int y1, int x2, int y2) {
+    float dx = (float)x1 - (float)x2;
+    float dy = (float)y1 - (float)y2;
+    return std::abs(dx) + std::abs(dy);
 }
 
 /*
@@ -39,7 +52,10 @@ inline float distance2d_squared(int x1, int y1, int x2, int y2) {
  */
 inline float distance3d(int x1, int y1, int z1, int x2,	int y2, int z2)
 {
-	return std::sqrt(std::pow(x1 - x2, 2.0) + std::pow(y1 - y2, 2.0)+ std::pow(z1 - z2, 2.0));
+	float dx = (float)x1 - (float)x2;
+    float dy = (float)y1 - (float)y2;
+    float dz = (float)z1 - (float)z2;
+    return std::sqrt((dx*dx) + (dy*dy) + (dz*dz));
 }
 
 /*
@@ -48,7 +64,21 @@ inline float distance3d(int x1, int y1, int z1, int x2,	int y2, int z2)
  */
 inline float distance3d_squared(int x1, int y1, int z1, int x2,	int y2, int z2)
 {
-	return std::pow(x1 - x2, 2.0) + std::pow(y1 - y2, 2.0) + std::pow(z1 - z2, 2.0);
+    float dx = (float)x1 - (float)x2;
+    float dy = (float)y1 - (float)y2;
+    float dz = (float)z1 - (float)z2;
+    return (dx*dx) + (dy*dy) + (dz*dz);
+}
+
+/*
+ * Provides Manhattan distance between two 3D points.
+ */
+inline float distance3d_manhattan(int x1, int y1, int z1, int x2, int y2, int z2)
+{
+    float dx = (float)x1 - (float)x2;
+    float dy = (float)y1 - (float)y2;
+    float dz = (float)z1 - (float)z2;
+    return std::abs(dx) + std::abs(dy) + std::abs(dz);
 }
 
 /*

@@ -4,8 +4,6 @@
 
 namespace rltk {
 
-constexpr double DEGRAD = 3.14159 / 180;
-
 /*
  * From a given point x/y, project forward radius units (generally tiles) at an angle of degrees_radians degrees
  * (in radians).
