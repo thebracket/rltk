@@ -214,7 +214,7 @@ std::shared_ptr<navigation_path<location_t>> find_path(const location_t start, c
 
 	a_star_search.SetStartAndGoalStates(a_start, a_end);
 	unsigned int search_state;
-	unsigned int search_steps = 0;
+	std::size_t search_steps = 0;
 
 	do {
 		search_state = a_star_search.SearchStep();
