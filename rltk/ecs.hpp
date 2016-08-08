@@ -195,7 +195,7 @@ struct entity_t {
 		if (deleted) throw std::runtime_error("Entity is deleted");
 		C empty_component;
 		component_t<C> temp(empty_component);
-		if (!component_mask.test(temp.family_id)) throw std::runtime_error("Entity #" + std::to_string(id) + " does not have the requested component.");
+		if (!component_mask.test(temp.family_id)) return nullptr;
 		for (component_t<C> &component : static_cast<component_store_t<component_t<C>> *>(component_store[temp.family_id].get())->components) {
 			if (component.entity_id == id) return &component.data;
 		}
