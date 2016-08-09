@@ -133,6 +133,15 @@ void virtual_terminal::box(const int x, const int y, const int w, const int h, c
 	}
 }
 
+void virtual_terminal::fill(const int left_x, const int top_y, const int right_x, const int bottom_y, const uint8_t glyph, const color_t &fg, const color_t &bg) noexcept {
+	for (int y=top_y; y<bottom_y; ++y) {
+		for (int x=left_x; x<right_x; ++x) {
+			set_char(x, y, vchar{glyph, fg, bg});
+		}
+	}
+}
+
+
 void virtual_terminal::draw_sprite(const int x, const int y, xp::rex_sprite &sprite) {
 	const int width = sprite.get_width();
 	const int height = sprite.get_height();

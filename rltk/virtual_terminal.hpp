@@ -98,6 +98,11 @@ public:
 	void box(const int x, const int y, const int w, const int h, const color_t &fg = colors::WHITE, const color_t &bg = colors::BLACK, bool double_lines=false) noexcept;
 
 	/*
+	 * Fill a region with a specified character
+	 */
+	void fill(const int left_x, const int top_y, const int right_x, const int bottom_y, const uint8_t glyph, const color_t &fg = colors::WHITE, const color_t &bg = colors::BLACK) noexcept;
+
+	/*
 	 * Draw a REX sprite at the specified location.
 	 */
 	void draw_sprite(const int x, const int y, xp::rex_sprite &sprite);
