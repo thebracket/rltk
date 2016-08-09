@@ -191,8 +191,8 @@ struct entity_t {
 	 * Find a component of the specified type that belongs to the entity.
 	 */
 	template <class C>
-	inline C * component() {
-		if (deleted) throw std::runtime_error("Entity is deleted");
+	inline C * component() noexcept {
+		if (deleted) return nullptr;
 		C empty_component;
 		component_t<C> temp(empty_component);
 		if (!component_mask.test(temp.family_id)) return nullptr;
@@ -223,10 +223,10 @@ inline void unset_component_mask(const std::size_t id, const std::size_t family_
  * entity(ID) is used to reference an entity. So you can, for example, do:
  * entity(12)->component<position_component>()->x = 3;
  */
-inline entity_t * entity(const std::size_t id) {
+inline entity_t * entity(const std::size_t id) noexcept {
 	auto finder = entity_store.find(id);
-	if (finder == entity_store.end()) throw std::runtime_error("Entity with ID " + std::to_string(id) + " does not exist");
-	if (finder->second.deleted) throw std::runtime_error("Entity #" + std::to_string(id) + " is deleted");
+	if (finder == entity_store.end()) return nullptr;
+	if (finder->second.deleted) return nullptr;
 	return &finder->second;
 }
 
