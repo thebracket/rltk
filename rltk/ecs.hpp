@@ -319,8 +319,11 @@ inline void each(F&& callback) {
 /*
  * Marks an entity (specified by ID#) as deleted.
  */
-inline void delete_entity(const std::size_t id) {
-	entity(id)->deleted = true;
+inline void delete_entity(const std::size_t id) noexcept {
+	entity_t * e = entity(id);
+	if (e == nullptr) return;
+
+	e->deleted = true;
 	for (auto &store : component_store) {
 		if (store) store->erase_by_entity_id(id);
 	}
@@ -329,7 +332,7 @@ inline void delete_entity(const std::size_t id) {
 /*
  * Marks an entity as deleted.
  */
-inline void delete_entity(entity_t &e) {
+inline void delete_entity(entity_t &e) noexcept {
 	delete_entity(e.id);
 }
 
@@ -337,11 +340,13 @@ inline void delete_entity(entity_t &e) {
  * Marks an entity's component as deleted.
  */
 template<class C>
-inline void delete_component(const std::size_t entity_id, bool delete_entity_if_empty=false) {
+inline void delete_component(const std::size_t entity_id, bool delete_entity_if_empty=false) noexcept {
+	entity_t * eptr = entity(entity_id);
+	if (eptr == nullptr) return;
 	entity_t e = *entity(entity_id);
 	C empty_component;
 	component_t<C> temp(empty_component);
-	if (!e.component_mask.test(temp.family_id)) throw std::runtime_error("Entity #" + std::to_string(entity_id) + " does not have a component to delete.");
+	if (!e.component_mask.test(temp.family_id)) return;
 	for (component_t<C> &component : static_cast<component_store_t<component_t<C>> *>(component_store[temp.family_id].get())->components) {
 		if (component.entity_id == entity_id) {
 			component.deleted = true;
