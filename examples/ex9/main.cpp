@@ -45,7 +45,7 @@ struct location_t {
 	bool operator==(location_t &rhs) { return (std::floor(x)==std::floor(rhs.x) && std::floor(y)==std::floor(rhs.y)); }
 
 	location_t() {}
-	location_t(const int X, const int Y) : x(X), y(Y) {}
+	location_t(const int X, const int Y) : x(static_cast<float>(X)), y(static_cast<float>(Y)) {}
 };
 
 // Now we define our basic map. Why a struct? Because a struct is just a class with
@@ -122,7 +122,7 @@ struct navigator {
 	// for now we'll just use a simple euclidian distance squared.
 	// The geometry system defines one for us.
 	static float get_distance_estimate(location_t &pos, location_t &goal) {
-		float d = distance2d_squared(pos.x, pos.y, goal.x, goal.y);
+		float d = distance2d_squared(static_cast<int>(pos.x), static_cast<int>(pos.y), static_cast<int>(goal.x), static_cast<int>(goal.y));
 		return d;
 	}
 
@@ -139,16 +139,16 @@ struct navigator {
 	static bool get_successors(location_t pos, std::vector<location_t> &successors) {
 		//std::cout << pos.x << "/" << pos.y << "\n";
 
-		if (map.walkable[map.at(pos.x-1, pos.y-1)]) successors.push_back(location_t(pos.x-1, pos.y-1));
-		if (map.walkable[map.at(pos.x, pos.y-1)]) successors.push_back(location_t(pos.x, pos.y-1));
-		if (map.walkable[map.at(pos.x+1, pos.y-1)]) successors.push_back(location_t(pos.x+1, pos.y-1));
+		if (map.walkable[map.at(static_cast<int>(pos.x-1), static_cast<int>(pos.y-1))]) successors.push_back(location_t(static_cast<int>(pos.x-1), static_cast<int>(pos.y-1)));
+		if (map.walkable[map.at(static_cast<int>(pos.x), static_cast<int>(pos.y-1))]) successors.push_back(location_t(static_cast<int>(pos.x), static_cast<int>(pos.y-1)));
+		if (map.walkable[map.at(static_cast<int>(pos.x+1), static_cast<int>(pos.y-1))]) successors.push_back(location_t(static_cast<int>(pos.x+1), static_cast<int>(pos.y-1)));
 
-		if (map.walkable[map.at(pos.x-1, pos.y)]) successors.push_back(location_t(pos.x-1, pos.y));
-		if (map.walkable[map.at(pos.x+1, pos.y)]) successors.push_back(location_t(pos.x+1, pos.y));
+		if (map.walkable[map.at(static_cast<int>(pos.x-1), static_cast<int>(pos.y))]) successors.push_back(location_t(static_cast<int>(pos.x-1), static_cast<int>(pos.y)));
+		if (map.walkable[map.at(static_cast<int>(pos.x+1), static_cast<int>(pos.y))]) successors.push_back(location_t(static_cast<int>(pos.x+1), static_cast<int>(pos.y)));
 
-		if (map.walkable[map.at(pos.x-1, pos.y+1)]) successors.push_back(location_t(pos.x-1, pos.y+1));
-		if (map.walkable[map.at(pos.x, pos.y+1)]) successors.push_back(location_t(pos.x, pos.y+1));
-		if (map.walkable[map.at(pos.x+1, pos.y+1)]) successors.push_back(location_t(pos.x+1, pos.y+1));
+		if (map.walkable[map.at(static_cast<int>(pos.x-1), static_cast<int>(pos.y+1))]) successors.push_back(location_t(static_cast<int>(pos.x-1), static_cast<int>(pos.y+1)));
+		if (map.walkable[map.at(static_cast<int>(pos.x), static_cast<int>(pos.y+1))]) successors.push_back(location_t(static_cast<int>(pos.x), static_cast<int>(pos.y+1)));
+		if (map.walkable[map.at(static_cast<int>(pos.x+1), static_cast<int>(pos.y+1))]) successors.push_back(location_t(static_cast<int>(pos.x+1), static_cast<int>(pos.y+1)));
 		return true;
 	}
 
@@ -167,10 +167,10 @@ struct navigator {
 	// We're using the Bresneham's line optimization for pathing this time, which requires a few extra
 	// static methods. These are designed to translate between your map format and co-ordinates used by
 	// the library (we don't want to force you to structure things a certain way).
-	static int get_x(const location_t &loc) { return loc.x; }
-	static int get_y(const location_t &loc) { return loc.y; }
+	static int get_x(const location_t &loc) { return static_cast<int>(loc.x); }
+	static int get_y(const location_t &loc) { return static_cast<int>(loc.y); }
 	static location_t get_xy(const int &x, const int &y) { return location_t{x,y}; }
-	static bool is_walkable(const location_t &loc) { return map.walkable[map.at(loc.x, loc.y)]; }
+	static bool is_walkable(const location_t &loc) { return map.walkable[map.at(static_cast<int>(loc.x), static_cast<int>(loc.y))]; }
 };
 
 // Lets go really fast!
@@ -182,10 +182,10 @@ double tick_time = 0.0;
 inline void visibility_sweep() {
 	visibility_sweep_2d<location_t, navigator>(dude_position, 10, 
 		[] (location_t reveal) { 
-			map.revealed[map.at(reveal.x, reveal.y)] = true;
-			map.visible[map.at(reveal.x, reveal.y)] = true;
+			map.revealed[map.at(static_cast<int>(reveal.x), static_cast<int>(reveal.y))] = true;
+			map.visible[map.at(static_cast<int>(reveal.x), static_cast<int>(reveal.y))] = true;
 		},
-		[] (auto test_visibility) { return map.walkable[map.at(test_visibility.x, test_visibility.y)]; }
+		[] (auto test_visibility) { return map.walkable[map.at(static_cast<int>(test_visibility.x), static_cast<int>(test_visibility.y))]; }
 	);
 }
 
@@ -212,8 +212,8 @@ void tick(double duration_ms) {
 
 			// If the mouse is pointing at a walkable location, and the left button is down - path to the mouse.
 			if (map.walkable[map.at(terminal_x, terminal_y)] && get_mouse_button_state(rltk::button::LEFT)) {
-				destination.x = terminal_x;
-				destination.y = terminal_y;
+				destination.x = static_cast<float>(terminal_x);
+				destination.y = static_cast<float>(terminal_y);
 
 				// Now determine how to get there
 				if (path) path.reset();
@@ -258,7 +258,7 @@ void tick(double duration_ms) {
 		// We're going to show off a bit and "lerp" the color along the path; the red
 		// lightens as it approaches the destination. This is a preview of some of the
 		// color functions.
-		const float n_steps = path->steps.size();
+		const float n_steps = static_cast<float>(path->steps.size());
 		float i = 0;
 		for (auto step : path->steps) {
 			const float lerp_amount = i / n_steps;
@@ -276,7 +276,7 @@ void tick(double duration_ms) {
 	}
 
 	// Render our destination
-	term(1)->set_char(term(1)->at(destination.x, destination.y), destination_glyph);
+	term(1)->set_char(term(1)->at(static_cast<int>(destination.x), static_cast<int>(destination.y)), destination_glyph);
 
 	// Finally, we render the @ symbol. dude_x and dude_y are in terminal coordinates.
 	//term(1)->set_char(term(1)->at(dude_position.x, dude_position.y), dude);

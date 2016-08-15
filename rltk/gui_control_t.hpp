@@ -96,12 +96,12 @@ struct gui_radiobuttons_t : public gui_control_t {
 	gui_radiobuttons_t(const int X, const int Y, const std::string heading, const color_t fg, const color_t bg, std::vector<radio> opts) :
 		caption(heading), foreground(fg), background(bg), options(opts), x(X), y(Y)
 	{
-		width = caption.size();
+		width = static_cast<int>(caption.size());
 		for (const radio &r : options) {
-			if (width < r.label.size()) width = r.label.size();
+			if (width < r.label.size()) width = static_cast<int>(r.label.size());
 			if (r.checked) selected_value = r.value;
 		}
-		height = options.size() + 1;
+		height = static_cast<int>(options.size()) + 1;
 
 		on_mouse_down = [] (gui_control_t * ctrl, int tx, int ty) {
 			gui_radiobuttons_t * me = static_cast<gui_radiobuttons_t *>(ctrl);
@@ -207,9 +207,9 @@ struct gui_listbox_t : public gui_control_t {
 		item_fg(ITEM_FG), item_bg(ITEM_BG), selected_fg(sel_fg), selected_bg(sel_bg) 
 	{
 		caption = label;
-		w = caption.size() + 2;
+		w = static_cast<int>(caption.size()) + 2;
 		for (const list_item &item : items) {
-			if (w < item.label.size()) w = item.label.size();
+			if (w < item.label.size()) w = static_cast<int>(item.label.size());
 		}
 
 		on_mouse_down = [] (gui_control_t * ctrl, int tx, int ty) {

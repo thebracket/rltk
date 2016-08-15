@@ -110,7 +110,7 @@ public:
 	/*
 	 * Renders the terminal to the specified renderable. Don't call this directly - the toolkit will take care of it.
 	 */
-	void render(sf::RenderWindow &window) noexcept;
+	void render(sf::RenderWindow &window);
 
 	/*
 	 * Sets the global translucency level for the console. You can use this to make a translucent console layer on top of

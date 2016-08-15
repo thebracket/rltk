@@ -53,7 +53,7 @@ void virtual_terminal_sparse::render(sf::RenderWindow &window) {
 				sprite.setColor(bgsfml);
 				sprite.setOrigin(origin);
 				sprite.setPosition(position);
-				sprite.setRotation(target.angle);
+				sprite.setRotation(static_cast<float>(target.angle));
 				backing.draw(sprite);
 			}
 			sf::Color fgsfml = color_to_sfml(target.foreground);
@@ -63,7 +63,7 @@ void virtual_terminal_sparse::render(sf::RenderWindow &window) {
 			sprite.setColor(fgsfml);
 			sprite.setOrigin(origin);
 			sprite.setPosition(position);
-			sprite.setRotation(target.angle);
+			sprite.setRotation(static_cast<float>(target.angle));
 			backing.draw(sprite);
 
 		}
@@ -72,7 +72,7 @@ void virtual_terminal_sparse::render(sf::RenderWindow &window) {
 	// Draw the backing
 	backing.display();
 	sf::Sprite compositor(backing.getTexture());
-	compositor.move(offset_x, offset_y);
+	compositor.move(static_cast<float>(offset_x), static_cast<float>(offset_y));
 	compositor.setColor(sf::Color(tint.r, tint.g, tint.b, alpha));
 	window.draw(sf::Sprite(compositor));
 	dirty = false;

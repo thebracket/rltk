@@ -76,7 +76,7 @@ void layer_t::render(sf::RenderWindow &window) {
 		owner_draw_func(this, *backing);
 		backing->display();
 		sf::Sprite compositor(backing->getTexture());
-		compositor.move(x, y);
+		compositor.move(static_cast<float>(x), static_cast<float>(y));
 		window.draw(sf::Sprite(compositor));
 	}
 }

@@ -525,7 +525,7 @@ inline void ecs_tick(const double duration_ms) {
 		std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 		sys->update(duration_ms);
 		std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
-		auto duration = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
+		double duration = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count());
 
 		system_profiling[count].last = duration;
 		if (duration > system_profiling[count].worst) system_profiling[count].worst = duration;

@@ -40,7 +40,7 @@ void gui_radiobuttons_t::render(virtual_terminal * console) {
 void gui_hbar_t::render(virtual_terminal * console) {
 	float fullness = (float)(value - min) / (float)max;
 	float full_w_f = fullness * (float)w;
-	int full_w = full_w_f;
+	int full_w = static_cast<int>(full_w_f);
 
 	std::stringstream ss;
 	for (int i=0; i<w; ++i) {
@@ -51,7 +51,7 @@ void gui_hbar_t::render(virtual_terminal * console) {
 	std::stringstream display;
 	display << prefix << value << "/" << max;
 	std::string tmp = display.str();
-	const int start = (w/2) - (tmp.size() / 2);
+	const int start = static_cast<int>((w/2) - (tmp.size() / 2));
 	for (int i=0; i < std::min(tmp.size(),w); ++i) {
 		s[i + start] = tmp[i];
 	}
@@ -69,7 +69,7 @@ void gui_hbar_t::render(virtual_terminal * console) {
 void gui_vbar_t::render(virtual_terminal * console) {
 	float fullness = (float)(value - min) / (float)max;
 	float full_h_f = fullness * (float)h;
-	int full_h = full_h_f;
+	int full_h = static_cast<int>(full_h_f);
 
 	std::stringstream ss;
 	for (int i=0; i<h; ++i) {
@@ -80,7 +80,7 @@ void gui_vbar_t::render(virtual_terminal * console) {
 	std::stringstream display;
 	display << prefix << value << "/" << max;
 	std::string tmp = display.str();
-	const int start = (h/2) - (tmp.size() / 2);
+	const int start = static_cast<int>((h/2) - (tmp.size() / 2));
 	for (int i=0; i < std::min(tmp.size(), h); ++i) {
 		s[i + start] = tmp[i];
 	}
@@ -96,7 +96,7 @@ void gui_vbar_t::render(virtual_terminal * console) {
 }
 
 void gui_listbox_t::render(virtual_terminal * console) {
-	console->box(x, y, w+3, items.size()+1, caption_fg, caption_bg, false);
+	console->box(x, y, w+3, static_cast<int>(items.size())+1, caption_fg, caption_bg, false);
 	console->print(x+3, y, caption, caption_fg, caption_bg);
 	console->set_char(x+1, y, vchar{180, caption_fg, caption_bg});
 	console->set_char(x+2, y, vchar{' ', caption_fg, caption_bg});

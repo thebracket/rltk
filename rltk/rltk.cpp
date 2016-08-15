@@ -70,7 +70,7 @@ void run(std::function<void(double)> on_tick) {
             if (event.type == sf::Event::Closed) {
                 main_window->close();
             } else if (event.type == sf::Event::Resized) {
-                main_window->setView(sf::View(sf::FloatRect(0.f, 0.f, event.size.width, event.size.height))); 
+                main_window->setView(sf::View(sf::FloatRect(0.f, 0.f, static_cast<float>(event.size.width), static_cast<float>(event.size.height)))); 
                 if (main_detail::use_root_console) console->resize_pixels(event.size.width, event.size.height);
                 if (gui) gui->on_resize(event.size.width, event.size.height);
             } else if (event.type == sf::Event::LostFocus) {

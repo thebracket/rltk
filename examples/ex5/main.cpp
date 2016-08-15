@@ -220,7 +220,7 @@ void tick(double duration_ms) {
 		// We're going to show off a bit and "lerp" the color along the path; the red
 		// lightens as it approaches the destination. This is a preview of some of the
 		// color functions.
-		const float n_steps = path->steps.size();
+		const float n_steps = static_cast<float>(path->steps.size());
 		float i = 0;
 		for (auto step : path->steps) {
 			const float lerp_amount = i / n_steps;

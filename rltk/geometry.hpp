@@ -92,7 +92,7 @@ inline void line_func(int x1, int y1, const int x2, const int y2, std::function<
     const float dest_x = static_cast<float>(x2);
     const float dest_y = static_cast<float>(y2);
     const float n_steps = distance2d(x1,y1,x2,y2);
-    const int steps = std::floor(n_steps) + 1;
+    const int steps = static_cast<const int>(std::floor(n_steps) + 1);
     const float slope_x = (dest_x - x) / n_steps;
     const float slope_y = (dest_y - y) / n_steps;
 
@@ -120,7 +120,7 @@ inline void line_func_cancellable(int x1, int y1, const int x2, const int y2, st
     const float dest_x = static_cast<float>(x2);
     const float dest_y = static_cast<float>(y2);
     const float n_steps = distance2d(x1,y1,x2,y2);
-    const int steps = std::floor(n_steps) + 1;
+    const int steps = static_cast<const int>(std::floor(n_steps) + 1);
     const float slope_x = (dest_x - x) / n_steps;
     const float slope_y = (dest_y - y) / n_steps;
 

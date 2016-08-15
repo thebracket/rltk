@@ -40,30 +40,30 @@ void virtual_terminal::resize_chars(const int width, const int height) noexcept 
 			for (int x=0; x<width; ++x) {
 				const int idx = ((y*width) + x)*4;
 				const int idx2 = idx + idx_half;
-				vertices[idx].position = sf::Vector2f(x * font->character_size.first, y * font->character_size.second);
-				vertices[idx+1].position = sf::Vector2f((x+1) * font->character_size.first, y * font->character_size.second);
-				vertices[idx+2].position = sf::Vector2f((x+1) * font->character_size.first, (y+1) * font->character_size.second);
-				vertices[idx+3].position = sf::Vector2f(x * font->character_size.first, (y+1) * font->character_size.second);
+				vertices[idx].position = sf::Vector2f(static_cast<float>(x * font->character_size.first), static_cast<float>(y * font->character_size.second));
+				vertices[idx+1].position = sf::Vector2f(static_cast<float>((x+1) * font->character_size.first), static_cast<float>(y * font->character_size.second));
+				vertices[idx+2].position = sf::Vector2f(static_cast<float>((x+1) * font->character_size.first), static_cast<float>((y+1) * font->character_size.second));
+				vertices[idx+3].position = sf::Vector2f(static_cast<float>(x * font->character_size.first), static_cast<float>((y+1) * font->character_size.second));
 
-				vertices[idx].texCoords = sf::Vector2f( space_x, space_y );
-				vertices[idx+1].texCoords = sf::Vector2f( space_x + font_width, space_y );
-				vertices[idx+2].texCoords = sf::Vector2f( space_x + font_width, space_y + font_height );
-				vertices[idx+3].texCoords = sf::Vector2f( space_x, space_y + font_height );
+				vertices[idx].texCoords = sf::Vector2f(static_cast<float>(space_x), static_cast<float>(space_y) );
+				vertices[idx+1].texCoords = sf::Vector2f(static_cast<float>(space_x + font_width), static_cast<float>(space_y) );
+				vertices[idx+2].texCoords = sf::Vector2f(static_cast<float>(space_x + font_width), static_cast<float>(space_y + font_height) );
+				vertices[idx+3].texCoords = sf::Vector2f(static_cast<float>(space_x), static_cast<float>(space_y + font_height ));
 
-				vertices[idx2].position = sf::Vector2f(x * font->character_size.first, y * font->character_size.second);
-				vertices[idx2+1].position = sf::Vector2f((x+1) * font->character_size.first, y * font->character_size.second);
-				vertices[idx2+2].position = sf::Vector2f((x+1) * font->character_size.first, (y+1) * font->character_size.second);
-				vertices[idx2+3].position = sf::Vector2f(x * font->character_size.first, (y+1) * font->character_size.second);
+				vertices[idx2].position = sf::Vector2f(static_cast<float>(x * font->character_size.first), static_cast<float>(y * font->character_size.second));
+				vertices[idx2+1].position = sf::Vector2f(static_cast<float>((x+1) * font->character_size.first), static_cast<float>(y * font->character_size.second));
+				vertices[idx2+2].position = sf::Vector2f(static_cast<float>((x+1) * font->character_size.first), static_cast<float>((y+1) * font->character_size.second));
+				vertices[idx2+3].position = sf::Vector2f(static_cast<float>(x * font->character_size.first), static_cast<float>((y+1) * font->character_size.second));
 			}
 		}
 	} else {
 		for (int y=0; y<height; ++y) {
 			for (int x=0; x<width; ++x) {
 				const int idx = ((y*width) + x)*4;
-				vertices[idx].position = sf::Vector2f(x * font->character_size.first, y * font->character_size.second);
-				vertices[idx+1].position = sf::Vector2f((x+1) * font->character_size.first, y * font->character_size.second);
-				vertices[idx+2].position = sf::Vector2f((x+1) * font->character_size.first, (y+1) * font->character_size.second);
-				vertices[idx+3].position = sf::Vector2f(x * font->character_size.first, (y+1) * font->character_size.second);
+				vertices[idx].position = sf::Vector2f(static_cast<float>(x * font->character_size.first), static_cast<float>(y * font->character_size.second));
+				vertices[idx+1].position = sf::Vector2f(static_cast<float>((x+1) * font->character_size.first), static_cast<float>(y * font->character_size.second));
+				vertices[idx+2].position = sf::Vector2f(static_cast<float>((x+1) * font->character_size.first), static_cast<float>((y+1) * font->character_size.second));
+				vertices[idx+3].position = sf::Vector2f(static_cast<float>(x * font->character_size.first), static_cast<float>((y+1) * font->character_size.second));
 			}
 		}
 	}
@@ -95,7 +95,7 @@ void virtual_terminal::print(const int x, const int y, const std::string &s, con
 }
 
 void virtual_terminal::print_center(const int y, const std::string &s, const color_t &fg, const color_t &bg) noexcept {
-	print((term_width/2) - (s.size()/2), y, s, fg, bg);
+	print(static_cast<int>((term_width/2) - (s.size()/2)), y, s, fg, bg);
 }
 
 void virtual_terminal::box(const int x, const int y, const int w, const int h, const color_t &fg, const color_t &bg, bool double_lines) noexcept {
@@ -158,7 +158,7 @@ void virtual_terminal::draw_sprite(const int x, const int y, xp::rex_sprite &spr
 	}
 }
 
-void virtual_terminal::render(sf::RenderWindow &window) noexcept {
+void virtual_terminal::render(sf::RenderWindow &window) {
 	if (!visible) return;
 
 	if (dirty) {
@@ -192,10 +192,10 @@ void virtual_terminal::render(sf::RenderWindow &window) noexcept {
 					vertices[bg_idx+3].color = bgsfml;
 				}
 
-				vertices[vertex_idx].texCoords = sf::Vector2f( texture_x, texture_y );
-				vertices[vertex_idx+1].texCoords = sf::Vector2f( texture_x + font_width, texture_y );
-				vertices[vertex_idx+2].texCoords = sf::Vector2f( texture_x + font_width, texture_y + font_height );
-				vertices[vertex_idx+3].texCoords = sf::Vector2f( texture_x, texture_y + font_height );
+				vertices[vertex_idx].texCoords = sf::Vector2f(static_cast<float>(texture_x), static_cast<float>(texture_y) );
+				vertices[vertex_idx+1].texCoords = sf::Vector2f(static_cast<float>(texture_x + font_width), static_cast<float>(texture_y) );
+				vertices[vertex_idx+2].texCoords = sf::Vector2f(static_cast<float>(texture_x + font_width), static_cast<float>(texture_y + font_height) );
+				vertices[vertex_idx+3].texCoords = sf::Vector2f(static_cast<float>(texture_x), static_cast<float>(texture_y + font_height) );
 
 				sf::Color fgsfml = color_to_sfml(target.foreground);
 				vertices[vertex_idx].color = fgsfml;
@@ -214,7 +214,7 @@ void virtual_terminal::render(sf::RenderWindow &window) noexcept {
 
 	backing.display();
 	sf::Sprite compositor(backing.getTexture());
-	compositor.move(offset_x, offset_y);
+	compositor.move(static_cast<float>(offset_x), static_cast<float>(offset_y));
 	compositor.setColor(sf::Color(tint.r, tint.g, tint.b, alpha));
 	window.draw(sf::Sprite(compositor));
 	dirty = false;
