@@ -137,10 +137,10 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lib\native\src\boost_system.error_code.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\rltk\ecs\ecs.cpp">
+    <ClCompile Include="..\..\rltk\virtual_terminal_sparse.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\rltk\virtual_terminal_sparse.cpp">
+    <ClCompile Include="..\..\rltk\ecs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

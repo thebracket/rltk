@@ -143,7 +143,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\rltk\color_t.cpp" />
-    <ClCompile Include="..\..\rltk\ecs\ecs.cpp" />
+    <ClCompile Include="..\..\rltk\ecs.cpp" />
     <ClCompile Include="..\..\rltk\font_manager.cpp" />
     <ClCompile Include="..\..\rltk\geometry.cpp" />
     <ClCompile Include="..\..\rltk\gui.cpp" />
