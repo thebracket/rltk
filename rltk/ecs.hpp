@@ -14,6 +14,7 @@
 #include <iomanip>
 #include <queue>
 #include <future>
+#include <mutex>
 #include "serialization_utils.hpp"
 
 namespace rltk {
@@ -321,6 +322,42 @@ inline void each(F&& callback) {
 	}
 }
 
+// Forward declaration
+struct base_message_t;
+
+/*
+ * Parallel variadic each. Use this to call a function for all entities having a discrete set of components. For example,
+ * each<position, ai>([] (entity_t &e, position &pos, ai &brain) { ... code ... });
+ * Each function will be called in parallel, and the function returns when every call is done.
+ * 
+ * Be careful: not every platform uses a proper thread pool, so this can end up with a thundering herd of threads
+ * competing for CPU time! Minimal effort is made to provide internal thread-safety at this time - so it's up to you to
+ * handle that for now.
+ * 
+ */
+template <typename... Cs, typename F>
+inline void parallel_each(F&& callback) {
+	std::vector<std::future<void>> futures;
+	std::array<size_t, sizeof...(Cs)> family_ids{ component_t<Cs>{}.family_id... };
+	for (auto it=entity_store.begin(); it!=entity_store.end(); ++it) {
+		if (!it->second.deleted) {
+			bool matches = true;
+			for (const std::size_t &compare : family_ids) {
+				if (!it->second.component_mask.test(compare)) {
+					matches = false;
+					break;
+				}
+			}
+			if (matches) {
+				futures.emplace_back(std::async(std::launch::async, [it, &callback] () { callback(it->second, *it->second.component<Cs>()...); }));
+			}
+		}
+	}
+	for (auto &f : futures) {
+		f.wait();
+	}
+}
+
 /*
  * Marks an entity (specified by ID#) as deleted.
  */
@@ -415,16 +452,10 @@ struct message_t : public base_message_t {
 };
 
 struct subscription_base_t {
+	virtual void deliver_messages()=0;
 };
 
 struct base_system; // Forward declaration to avoid circles.
-
-template <class C>
-struct subscription_holder_t : subscription_base_t {
-	std::vector<std::tuple<bool,std::function<void(C& message)>,base_system *>> subscriptions;
-};
-
-extern std::vector<std::unique_ptr<subscription_base_t>> pubsub_holder;
 
 /* Base class for subscription mailboxes */
 struct subscription_mailbox_t {
@@ -434,6 +465,49 @@ template <class C>
 struct mailbox_t : subscription_mailbox_t {
 	std::queue<C> messages;
 };
+
+template <class C>
+struct subscription_holder_t : subscription_base_t {
+	std::queue<C> delivery_queue;	
+	std::mutex delivery_mutex;
+	std::vector<std::tuple<bool,std::function<void(C& message)>,base_system *>> subscriptions;
+
+	virtual void deliver_messages() override {
+		std::lock_guard<std::mutex> guard(delivery_mutex);
+		while (!delivery_queue.empty()) {
+			C message = delivery_queue.front();
+			delivery_queue.pop();
+			message_t<C> handle(message);
+
+			for (auto &func : subscriptions) {
+				if (std::get<0>(func) && std::get<1>(func)) {
+					std::get<1>(func)(message);
+				} else {
+					// It is destined for the system's mailbox queue.
+					auto finder = std::get<2>(func)->mailboxes.find(handle.family_id);
+					if (finder != std::get<2>(func)->mailboxes.end()) {
+						static_cast<mailbox_t<C> *>(finder->second.get())->messages.push(message);
+					}
+				}
+			}
+
+			/*
+			for (auto &func : static_cast<subscription_holder_t<MSG> *>(pubsub_holder[handle.family_id].get())->subscriptions) {
+				if (std::get<0>(func) && std::get<1>(func)) {
+					std::get<1>(func)(message);
+				} else {
+					// It is destined for the system's mailbox queue.
+					auto finder = std::get<2>(func)->mailboxes.find(handle.family_id);
+					if (finder != std::get<2>(func)->mailboxes.end()) {
+						static_cast<mailbox_t<MSG> *>(finder->second.get())->messages.push(message);
+					}
+				}
+			}*/
+		}
+	}
+};
+
+extern std::vector<std::unique_ptr<subscription_base_t>> pubsub_holder;
 
 /*
  * Systems should inherit from this class.
@@ -484,6 +558,10 @@ struct base_system {
 	}
 };
 
+/*
+ * Submits a message for delivery. It will be delivered to every system that has issued a subscribe or subscribe_mbox
+ * call.
+ */
 template <class MSG>
 inline void emit(MSG &&message) {
 	message_t<MSG> handle(message);
@@ -499,6 +577,28 @@ inline void emit(MSG &&message) {
 				}
 			}
 		}
+	}
+}
+
+/*
+ * Submits a message for delivery. It will be delivered to every system that has issued a subscribe or subscribe_mbox
+ * call at the end of the next system execution. This is thead-safe, so you can emit_defer from within a parallel_each.
+ */
+template <class MSG>
+inline void emit_deferred(MSG &&message) {
+	message_t<MSG> handle(message);
+	if (pubsub_holder.size() > handle.family_id) {
+
+		auto * subholder = static_cast<subscription_holder_t<MSG> *>(pubsub_holder[handle.family_id].get());
+		std::lock_guard<std::mutex> postlock(subholder->delivery_mutex);
+		subholder->delivery_queue.push(message);
+	}
+}
+
+/* Delivers the queue; called at the end of each system call */
+inline void deliver_messages() {
+	for (auto &holder : pubsub_holder) {
+		if (holder) holder->deliver_messages();
 	}
 }
 
@@ -529,6 +629,7 @@ inline void ecs_tick(const double duration_ms) {
 	for (std::unique_ptr<base_system> & sys : system_store) {
 		std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 		sys->update(duration_ms);
+		deliver_messages();
 		std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
 		double duration = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count());
 
