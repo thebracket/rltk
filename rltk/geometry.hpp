@@ -132,9 +132,8 @@ inline void line_func_cancellable(const int &x1, const int &y1, const int &x2, c
 }
 
 /*
- * Perform a function for each line element between x1/y1/z1 and x2/y2/z2. Uses a 3D
- * implementation of Bresenham's line algorithm.
- * https://gist.github.com/yamamushi/5823518
+ * Perform a function for each line element between x1/y1/z1 and x2/y2/z2. We used to use Bresenham's algorithm,
+ * but benchmarking showed that a simple float based vector was faster.
  * Cancellable version: the function can return "false" to stop traversing the line.
  */
 void line_func_3d_cancellable(const int &x1, const int &y1, const int &z1, const int &x2, const int &y2, const int &z2, std::function<bool(int, int, int)> &&func) noexcept;

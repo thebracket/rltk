@@ -13,6 +13,7 @@
 #include <sstream>
 #include <iomanip>
 #include <queue>
+#include <future>
 #include "serialization_utils.hpp"
 
 namespace rltk {
@@ -296,6 +297,10 @@ inline void each(std::function<void(entity_t &)> &&func) {
 	}
 }
 
+/*
+ * Variadic each. Use this to call a function for all entities having a discrete set of components. For example,
+ * each<position, ai>([] (entity_t &e, position &pos, ai &brain) { ... code ... });
+ */
 template <typename... Cs, typename F>
 inline void each(F&& callback) {
 	std::array<size_t, sizeof...(Cs)> family_ids{ component_t<Cs>{}.family_id... };
