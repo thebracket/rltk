@@ -231,18 +231,20 @@ inline void unset_component_mask(const std::size_t id, const std::size_t family_
  * entity(ID) is used to reference an entity. So you can, for example, do:
  * entity(12)->component<position_component>()->x = 3;
  */
-inline entity_t * entity(const std::size_t id) noexcept {
+inline boost::optional<entity_t&> entity(const std::size_t id) noexcept {
+	boost::optional<entity_t&> result;
 	auto finder = entity_store.find(id);
-	if (finder == entity_store.end()) return nullptr;
-	if (finder->second.deleted) return nullptr;
-	return &finder->second;
+	if (finder == entity_store.end()) return result;
+	if (finder->second.deleted) return result;
+	result = finder->second;
+	return result;
 }
 
 /*
  * Creates an entity with a new ID #. Returns a pointer to the entity, to enable
  * call chaining. For example create_entity()->assign(foo)->assign(bar)
  */
-inline entity_t * create_entity() {
+inline boost::optional<entity_t&> create_entity() {
 	entity_t new_entity;
 	entity_store.emplace(new_entity.id, new_entity);
 	return entity(new_entity.id);
@@ -251,7 +253,7 @@ inline entity_t * create_entity() {
 /*
  * Creates an entity with a specified ID #. You generally only do this during loading.
  */
-inline entity_t * create_entity(const std::size_t new_id) {
+inline boost::optional<entity_t&> create_entity(const std::size_t new_id) {
 	entity_t new_entity(new_id);
 	entity_store.emplace(new_entity.id, new_entity);
 	return entity(new_entity.id);
@@ -368,8 +370,8 @@ inline void parallel_each(F&& callback) {
  * Marks an entity (specified by ID#) as deleted.
  */
 inline void delete_entity(const std::size_t id) noexcept {
-	entity_t * e = entity(id);
-	if (e == nullptr) return;
+	auto e = entity(id);
+	if (!e) return;
 
 	e->deleted = true;
 	for (auto &store : component_store) {
@@ -389,8 +391,8 @@ inline void delete_entity(entity_t &e) noexcept {
  */
 template<class C>
 inline void delete_component(const std::size_t entity_id, bool delete_entity_if_empty=false) noexcept {
-	entity_t * eptr = entity(entity_id);
-	if (eptr == nullptr) return;
+	auto eptr = entity(entity_id);
+	if (!eptr) return;
 	entity_t e = *entity(entity_id);
 	C empty_component;
 	component_t<C> temp(empty_component);
