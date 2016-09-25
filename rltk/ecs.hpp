@@ -15,6 +15,7 @@
 #include <queue>
 #include <future>
 #include <mutex>
+#include <boost/optional.hpp>
 #include "serialization_utils.hpp"
 
 namespace rltk {
@@ -193,15 +194,20 @@ struct entity_t {
 	 * Find a component of the specified type that belongs to the entity.
 	 */
 	template <class C>
-	inline C * component() noexcept {
-		if (deleted) return nullptr;
+	inline boost::optional<C&> component() noexcept {
+		boost::optional<C&> result;
+		if (deleted) return result;
+
 		C empty_component;
 		component_t<C> temp(empty_component);
-		if (!component_mask.test(temp.family_id)) return nullptr;
+		if (!component_mask.test(temp.family_id)) return result;
 		for (component_t<C> &component : static_cast<component_store_t<component_t<C>> *>(component_store[temp.family_id].get())->components) {
-			if (component.entity_id == id) return &component.data;
+			if (component.entity_id == id) {
+				result = component.data;
+				return result;
+			}
 		}
-		return nullptr;
+		return result;
 	}
 };
 
