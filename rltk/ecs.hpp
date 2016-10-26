@@ -91,7 +91,7 @@ template<class C>
 struct component_store_t : public base_component_store {
 	std::vector<C> components;
 	
-	virtual void erase_by_entity_id(const std::size_t &id) override {
+	virtual void erase_by_entity_id(const std::size_t &id) override final {
 		for (auto &item : components) {
 			if (item.entity_id == id) {
 				item.deleted=true;
@@ -100,13 +100,13 @@ struct component_store_t : public base_component_store {
 		}
 	}
 
-	virtual void really_delete() {
+	virtual void really_delete() override final {
 		components.erase(std::remove_if(components.begin(), components.end(),
 			[] (auto x) { return x.deleted; }), 
 			components.end());
 	}
 
-	virtual void save(std::ostream &lbfile) override {
+	virtual void save(std::ostream &lbfile) override final {
 		for (auto &item : components) {
 			serialize(lbfile, item.data.serialization_identity);
 			serialize(lbfile, item.entity_id);
@@ -114,7 +114,7 @@ struct component_store_t : public base_component_store {
 		}
 	}
 
-	virtual std::size_t size() {
+	virtual std::size_t size() override final {
 		return components.size();
 	}
 };
