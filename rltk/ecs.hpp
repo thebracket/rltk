@@ -412,6 +412,15 @@ inline void delete_entity(entity_t &e) noexcept {
 }
 
 /*
+ * Deletes all entities
+ */
+inline void delete_all_entities() noexcept {
+	for (auto it=entity_store.begin(); it!=entity_store.end(); ++it) {
+		delete_entity(it->first);
+	}
+}
+
+/*
  * Marks an entity's component as deleted.
  */
 template<class C>
@@ -649,6 +658,12 @@ template<typename S, typename ...Args>
 inline void add_system( Args && ... args ) {
 	system_store.push_back(std::make_unique<S>( std::forward<Args>(args) ... ));
 	system_profiling.push_back(system_profiling_t{});
+}
+
+inline void delete_all_systems() {
+	system_store.clear();
+	system_profiling.clear();
+	pubsub_holder.clear();
 }
 
 inline void ecs_configure() {
