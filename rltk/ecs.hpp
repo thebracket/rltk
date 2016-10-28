@@ -345,6 +345,30 @@ struct base_message_t;
  */
 template <typename... Cs, typename F>
 inline void parallel_each(F&& callback) {
+	#if defined(_OPENMP)
+	std::vector<std::function<void()>> callbacks;
+	std::array<size_t, sizeof...(Cs)> family_ids{ component_t<Cs>{}.family_id... };
+	for (auto it=entity_store.begin(); it!=entity_store.end(); ++it) {
+		if (!it->second.deleted) {
+			bool matches = true;
+			for (const std::size_t &compare : family_ids) {
+				if (!it->second.component_mask.test(compare)) {
+					matches = false;
+					break;
+				}
+			}
+			if (matches) {
+				callbacks.emplace_back([it, &callback] () { callback(it->second, *it->second.component<Cs>()...); });
+			}
+		}
+	}
+
+	#pragma omp parallel for
+	for (std::size_t i=0; i<callbacks.size(); ++i) {
+		const std::function<void()> &cb = callbacks.at(i);
+		cb();
+	}
+	#else	
 	std::vector<std::future<void>> futures;
 	std::array<size_t, sizeof...(Cs)> family_ids{ component_t<Cs>{}.family_id... };
 	for (auto it=entity_store.begin(); it!=entity_store.end(); ++it) {
@@ -364,6 +388,7 @@ inline void parallel_each(F&& callback) {
 	for (auto &f : futures) {
 		f.wait();
 	}
+	#endif
 }
 
 /*
