@@ -70,10 +70,10 @@ int left_x, right_x, top_y, bottom_y;
 
 struct actor_moved_message : base_message_t {
 	actor_moved_message() {}
-	actor_moved_message(entity_t * ACTOR, const int fx, const int fy, const int dx, const int dy) :
+	actor_moved_message(boost::optional<entity_t &> ACTOR, const int fx, const int fy, const int dx, const int dy) :
 		mover(ACTOR), from_x(fx), from_y(fy), destination_x(dx), destination_y(dy) {}
 
-	entity_t * mover;
+	boost::optional<entity_t &> mover;
 	int from_x, from_y, destination_x, destination_y;
 };
 
@@ -95,7 +95,7 @@ struct camera_system : public base_system {
 			console->clear();
 
 			// Find the camera
-			position * camera_loc = entity(player_id)->component<position>();
+			auto camera_loc = entity(player_id)->component<position>();
 			left_x = camera_loc->x - (console->term_width / 2);
 			right_x = camera_loc->x + (console->term_width / 2);
 			top_y = camera_loc->y - (console->term_height/2);
@@ -161,7 +161,7 @@ struct player_system : public base_system {
 	}
 
 	virtual void update(const double duration_ms) override {
-		position * camera_loc = entity(player_id)->component<position>();
+		auto camera_loc = entity(player_id)->component<position>();
 
 		// Loop through the keyboard input list
 		std::queue<key_pressed_t> * messages = mbox<key_pressed_t>();
@@ -185,7 +185,7 @@ struct visibility_system : public base_system {
 	virtual void configure() override {
 		system_name = "Visibility System";
 		subscribe<player_moved_message>([this](player_moved_message &msg) {
-			position * camera_loc = entity(player_id)->component<position>();
+			auto camera_loc = entity(player_id)->component<position>();
 			position camera_loc_deref = *camera_loc;
 
 			std::fill(visible.begin(), visible.end(), 0);
