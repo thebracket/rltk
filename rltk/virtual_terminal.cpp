@@ -81,7 +81,7 @@ void virtual_terminal::clear(const vchar &target) noexcept {
 
 void virtual_terminal::set_char(const int idx, const vchar &target) noexcept {
 	dirty = true;
-	if (!(idx < 0 || idx > buffer.size())) {
+	if (!(idx < 0 || idx > static_cast<int>(buffer.size()))) {
 		buffer[idx] = target;
 	}
 }

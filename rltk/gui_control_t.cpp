@@ -40,10 +40,10 @@ void gui_radiobuttons_t::render(virtual_terminal * console) {
 void gui_hbar_t::render(virtual_terminal * console) {
 	float fullness = (float)(value - min) / (float)max;
 	float full_w_f = fullness * (float)w;
-	int full_w = static_cast<int>(full_w_f);
+	std::size_t full_w = static_cast<std::size_t>(full_w_f);
 
 	std::stringstream ss;
-	for (int i=0; i<w; ++i) {
+	for (std::size_t i=0; i<w; ++i) {
 		ss << ' ';
 	}
 	std::string s = ss.str();
@@ -52,11 +52,11 @@ void gui_hbar_t::render(virtual_terminal * console) {
 	display << prefix << value << "/" << max;
 	std::string tmp = display.str();
 	const int start = static_cast<int>((w/2) - (tmp.size() / 2));
-	for (int i=0; i < std::min(tmp.size(),w); ++i) {
+	for (std::size_t i=0; i < std::min(tmp.size(),w); ++i) {
 		s[i + start] = tmp[i];
 	}
 
-	for (int i=0; i<w; ++i) {
+	for (std::size_t i=0; i<w; ++i) {
 		const float pct = (float)i / (float)w;
 		if (i <= full_w) {
 			console->set_char(x+i, y, vchar{s[i], text_color, lerp(full_start, full_end, pct)});
@@ -69,10 +69,10 @@ void gui_hbar_t::render(virtual_terminal * console) {
 void gui_vbar_t::render(virtual_terminal * console) {
 	float fullness = (float)(value - min) / (float)max;
 	float full_h_f = fullness * (float)h;
-	int full_h = static_cast<int>(full_h_f);
+	std::size_t full_h = static_cast<std::size_t>(full_h_f);
 
 	std::stringstream ss;
-	for (int i=0; i<h; ++i) {
+	for (std::size_t i=0; i<h; ++i) {
 		ss << ' ';
 	}
 	std::string s = ss.str();
@@ -81,11 +81,11 @@ void gui_vbar_t::render(virtual_terminal * console) {
 	display << prefix << value << "/" << max;
 	std::string tmp = display.str();
 	const int start = static_cast<int>((h/2) - (tmp.size() / 2));
-	for (int i=0; i < std::min(tmp.size(), h); ++i) {
+	for (std::size_t i=0; i < std::min(tmp.size(), h); ++i) {
 		s[i + start] = tmp[i];
 	}
 
-	for (int i=0; i<h; ++i) {
+	for (std::size_t i=0; i<h; ++i) {
 		const float pct = (float)i / (float)h;
 		if (i <= full_h) {
 			console->set_char(x, y+i, vchar{s[i], text_color, lerp(full_start, full_end, pct)});

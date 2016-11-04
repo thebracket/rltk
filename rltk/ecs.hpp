@@ -97,7 +97,7 @@ struct component_store_t : public base_component_store {
 		}
 	}
 
-	virtual void really_delete() {
+	virtual void really_delete() override final {
 		components.erase(std::remove_if(components.begin(), components.end(),
 			[] (auto x) { return x.deleted; }), 
 			components.end());
@@ -111,7 +111,7 @@ struct component_store_t : public base_component_store {
 		}
 	}
 
-	virtual std::size_t size() {
+	virtual std::size_t size() override final {
 		return components.size();
 	}
 };

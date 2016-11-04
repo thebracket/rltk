@@ -20,7 +20,7 @@ namespace xp {
 	//REXpaint identifies transparent tiles by setting their background color to 255,0,255.
 	//You may want to check this for each tile before drawing or converting a RexFile.
 	//(By default, no tile in the first layer is transaprent).
-	inline const bool is_transparent(const rltk::vchar * tile)
+	inline bool is_transparent(const rltk::vchar * tile)
 	{
 		//This might be faster than comparing with transparentTile(), despite it being a constexpr
 		return (tile->background.r == 255 && tile->background.g == 0 && tile->background.b == 255);

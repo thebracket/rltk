@@ -42,7 +42,7 @@ struct gui_static_text_t : public gui_control_t {
 	color_t background;
 
 	virtual void render(virtual_terminal * console) override;
-	virtual bool mouse_in_control(const int tx, const int ty) override { return (tx >= x && tx <= x + (text.size()) && ty==y); }
+	virtual bool mouse_in_control(const int tx, const int ty) override { return (tx >= x && tx <= x + (static_cast<int>(text.size())) && ty==y); }
 };
 
 struct gui_border_box_t : public gui_control_t {
@@ -82,7 +82,7 @@ struct gui_checkbox_t : public gui_control_t {
 
 	virtual void render(virtual_terminal * console) override;
 	virtual bool mouse_in_control(const int tx, const int ty) override { 
-		return (tx >= x && tx <= x + (label.size()+4) && ty==y); 
+		return (tx >= x && tx <= x + (static_cast<int>(label.size())+4) && ty==y); 
 	}
 };
 
@@ -98,7 +98,7 @@ struct gui_radiobuttons_t : public gui_control_t {
 	{
 		width = static_cast<int>(caption.size());
 		for (const radio &r : options) {
-			if (width < r.label.size()) width = static_cast<int>(r.label.size());
+			if (width < static_cast<int>(r.label.size())) width = static_cast<int>(r.label.size());
 			if (r.checked) selected_value = r.value;
 		}
 		height = static_cast<int>(options.size()) + 1;
@@ -111,7 +111,7 @@ struct gui_radiobuttons_t : public gui_control_t {
 			gui_radiobuttons_t * me = static_cast<gui_radiobuttons_t *>(ctrl);
 			if (me->click_started) {
 				const int option_number = (ty - me->y) -1;
-				if (option_number >= 0 && option_number <= me->options.size()) {
+				if (option_number >= 0 && option_number <= static_cast<int>(me->options.size())) {
 					me->selected_value = me->options[option_number].value;
 					for (auto &r : me->options) {
 						if (r.value == me->selected_value) {
@@ -209,7 +209,7 @@ struct gui_listbox_t : public gui_control_t {
 		caption = label;
 		w = static_cast<int>(caption.size()) + 2;
 		for (const list_item &item : items) {
-			if (w < item.label.size()) w = static_cast<int>(item.label.size());
+			if (w < static_cast<int>(item.label.size())) w = static_cast<int>(item.label.size());
 		}
 
 		on_mouse_down = [] (gui_control_t * ctrl, int tx, int ty) {
@@ -220,7 +220,7 @@ struct gui_listbox_t : public gui_control_t {
 			gui_listbox_t * me = static_cast<gui_listbox_t *>(ctrl);
 			if (me->click_started) {
 				const int option_number = (ty - me->y) -1;
-				if (option_number >= 0 && option_number <= me->items.size()) {
+				if (option_number >= 0 && option_number <= static_cast<int>(me->items.size())) {
 					me->selected_value = me->items[option_number].value;
 				}
 			}
@@ -244,7 +244,7 @@ struct gui_listbox_t : public gui_control_t {
 
 	virtual void render(virtual_terminal * console) override;
 	virtual bool mouse_in_control(const int tx, const int ty) override { 
-		if (tx >= x && tx <= (x + w) && ty >= y && ty <= (y + items.size()+1)) {
+		if (tx >= x && tx <= (x + w) && ty >= y && ty <= (y + static_cast<int>(items.size())+1)) {
 			return true;
 		}
 		return false;
