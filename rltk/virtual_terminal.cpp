@@ -183,8 +183,10 @@ void virtual_terminal::render(sf::RenderWindow &window) {
 
 				if (has_background) {
 					sf::Color bgsfml = color_to_sfml(target.background);
-					if (alpha != 255 && target.background.r == 0 && target.background.g == 0 && target.background.b == 0) {
+					if (alpha == 0 || (target.background.r == 0 && target.background.g == 0 && target.background.b == 0)) {
 						bgsfml.a = 0;
+					} else {
+						bgsfml.a = alpha;
 					}
 					vertices[bg_idx].color = bgsfml;
 					vertices[bg_idx+1].color = bgsfml;

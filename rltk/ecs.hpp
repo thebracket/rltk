@@ -13,6 +13,9 @@
 #include <sstream>
 #include <iomanip>
 #include <queue>
+#include <future>
+#include <mutex>
+#include <boost/optional.hpp>
 #include "serialization_utils.hpp"
 
 namespace rltk {
@@ -88,7 +91,7 @@ template<class C>
 struct component_store_t : public base_component_store {
 	std::vector<C> components;
 	
-	virtual void erase_by_entity_id(const std::size_t &id) override {
+	virtual void erase_by_entity_id(const std::size_t &id) override final {
 		for (auto &item : components) {
 			if (item.entity_id == id) {
 				item.deleted=true;
@@ -103,7 +106,7 @@ struct component_store_t : public base_component_store {
 			components.end());
 	}
 
-	virtual void save(std::ostream &lbfile) override {
+	virtual void save(std::ostream &lbfile) override final {
 		for (auto &item : components) {
 			serialize(lbfile, item.data.serialization_identity);
 			serialize(lbfile, item.entity_id);
@@ -191,15 +194,20 @@ struct entity_t {
 	 * Find a component of the specified type that belongs to the entity.
 	 */
 	template <class C>
-	inline C * component() noexcept {
-		if (deleted) return nullptr;
+	inline boost::optional<C&> component() noexcept {
+		boost::optional<C&> result;
+		if (deleted) return result;
+
 		C empty_component;
 		component_t<C> temp(empty_component);
-		if (!component_mask.test(temp.family_id)) return nullptr;
+		if (!component_mask.test(temp.family_id)) return result;
 		for (component_t<C> &component : static_cast<component_store_t<component_t<C>> *>(component_store[temp.family_id].get())->components) {
-			if (component.entity_id == id) return &component.data;
+			if (component.entity_id == id) {
+				result = component.data;
+				return result;
+			}
 		}
-		return nullptr;
+		return result;
 	}
 };
 
@@ -223,18 +231,20 @@ inline void unset_component_mask(const std::size_t id, const std::size_t family_
  * entity(ID) is used to reference an entity. So you can, for example, do:
  * entity(12)->component<position_component>()->x = 3;
  */
-inline entity_t * entity(const std::size_t id) noexcept {
+inline boost::optional<entity_t&> entity(const std::size_t id) noexcept {
+	boost::optional<entity_t&> result;
 	auto finder = entity_store.find(id);
-	if (finder == entity_store.end()) return nullptr;
-	if (finder->second.deleted) return nullptr;
-	return &finder->second;
+	if (finder == entity_store.end()) return result;
+	if (finder->second.deleted) return result;
+	result = finder->second;
+	return result;
 }
 
 /*
  * Creates an entity with a new ID #. Returns a pointer to the entity, to enable
  * call chaining. For example create_entity()->assign(foo)->assign(bar)
  */
-inline entity_t * create_entity() {
+inline boost::optional<entity_t&> create_entity() {
 	entity_t new_entity;
 	entity_store.emplace(new_entity.id, new_entity);
 	return entity(new_entity.id);
@@ -243,7 +253,7 @@ inline entity_t * create_entity() {
 /*
  * Creates an entity with a specified ID #. You generally only do this during loading.
  */
-inline entity_t * create_entity(const std::size_t new_id) {
+inline boost::optional<entity_t&> create_entity(const std::size_t new_id) {
 	entity_t new_entity(new_id);
 	entity_store.emplace(new_entity.id, new_entity);
 	return entity(new_entity.id);
@@ -296,6 +306,10 @@ inline void each(std::function<void(entity_t &)> &&func) {
 	}
 }
 
+/*
+ * Variadic each. Use this to call a function for all entities having a discrete set of components. For example,
+ * each<position, ai>([] (entity_t &e, position &pos, ai &brain) { ... code ... });
+ */
 template <typename... Cs, typename F>
 inline void each(F&& callback) {
 	std::array<size_t, sizeof...(Cs)> family_ids{ component_t<Cs>{}.family_id... };
@@ -316,12 +330,73 @@ inline void each(F&& callback) {
 	}
 }
 
+// Forward declaration
+struct base_message_t;
+
+/*
+ * Parallel variadic each. Use this to call a function for all entities having a discrete set of components. For example,
+ * each<position, ai>([] (entity_t &e, position &pos, ai &brain) { ... code ... });
+ * Each function will be called in parallel, and the function returns when every call is done.
+ * 
+ * Be careful: not every platform uses a proper thread pool, so this can end up with a thundering herd of threads
+ * competing for CPU time! Minimal effort is made to provide internal thread-safety at this time - so it's up to you to
+ * handle that for now.
+ * 
+ */
+template <typename... Cs, typename F>
+inline void parallel_each(F&& callback) {
+	#if defined(_OPENMP)
+	std::vector<std::function<void()>> callbacks;
+	std::array<size_t, sizeof...(Cs)> family_ids{ component_t<Cs>{}.family_id... };
+	for (auto it=entity_store.begin(); it!=entity_store.end(); ++it) {
+		if (!it->second.deleted) {
+			bool matches = true;
+			for (const std::size_t &compare : family_ids) {
+				if (!it->second.component_mask.test(compare)) {
+					matches = false;
+					break;
+				}
+			}
+			if (matches) {
+				callbacks.emplace_back([it, &callback] () { callback(it->second, *it->second.component<Cs>()...); });
+			}
+		}
+	}
+
+	#pragma omp parallel for
+	for (std::size_t i=0; i<callbacks.size(); ++i) {
+		const std::function<void()> &cb = callbacks.at(i);
+		cb();
+	}
+	#else	
+	std::vector<std::future<void>> futures;
+	std::array<size_t, sizeof...(Cs)> family_ids{ component_t<Cs>{}.family_id... };
+	for (auto it=entity_store.begin(); it!=entity_store.end(); ++it) {
+		if (!it->second.deleted) {
+			bool matches = true;
+			for (const std::size_t &compare : family_ids) {
+				if (!it->second.component_mask.test(compare)) {
+					matches = false;
+					break;
+				}
+			}
+			if (matches) {
+				futures.emplace_back(std::async(std::launch::async, [it, &callback] () { callback(it->second, *it->second.component<Cs>()...); }));
+			}
+		}
+	}
+	for (auto &f : futures) {
+		f.wait();
+	}
+	#endif
+}
+
 /*
  * Marks an entity (specified by ID#) as deleted.
  */
 inline void delete_entity(const std::size_t id) noexcept {
-	entity_t * e = entity(id);
-	if (e == nullptr) return;
+	auto e = entity(id);
+	if (!e) return;
 
 	e->deleted = true;
 	for (auto &store : component_store) {
@@ -337,12 +412,21 @@ inline void delete_entity(entity_t &e) noexcept {
 }
 
 /*
+ * Deletes all entities
+ */
+inline void delete_all_entities() noexcept {
+	for (auto it=entity_store.begin(); it!=entity_store.end(); ++it) {
+		delete_entity(it->first);
+	}
+}
+
+/*
  * Marks an entity's component as deleted.
  */
 template<class C>
 inline void delete_component(const std::size_t entity_id, bool delete_entity_if_empty=false) noexcept {
-	entity_t * eptr = entity(entity_id);
-	if (eptr == nullptr) return;
+	auto eptr = entity(entity_id);
+	if (!eptr) return;
 	entity_t e = *entity(entity_id);
 	C empty_component;
 	component_t<C> temp(empty_component);
@@ -410,16 +494,10 @@ struct message_t : public base_message_t {
 };
 
 struct subscription_base_t {
+	virtual void deliver_messages()=0;
 };
 
 struct base_system; // Forward declaration to avoid circles.
-
-template <class C>
-struct subscription_holder_t : subscription_base_t {
-	std::vector<std::tuple<bool,std::function<void(C& message)>,base_system *>> subscriptions;
-};
-
-extern std::vector<std::unique_ptr<subscription_base_t>> pubsub_holder;
 
 /* Base class for subscription mailboxes */
 struct subscription_mailbox_t {
@@ -429,6 +507,49 @@ template <class C>
 struct mailbox_t : subscription_mailbox_t {
 	std::queue<C> messages;
 };
+
+template <class C>
+struct subscription_holder_t : subscription_base_t {
+	std::queue<C> delivery_queue;	
+	std::mutex delivery_mutex;
+	std::vector<std::tuple<bool,std::function<void(C& message)>,base_system *>> subscriptions;
+
+	virtual void deliver_messages() override {
+		std::lock_guard<std::mutex> guard(delivery_mutex);
+		while (!delivery_queue.empty()) {
+			C message = delivery_queue.front();
+			delivery_queue.pop();
+			message_t<C> handle(message);
+
+			for (auto &func : subscriptions) {
+				if (std::get<0>(func) && std::get<1>(func)) {
+					std::get<1>(func)(message);
+				} else {
+					// It is destined for the system's mailbox queue.
+					auto finder = std::get<2>(func)->mailboxes.find(handle.family_id);
+					if (finder != std::get<2>(func)->mailboxes.end()) {
+						static_cast<mailbox_t<C> *>(finder->second.get())->messages.push(message);
+					}
+				}
+			}
+
+			/*
+			for (auto &func : static_cast<subscription_holder_t<MSG> *>(pubsub_holder[handle.family_id].get())->subscriptions) {
+				if (std::get<0>(func) && std::get<1>(func)) {
+					std::get<1>(func)(message);
+				} else {
+					// It is destined for the system's mailbox queue.
+					auto finder = std::get<2>(func)->mailboxes.find(handle.family_id);
+					if (finder != std::get<2>(func)->mailboxes.end()) {
+						static_cast<mailbox_t<MSG> *>(finder->second.get())->messages.push(message);
+					}
+				}
+			}*/
+		}
+	}
+};
+
+extern std::vector<std::unique_ptr<subscription_base_t>> pubsub_holder;
 
 /*
  * Systems should inherit from this class.
@@ -479,6 +600,10 @@ struct base_system {
 	}
 };
 
+/*
+ * Submits a message for delivery. It will be delivered to every system that has issued a subscribe or subscribe_mbox
+ * call.
+ */
 template <class MSG>
 inline void emit(MSG &&message) {
 	message_t<MSG> handle(message);
@@ -494,6 +619,28 @@ inline void emit(MSG &&message) {
 				}
 			}
 		}
+	}
+}
+
+/*
+ * Submits a message for delivery. It will be delivered to every system that has issued a subscribe or subscribe_mbox
+ * call at the end of the next system execution. This is thead-safe, so you can emit_defer from within a parallel_each.
+ */
+template <class MSG>
+inline void emit_deferred(MSG &&message) {
+	message_t<MSG> handle(message);
+	if (pubsub_holder.size() > handle.family_id) {
+
+		auto * subholder = static_cast<subscription_holder_t<MSG> *>(pubsub_holder[handle.family_id].get());
+		std::lock_guard<std::mutex> postlock(subholder->delivery_mutex);
+		subholder->delivery_queue.push(message);
+	}
+}
+
+/* Delivers the queue; called at the end of each system call */
+inline void deliver_messages() {
+	for (auto &holder : pubsub_holder) {
+		if (holder) holder->deliver_messages();
 	}
 }
 
@@ -513,6 +660,12 @@ inline void add_system( Args && ... args ) {
 	system_profiling.push_back(system_profiling_t{});
 }
 
+inline void delete_all_systems() {
+	system_store.clear();
+	system_profiling.clear();
+	pubsub_holder.clear();
+}
+
 inline void ecs_configure() {
 	for (std::unique_ptr<base_system> & sys : system_store) {
 		sys->configure();
@@ -524,6 +677,7 @@ inline void ecs_tick(const double duration_ms) {
 	for (std::unique_ptr<base_system> & sys : system_store) {
 		std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 		sys->update(duration_ms);
+		deliver_messages();
 		std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
 		double duration = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count());
 
