@@ -36,8 +36,9 @@ int main()
 	// The first parameter is the path to the font files.
 	// The second and third parameters specify the desired console size in screen characters (80x25).
 	// The fourth parameter is the window title.
-	// The final parameter says that we'd like the default console to use an 8x16 VGA font. Not so great for games, but easy to read!
-	init(config_simple("../assets", 80, 25, "RLTK Hello World", "8x16"));
+	// The fifth parameter says that we'd like the default console to use an 8x16 VGA font. Not so great for games, but easy to read!
+	// The final parameter controls whether or not we want to go full screen.
+	init(config_simple("../assets", 80, 25, "RLTK Hello World", "8x16", false));
 
 	// Enter the main loop. "tick" is the function we wrote above.
 	run(tick);

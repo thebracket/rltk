@@ -23,9 +23,15 @@ gui_t * get_gui() {
 void init(const config_simple &config) {
     register_font_directory(config.font_path);
     bitmap_font * font = get_font(config.root_font);
-    main_window = std::make_unique<sf::RenderWindow>(sf::VideoMode(config.width * font->character_size.first, 
-        config.height * font->character_size.second, 
-        sf::Style::Titlebar | sf::Style::Resize | sf::Style::Close), config.window_title);
+    if (!config.fullscreen) {
+        main_window = std::make_unique<sf::RenderWindow>(sf::VideoMode(config.width * font->character_size.first, 
+            config.height * font->character_size.second), 
+            config.window_title, sf::Style::Titlebar | sf::Style::Resize | sf::Style::Close);
+    } else {
+        sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
+        main_window = std::make_unique<sf::RenderWindow>(sf::VideoMode(desktop.width, desktop.height, desktop.bitsPerPixel)
+            , config.window_title, sf::Style::Fullscreen);
+    }
     main_window->setVerticalSyncEnabled(true);
     main_detail::use_root_console = true;
 
@@ -36,8 +42,14 @@ void init(const config_simple &config) {
 
 void init(const config_simple_px &config) {
     register_font_directory(config.font_path);
-    main_window = std::make_unique<sf::RenderWindow>(sf::VideoMode(config.width_px, config.height_px, 
-        sf::Style::Titlebar | sf::Style::Resize | sf::Style::Close), config.window_title);
+    if (!config.fullscreen) {
+        main_window = std::make_unique<sf::RenderWindow>(sf::VideoMode(config.width_px, config.height_px), 
+            config.window_title, sf::Style::Titlebar | sf::Style::Resize | sf::Style::Close);
+    } else {
+        sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
+        main_window = std::make_unique<sf::RenderWindow>(sf::VideoMode(desktop.width, desktop.height, desktop.bitsPerPixel)
+            , config.window_title, sf::Style::Fullscreen);
+    }
     main_window->setVerticalSyncEnabled(true);
     main_detail::use_root_console = true;
 
@@ -48,8 +60,14 @@ void init(const config_simple_px &config) {
 
 void init(const config_advanced &config) {
     register_font_directory(config.font_path);
-    main_window = std::make_unique<sf::RenderWindow>(sf::VideoMode(config.width_px, config.height_px, 
-        sf::Style::Titlebar | sf::Style::Resize | sf::Style::Close), config.window_title);
+    if (!config.fullscreen) {
+        main_window = std::make_unique<sf::RenderWindow>(sf::VideoMode(config.width_px, config.height_px), 
+            config.window_title, sf::Style::Titlebar | sf::Style::Resize | sf::Style::Close);
+    } else {
+        sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
+        main_window = std::make_unique<sf::RenderWindow>(sf::VideoMode(desktop.width, desktop.height, desktop.bitsPerPixel)
+            , config.window_title, sf::Style::Fullscreen);
+    }
     main_window->setVerticalSyncEnabled(true);
     main_detail::use_root_console = false;
 

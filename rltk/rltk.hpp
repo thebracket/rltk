@@ -28,41 +28,47 @@ namespace rltk {
  * Defines a simple configuration to get most people started. 8x8 font, window size 1024x768. 
  */
 struct config_simple_px {
-	config_simple_px(const std::string fontpath, const int width=1024, const int height=768, const std::string title="RLTK Roguelike", const std::string font="8x8") :
-		font_path(fontpath), width_px(width), height_px(height), window_title(title), root_font(font) {}
+	config_simple_px(const std::string fontpath, const int width=1024, const int height=768, const std::string title="RLTK Roguelike", 
+		const std::string font="8x8", bool full_screen=false) :
+		font_path(fontpath), width_px(width), height_px(height), window_title(title), root_font(font), fullscreen(full_screen) {}
 
 	const std::string font_path;
 	const int width_px;
 	const int height_px;
 	const std::string window_title;
 	const std::string root_font;
+	const bool fullscreen;
 };
 
 /* 
  * Defines a simple configuration to get most people started. 8x8 font, window size 128x96 (which happens to be 1024x768) 
  */
 struct config_simple {
-	config_simple(const std::string fontpath, const int width_term=128, const int height_term=96, const std::string title="RLTK Roguelike", const std::string font="8x8") :
-		font_path(fontpath), width(width_term), height(height_term), window_title(title), root_font(font) {}
+	config_simple(const std::string fontpath, const int width_term=128, const int height_term=96, 
+		const std::string title="RLTK Roguelike", const std::string font="8x8", bool full_screen=false) :
+		font_path(fontpath), width(width_term), height(height_term), window_title(title), root_font(font), fullscreen(full_screen) {}
 
 	const std::string font_path;
 	const int width;
 	const int height;
 	const std::string window_title;
 	const std::string root_font;
+	const bool fullscreen;
 };
 
 /* 
  * Defines an advanced configuration. No root console, so it is designed for the times you want to build your own GUI.
  */
 struct config_advanced {
-	config_advanced(const std::string fontpath, const int width=1024, const int height=768, const std::string title="RLTK Roguelike") :
-		font_path(fontpath), width_px(width), height_px(height), window_title(title) {}
+	config_advanced(const std::string fontpath, const int width=1024, const int height=768, const std::string title="RLTK Roguelike",
+		bool full_screen=false) :
+		font_path(fontpath), width_px(width), height_px(height), window_title(title), fullscreen(full_screen) {}
 
 	const std::string font_path;
 	const int width_px;
 	const int height_px;
 	const std::string window_title;
+	const bool fullscreen;
 };
 
 /*
