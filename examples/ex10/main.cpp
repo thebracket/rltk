@@ -90,7 +90,6 @@ struct camera_system : public base_system {
 	}
 
 	virtual void update(const double duration_ms) override {
-		// In this case, we just want to print "Hello World" in white on black.
 		if (console->dirty) {
 			console->clear();
 
