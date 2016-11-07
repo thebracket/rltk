@@ -364,7 +364,7 @@ inline void parallel_each(F&& callback) {
 	}
 
 	#pragma omp parallel for
-	for (std::size_t i=0; i<callbacks.size(); ++i) {
+	for (auto i=0; i<callbacks.size(); ++i) {
 		const std::function<void()> &cb = callbacks.at(i);
 		cb();
 	}

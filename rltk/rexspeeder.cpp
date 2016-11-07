@@ -1,5 +1,7 @@
 #include "rexspeeder.hpp"
+extern "C" {
 #include <zlib.h>
+}
 #include <stdexcept>
 
 namespace rltk {
