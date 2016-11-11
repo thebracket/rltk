@@ -77,9 +77,10 @@ struct map_t {
 		// to find our way.	
 		for (int y=1; y<height-2; ++y) {
 			for (int x=1; x<width-2; ++x) {
-				if ((x != 10 && y != 10) && rng.roll_dice(1,3)==1) walkable[at(x,y)] = false;
+				if (rng.roll_dice(1,3)==1) walkable[at(x,y)] = false;
 			}
 		}
+		walkable[at(10,10)]=true;
 	}
 
 	// Calculate the vector offset of a grid location

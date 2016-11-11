@@ -73,9 +73,10 @@ struct map_t {
 		// to find our way.	
 		for (int y=1; y<height-2; ++y) {
 			for (int x=1; x<width-2; ++x) {
-				if ((x != 10 && y != 10) && rng.roll_dice(1,3)==1) walkable[at(x,y)] = false;
+				if (rng.roll_dice(1,3)==1) walkable[at(x,y)] = false;
 			}
 		}
+		walkable[at(10,10)] = true;
 	}
 
 	// Calculate the vector offset of a grid location
@@ -185,7 +186,8 @@ void tick(double duration_ms) {
 			const int terminal_x = mouse_x / 8;
 			const int terminal_y = mouse_y / 8;
 
-			if (map.walkable[map.at(terminal_x, terminal_y)] && get_mouse_button_state(rltk::button::LEFT)) {
+			const bool walkable = map.walkable[map.at(terminal_x, terminal_y)]; 
+			if (walkable && get_mouse_button_state(rltk::button::LEFT)) {
 				destination.x = terminal_x;
 				destination.y = terminal_y;
 
@@ -196,7 +198,7 @@ void tick(double duration_ms) {
 					destination = dude_position;
 					std::cout << "RESET: THIS ISN'T MEANT TO HAPPEN!\n";
 				}
-			} else {
+			} else if (walkable) {
 				if (path) path.reset();
 				path = find_path<location_t, navigator>(dude_position, location_t{terminal_x, terminal_y});
 			}
