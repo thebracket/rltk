@@ -16,7 +16,9 @@
 #include <future>
 #include <mutex>
 #include <boost/optional.hpp>
+#include <typeinfo>
 #include "serialization_utils.hpp"
+#include "xml.hpp"
 
 namespace rltk {
 
@@ -35,6 +37,37 @@ struct base_component_t {
 	static std::size_t type_counter;
 	std::size_t entity_id;
 	bool deleted = false;
+};
+
+/* Extracts xml_identity from a class, or uses the RTTI name if one isn't available */
+template< class T >
+struct has_to_xml_identity
+{
+    typedef char(&YesType)[1];
+    typedef char(&NoType)[2];
+    template< class, class > struct Sfinae;
+
+    template< class T2 > static YesType Test( Sfinae<T2, decltype(std::declval<T2>().xml_identity)> *);
+    template< class T2 > static NoType  Test( ... );
+    static const bool value = sizeof(Test<T>(0))==sizeof(YesType);
+};
+
+template <typename T>
+struct _calc_xml_identity {
+
+	template<class Q = T>
+	typename std::enable_if< has_to_xml_identity<Q>::value, void >::type
+    test(T &data, std::string &id)
+    {
+		id = data.xml_identity;
+    }
+
+	template<class Q = T>
+	typename std::enable_if< !has_to_xml_identity<Q>::value, void >::type
+    test(T &data, std::string &id)
+    {
+		id = typeid(data).name();
+    }
 };
 
 /*
@@ -61,8 +94,14 @@ struct component_t : public base_component_t {
 		family_id = family_id_tmp;
 	}
 
-	inline void save(std::ostream &lbfile) {
-		data.save(lbfile);
+	inline std::string xml_identity() {
+		std::string id;
+		_calc_xml_identity<C>().test(data, id);
+		return id;
+	}
+
+	inline void to_xml(xml_node * c) {
+		data.to_xml(c);
 	}
 };
 
@@ -72,7 +111,7 @@ struct component_t : public base_component_t {
 struct base_component_store {
 	virtual void erase_by_entity_id(const std::size_t &id)=0;
 	virtual void really_delete()=0;
-	virtual void save(std::ostream &lbfile)=0;
+	virtual void save(xml_node * xml)=0;
 	virtual std::size_t size()=0;
 };
 
@@ -106,11 +145,11 @@ struct component_store_t : public base_component_store {
 			components.end());
 	}
 
-	virtual void save(std::ostream &lbfile) override final {
+	virtual void save(xml_node * xml) override final {
 		for (auto &item : components) {
-			serialize(lbfile, item.data.serialization_identity);
-			serialize(lbfile, item.entity_id);
-			item.save(lbfile);
+			xml_node * body = xml->add_node(item.xml_identity());			
+			item.to_xml(body);
+			body->add_value("entity_id", rltk::serial::to_string(item.entity_id));
 		}
 	}
 
@@ -219,45 +258,24 @@ extern std::unordered_map<std::size_t, entity_t> entity_store;
 /*
  * Remove a reference to a component in an entity's bitmask
  */
-inline void unset_component_mask(const std::size_t id, const std::size_t family_id, bool delete_if_empty) {
-	auto finder = entity_store.find(id);
-	if (finder != entity_store.end()) {
-		finder->second.component_mask.reset(family_id);
-		if (delete_if_empty && finder->second.component_mask.none()) finder->second.deleted = true;
-	}
-}
+void unset_component_mask(const std::size_t id, const std::size_t family_id, bool delete_if_empty);
 
 /*
  * entity(ID) is used to reference an entity. So you can, for example, do:
  * entity(12)->component<position_component>()->x = 3;
  */
-inline boost::optional<entity_t&> entity(const std::size_t id) noexcept {
-	boost::optional<entity_t&> result;
-	auto finder = entity_store.find(id);
-	if (finder == entity_store.end()) return result;
-	if (finder->second.deleted) return result;
-	result = finder->second;
-	return result;
-}
+boost::optional<entity_t&> entity(const std::size_t id) noexcept;
 
 /*
  * Creates an entity with a new ID #. Returns a pointer to the entity, to enable
  * call chaining. For example create_entity()->assign(foo)->assign(bar)
  */
-inline boost::optional<entity_t&> create_entity() {
-	entity_t new_entity;
-	entity_store.emplace(new_entity.id, new_entity);
-	return entity(new_entity.id);
-}
+boost::optional<entity_t&> create_entity();
 
 /*
  * Creates an entity with a specified ID #. You generally only do this during loading.
  */
-inline boost::optional<entity_t&> create_entity(const std::size_t new_id) {
-	entity_t new_entity(new_id);
-	entity_store.emplace(new_entity.id, new_entity);
-	return entity(new_entity.id);
-}
+boost::optional<entity_t&> create_entity(const std::size_t new_id);
 
 /*
  * Finds all entities that have a component of the type specified, and returns a
@@ -298,13 +316,7 @@ inline void all_components(typename std::function<void(entity_t &, C &)> func) {
  * each, overloaded with a function/lambda that accepts an entity, will call the provided
  * function on _every_ entity in the system.
  */
-inline void each(std::function<void(entity_t &)> &&func) {
-	for (auto it=entity_store.begin(); it!=entity_store.end(); ++it) {
-		if (!it->second.deleted) {
-			func(it->second);
-		}
-	}
-}
+void each(std::function<void(entity_t &)> &&func);
 
 /*
  * Variadic each. Use this to call a function for all entities having a discrete set of components. For example,
@@ -341,7 +353,9 @@ struct base_message_t;
  * Be careful: not every platform uses a proper thread pool, so this can end up with a thundering herd of threads
  * competing for CPU time! Minimal effort is made to provide internal thread-safety at this time - so it's up to you to
  * handle that for now.
- * 
+ *
+ * WARNING: It's really easy to shoot yourself in the foot with this function. Be aware of synchronization, race conditions,
+ * etc. If you aren't sure, don't use it!
  */
 template <typename... Cs, typename F>
 inline void parallel_each(F&& callback) {
@@ -394,31 +408,17 @@ inline void parallel_each(F&& callback) {
 /*
  * Marks an entity (specified by ID#) as deleted.
  */
-inline void delete_entity(const std::size_t id) noexcept {
-	auto e = entity(id);
-	if (!e) return;
-
-	e->deleted = true;
-	for (auto &store : component_store) {
-		if (store) store->erase_by_entity_id(id);
-	}
-}
+void delete_entity(const std::size_t id) noexcept;
 
 /*
  * Marks an entity as deleted.
  */
-inline void delete_entity(entity_t &e) noexcept {
-	delete_entity(e.id);
-}
+void delete_entity(entity_t &e) noexcept;
 
 /*
  * Deletes all entities
  */
-inline void delete_all_entities() noexcept {
-	for (auto it=entity_store.begin(); it!=entity_store.end(); ++it) {
-		delete_entity(it->first);
-	}
-}
+void delete_all_entities() noexcept;
 
 /*
  * Marks an entity's component as deleted.
@@ -442,27 +442,7 @@ inline void delete_component(const std::size_t entity_id, bool delete_entity_if_
 /*
  * This should be called periodically to actually erase all entities and components that are marked as deleted.
  */
-inline void ecs_garbage_collect() {
-	std::unordered_set<std::size_t> entities_to_delete;
-
-	// Ensure that components are marked as deleted, and list out entities for erasure
-	for (auto it=entity_store.begin(); it!=entity_store.end(); ++it) {
-		if (it->second.deleted) {
-			for (std::unique_ptr<base_component_store> &store : component_store) {
-				if (store) store->erase_by_entity_id(it->second.id);
-			}
-			entities_to_delete.insert(it->second.id);
-		}
-	}
-
-	// Actually delete entities
-	for (const std::size_t &id : entities_to_delete) entity_store.erase(id);
-
-	// Now we erase components
-	for (std::unique_ptr<base_component_store> &store : component_store) {
-		if (store) store->really_delete();
-	}
-}
+void ecs_garbage_collect();
 
 /*
  * Base class from which all messages must derive.
@@ -532,19 +512,6 @@ struct subscription_holder_t : subscription_base_t {
 					}
 				}
 			}
-
-			/*
-			for (auto &func : static_cast<subscription_holder_t<MSG> *>(pubsub_holder[handle.family_id].get())->subscriptions) {
-				if (std::get<0>(func) && std::get<1>(func)) {
-					std::get<1>(func)(message);
-				} else {
-					// It is destined for the system's mailbox queue.
-					auto finder = std::get<2>(func)->mailboxes.find(handle.family_id);
-					if (finder != std::get<2>(func)->mailboxes.end()) {
-						static_cast<mailbox_t<MSG> *>(finder->second.get())->messages.push(message);
-					}
-				}
-			}*/
 		}
 	}
 };
@@ -660,93 +627,16 @@ inline void add_system( Args && ... args ) {
 	system_profiling.push_back(system_profiling_t{});
 }
 
-inline void delete_all_systems() {
-	system_store.clear();
-	system_profiling.clear();
-	pubsub_holder.clear();
-}
+void delete_all_systems();
 
-inline void ecs_configure() {
-	for (std::unique_ptr<base_system> & sys : system_store) {
-		sys->configure();
-	}
-}
+void ecs_configure();
 
-inline void ecs_tick(const double duration_ms) {
-	std::size_t count = 0;
-	for (std::unique_ptr<base_system> & sys : system_store) {
-		std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
-		sys->update(duration_ms);
-		deliver_messages();
-		std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
-		double duration = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count());
+void ecs_tick(const double duration_ms);
 
-		system_profiling[count].last = duration;
-		if (duration > system_profiling[count].worst) system_profiling[count].worst = duration;
-		if (duration < system_profiling[count].best) system_profiling[count].best = duration;
-		++count;
-	}
-	ecs_garbage_collect();
-}
+void ecs_save(std::unique_ptr<std::ofstream> lbfile);
 
-inline void ecs_save(std::ostream &lbfile) {
-	// Store the number of entities and their ID numbers
-	serialize(lbfile, entity_store.size());
-	for (auto it=entity_store.begin(); it!=entity_store.end(); ++it) {
-		serialize(lbfile, it->first);
-	}
+void ecs_load(std::unique_ptr<std::ifstream> lbfile, const std::function<void(xml_node *, std::size_t, std::string)> &helper);
 
-	// Store the last entity number
-	serialize(lbfile, entity_t::entity_counter);
-
-	// For each component type
-	std::size_t number_of_components = 0;
-	for (auto &it : component_store) {
-		if (it) number_of_components += it->size();
-	}
-	serialize(lbfile, number_of_components);
-	for (auto &it : component_store) {
-		if (it) it->save(lbfile);
-	}
-}
-
-inline void ecs_load(std::istream &lbfile, std::function<void(std::istream&,std::size_t,std::size_t)> helper) {
-	entity_store.clear();
-	component_store.clear();
-
-	std::size_t number_of_entities;
-	deserialize(lbfile, number_of_entities);
-	for (std::size_t i=0; i<number_of_entities; ++i) {
-		std::size_t entity_id;
-		deserialize(lbfile, entity_id);
-		create_entity(entity_id);
-	}
-	deserialize(lbfile, entity_t::entity_counter);
-
-	std::size_t number_of_components;
-	deserialize(lbfile, number_of_components);
-	for (std::size_t i=0; i<number_of_components; ++i) {
-		std::size_t serialization_identity;
-		std::size_t entity_id;
-		deserialize(lbfile, serialization_identity);
-		deserialize(lbfile, entity_id);
-		helper(lbfile, serialization_identity, entity_id);
-	}
-}
-
-inline std::string ecs_profile_dump() {
-	std::stringstream ss;
-	ss.precision(3);
-	ss << std::fixed;
-	ss << "SYSTEMS PERFORMANCE IN MICROSECONDS:\n";
-	ss << std::setw(20) << "System" << std::setw(20) << "Last" << std::setw(20) << "Best" << std::setw(20) << "Worst\n";
-	for (std::size_t i=0; i<system_profiling.size(); ++i) {
-		ss << std::setw(20) << system_store[i]->system_name 
-			<< std::setw(20) << system_profiling[i].last 
-			<< std::setw(20) << system_profiling[i].best 
-			<< std::setw(20) << system_profiling[i].worst << "\n";
-	}
-	return ss.str();
-}
+std::string ecs_profile_dump();
 
 }
