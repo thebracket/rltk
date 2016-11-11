@@ -29,6 +29,11 @@ namespace rltk {
 constexpr std::size_t MAX_COMPONENTS = 64;
 
 /*
+ * If the current component set does not support serialization, this will become true.
+ */
+ static bool ecs_supports_serialization = true;
+
+/*
  * Base type for component handles. Exists so that we can have a vector of pointers to
  * derived classes. entity_id is included to allow a quick reference without a static cast.
  * type_counter is used as a static member, referenced from component_t - the handle class.
@@ -70,6 +75,24 @@ struct _calc_xml_identity {
     }
 };
 
+template<class T>
+struct _ecs_check_for_to_xml
+{
+    template<class Q = T>
+	typename std::enable_if< serial::has_to_xml_method<Q>::value, void >::type
+    test(xml_node * c, T &data)
+    {
+		data.to_xml(c, data);
+    }
+
+    template<class Q = T>
+	typename std::enable_if< !serial::has_to_xml_method<Q>::value, void >::type
+    test(xml_node * c, T &data)
+    {
+        ecs_supports_serialization = false;
+    }
+};
+
 /*
  * component_t is a handle class for components. It inherits from base_component, allowing
  * the component store to have vectors of base_component_t *, where each type is a concrete
@@ -101,7 +124,8 @@ struct component_t : public base_component_t {
 	}
 
 	inline void to_xml(xml_node * c) {
-		data.to_xml(c);
+		_ecs_check_for_to_xml<C> serial;
+		serial.test(c, data);
 	}
 };
 

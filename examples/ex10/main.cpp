@@ -41,10 +41,6 @@ struct position {
 		if (y < 0) y = 0;
 		if (y > map_height) y = map_height;
 	}
-
-	// Boilerplate required for the ECS
-	std::size_t serialization_identity = 1;
-	void save(std::ostream &lbfile) {}
 };
 
 struct renderable { 
@@ -53,10 +49,6 @@ struct renderable {
 	int glyph; 
 	color_t fg=colors::WHITE; 
 	color_t bg=colors::BLACK; 
-
-	// Boilerplate required for the ECS
-	std::size_t serialization_identity = 2;
-	void save(std::ostream &lbfile) {}
 };
 
 struct navigator_helper {

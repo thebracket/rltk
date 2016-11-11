@@ -77,7 +77,7 @@ struct _component_to_xml_check_for_to_xml
         __component_to_xml(c, arg);
     }
 };
-// Issue is that T is a std::pair and we need to check the second argument!
+
 template <typename T>
 inline void _component_to_xml(xml_node * c, std::pair<const char *,T> arg) {
 	_component_to_xml_check_for_to_xml<T> temp;
