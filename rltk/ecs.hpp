@@ -82,7 +82,7 @@ struct _ecs_check_for_to_xml
 	typename std::enable_if< serial::has_to_xml_method<Q>::value, void >::type
     test(xml_node * c, T &data)
     {
-		data.to_xml(c, data);
+		data.to_xml(c);
     }
 
     template<class Q = T>
