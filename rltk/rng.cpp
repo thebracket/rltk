@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <functional>
+#include <ctime>
 
 using std::mt19937;
 using std::uniform_int_distribution;
@@ -11,7 +12,7 @@ namespace rltk
 
 random_number_generator::random_number_generator()
 {
-	initial_seed = static_cast<uint64_t>(std::random_device()());
+	initial_seed = time(nullptr);
 	rng.seed(static_cast<unsigned int>(initial_seed));
 }
 
