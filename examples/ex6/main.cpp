@@ -236,7 +236,8 @@ void tick(double duration_ms) {
 			const int terminal_y = mouse_y / 8;
 
 			// If the mouse is pointing at a walkable location, and the left button is down - path to the mouse.
-			if (map.walkable[map.at(terminal_x, terminal_y)] && get_mouse_button_state(rltk::button::LEFT)) {
+			const bool walkable = map.walkable[map.at(terminal_x, terminal_y)]; 
+			if (walkable && get_mouse_button_state(rltk::button::LEFT)) {
 				destination.x = terminal_x;
 				destination.y = terminal_y;
 
@@ -247,7 +248,7 @@ void tick(double duration_ms) {
 					destination = dude_position;
 					std::cout << "RESET: THIS ISN'T MEANT TO HAPPEN!\n";
 				}
-			} else {
+			} else if (walkable) {
 				// If the mouse is not clicked, then path to the mouse cursor for display only
 				if (path) path.reset();
 				path = find_path_2d<location_t, navigator>(dude_position, location_t{terminal_x, terminal_y});
