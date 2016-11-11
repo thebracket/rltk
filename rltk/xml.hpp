@@ -13,6 +13,23 @@
 
 namespace rltk {
 
+template<typename T>
+inline T from_string(const std::string &val) {
+    std::stringstream ss;
+    ss << val;
+    T result;
+    ss >> result;
+    return result;
+}
+template<>
+inline uint8_t from_string(const std::string &val) {
+    std::stringstream ss;
+    ss << val;
+    int result;
+    ss >> result;
+    return static_cast<uint8_t>(result);
+}
+
 struct xml_node {
     xml_node() {};
     xml_node(const std::string &Name) : name(Name) {}
@@ -54,11 +71,7 @@ struct xml_node {
     T val(const std::string &key) {
         for (const auto &val : values) {
             if (val.first == key) {
-                std::stringstream ss;
-                ss << val.second;
-                T result;
-                ss >> result;
-                return result;
+                return from_string<T>(val.second);
             }
         }
         throw std::runtime_error(std::string("Key not found:") + key);
