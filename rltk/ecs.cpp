@@ -155,7 +155,8 @@ void ecs_load(std::unique_ptr<std::ifstream> lbfile, const std::function<void(xm
     xml_reader reader(std::move(lbfile));
 
     xml_node * entity_list = reader.get()->find("entities");
-    std::size_t number_of_entities = entity_list->val<std::size_t>("entityCount");
+    //std::size_t number_of_entities = entity_list->val<std::size_t>("entityCount");
+	std::size_t last_entity = entity_list->val<std::size_t>("lastEntity");
     for (const auto &e : entity_list->values) {
         if (e.first == "entityId") {
             std::size_t entity_id;
@@ -165,9 +166,10 @@ void ecs_load(std::unique_ptr<std::ifstream> lbfile, const std::function<void(xm
             create_entity(entity_id);
         }
     }
+	entity_t::entity_counter = last_entity;
 
     xml_node * component_list = reader.get()->find("components");
-    std::size_t number_of_components = component_list->val<std::size_t>("componentCount");
+    //std::size_t number_of_components = component_list->val<std::size_t>("componentCount");
     for (xml_node &comp : component_list->children) {
         std::size_t entity_id = comp.val<std::size_t>("entity_id");
         helper(&comp, entity_id, comp.name);
