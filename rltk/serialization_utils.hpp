@@ -123,9 +123,10 @@ template<typename T, typename S>
 inline void _component_to_xml(xml_node *c, std::pair<const char *, std::vector<std::pair<T,S>>> arg) {
 	xml_node * vec = c->add_node(arg.first);
 	for (auto item : arg.second) {
-		xml_node * i = vec->add_node(std::string(arg.first) + std::string("_first"));
+		xml_node * e = vec->add_node(arg.first);
+		xml_node * i = e->add_node(std::string(arg.first) + std::string("_first"));
 		rltk::component_to_xml(i, std::make_pair(arg.first, item.first));
-		xml_node * i2 = vec->add_node(std::string(arg.first) + std::string("_second"));
+		xml_node * i2 = e->add_node(std::string(arg.first) + std::string("_second"));
 		rltk::component_to_xml(i2, std::make_pair(arg.first, item.second));
 	}
 }
