@@ -147,6 +147,10 @@ struct layer_t {
 		check_handle_uniqueness(handle);
 		controls.emplace(handle, std::make_unique<gui_listbox_t>(X, Y, VAL, options, label, label_fg, label_bg, ITEM_FG, ITEM_BG, sel_fg, sel_bg));
 	}
+
+	inline void clear_gui() {
+		controls.clear();
+	}
 };
 
 // Convenience: ready-made function to resize to use the whole screen.
