@@ -29,6 +29,10 @@ inline uint8_t from_string(const std::string &val) {
     ss >> result;
     return static_cast<uint8_t>(result);
 }
+template<>
+inline std::string from_string(const std::string &val) {
+    return val;
+}
 
 struct xml_node {
     xml_node() {};
