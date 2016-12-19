@@ -589,6 +589,34 @@ struct base_system {
 			return nullptr;
 		}
 	}
+
+    template<class MSG>
+    void each_mbox(const std::function<void(const MSG&)> &func) {
+        std::queue<MSG> * mailbox = mbox<MSG>();
+        while (!mailbox->empty()) {
+            MSG msg = mailbox->front();
+            mailbox->pop();
+            func(msg);
+        }
+    }
+};
+
+template <class MSG>
+struct mailbox_system : public base_system {
+    virtual void configure() override final {
+        subscribe_mbox<MSG>();
+    }
+
+    virtual void update(const double duration_ms) override final {
+        std::queue<MSG> * mailbox = base_system::mbox<MSG>();
+        while (!mailbox->empty()) {
+            MSG msg = mailbox->front();
+            mailbox->pop();
+            on_message(msg);
+        }
+    }
+
+    virtual void on_message(const MSG &msg)=0;
 };
 
 /*
