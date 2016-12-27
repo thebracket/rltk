@@ -10,6 +10,8 @@ std::unique_ptr<gui_t> gui;
 
 namespace main_detail {
 bool use_root_console;
+bool taking_screenshot = false;
+std::string screenshot_filename = "";
 }
 
 sf::RenderWindow * get_window() {
@@ -118,9 +120,20 @@ void run(std::function<void(double)> on_tick) {
         }
 
         main_window->display();
+        if (main_detail::taking_screenshot) {
+            sf::Image screen = rltk::get_window()->capture();
+            screen.saveToFile(main_detail::screenshot_filename);
+            main_detail::screenshot_filename = "";
+            main_detail::taking_screenshot = false;
+        }
 
         duration_ms = ((clock() - start_time) * 1000.0) / CLOCKS_PER_SEC;
     }
+}
+
+void request_screenshot(const std::string &filename) {
+    main_detail::taking_screenshot = true;
+    main_detail::screenshot_filename = filename;
 }
 
 }
