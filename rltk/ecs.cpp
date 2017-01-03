@@ -4,7 +4,7 @@ namespace rltk {
 
 std::size_t base_component_t::type_counter = 1;
 std::size_t base_message_t::type_counter = 1;
-std::size_t entity_t::entity_counter = 1; // Not using zero since it is used as null so often
+std::atomic<std::size_t> entity_t::entity_counter{1}; // Not using zero since it is used as null so often
 std::vector<std::unique_ptr<base_component_store>> component_store;
 std::unordered_map<std::size_t, entity_t> entity_store;
 std::vector<std::unique_ptr<base_system>> system_store;
@@ -30,12 +30,21 @@ boost::optional<entity_t&> entity(const std::size_t id) noexcept {
 
 boost::optional<entity_t&> create_entity() {
 	entity_t new_entity;
-	entity_store.emplace(new_entity.id, new_entity);
+    while (entity_store.find(new_entity.id) != entity_store.end()) {
+        ++entity_t::entity_counter;
+        new_entity.id = entity_t::entity_counter;
+    }
+    //std::cout << "New Entity ID#: " << new_entity.id << "\n";
+
+    entity_store.emplace(new_entity.id, new_entity);
 	return entity(new_entity.id);
 }
 
 boost::optional<entity_t&> create_entity(const std::size_t new_id) {
 	entity_t new_entity(new_id);
+    if (entity_store.find(new_entity.id) != entity_store.end()) {
+        throw std::runtime_error("WARNING: Duplicate entity ID. Odd things will happen\n");
+    }
 	entity_store.emplace(new_entity.id, new_entity);
 	return entity(new_entity.id);
 }

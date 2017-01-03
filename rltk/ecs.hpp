@@ -17,6 +17,7 @@
 #include <mutex>
 #include <boost/optional.hpp>
 #include <typeinfo>
+#include <atomic>
 #include "serialization_utils.hpp"
 #include "xml.hpp"
 
@@ -197,7 +198,8 @@ struct entity_t {
 	 * Default constructor - use the next available entity id #.
 	 */
 	entity_t() {
-		id = {entity_t::entity_counter++};
+        ++entity_t::entity_counter;
+		id = entity_t::entity_counter;
 	}
 
 	/*
@@ -212,7 +214,7 @@ struct entity_t {
 	 * Static ID counter - used to ensure that entity IDs are unique. This would need to be atomic
 	 * in a threaded app.
 	 */
-	static std::size_t entity_counter;
+	static std::atomic<std::size_t> entity_counter;
 
 	/*
 	 * The entities ID number. Used to identify the entity. These should be unique.
