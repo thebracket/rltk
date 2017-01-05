@@ -76,6 +76,9 @@ void init(const config_advanced &config) {
     gui = std::make_unique<gui_t>(config.width_px, config.height_px);
 }
 
+boost::optional<std::function<bool(sf::Event)>> optional_event_hook;
+boost::optional<std::function<void()>> optional_display_hook;
+
 void run(std::function<void(double)> on_tick) {    
     reset_mouse_state();
 
@@ -87,24 +90,31 @@ void run(std::function<void(double)> on_tick) {
         sf::Event event;
         while (main_window->pollEvent(event))
         {
-            if (event.type == sf::Event::Closed) {
-                main_window->close();
-            } else if (event.type == sf::Event::Resized) {
-                main_window->setView(sf::View(sf::FloatRect(0.f, 0.f, static_cast<float>(event.size.width), static_cast<float>(event.size.height)))); 
-                if (main_detail::use_root_console) console->resize_pixels(event.size.width, event.size.height);
-                if (gui) gui->on_resize(event.size.width, event.size.height);
-            } else if (event.type == sf::Event::LostFocus) {
-                set_window_focus_state(false);
-            } else if (event.type == sf::Event::GainedFocus) {
-                set_window_focus_state(true);
-            } else if (event.type == sf::Event::MouseButtonPressed) {                
-                set_mouse_button_state(event.mouseButton.button, true);
-            } else if (event.type == sf::Event::MouseButtonReleased) {
-                set_mouse_button_state(event.mouseButton.button, false);
-            } else if (event.type == sf::Event::MouseMoved) {
-                set_mouse_position(event.mouseMove.x, event.mouseMove.y);
-            } else if (event.type == sf::Event::KeyPressed) {
-                enqueue_key_pressed(event);
+            bool handle_events = true;
+            if (optional_event_hook) {
+                handle_events = optional_event_hook.get()(event);
+            }
+            if (handle_events) {
+                if (event.type == sf::Event::Closed) {
+                    main_window->close();
+                } else if (event.type == sf::Event::Resized) {
+                    main_window->setView(sf::View(sf::FloatRect(0.f, 0.f, static_cast<float>(event.size.width),
+                                                                static_cast<float>(event.size.height))));
+                    if (main_detail::use_root_console) console->resize_pixels(event.size.width, event.size.height);
+                    if (gui) gui->on_resize(event.size.width, event.size.height);
+                } else if (event.type == sf::Event::LostFocus) {
+                    set_window_focus_state(false);
+                } else if (event.type == sf::Event::GainedFocus) {
+                    set_window_focus_state(true);
+                } else if (event.type == sf::Event::MouseButtonPressed) {
+                    set_mouse_button_state(event.mouseButton.button, true);
+                } else if (event.type == sf::Event::MouseButtonReleased) {
+                    set_mouse_button_state(event.mouseButton.button, false);
+                } else if (event.type == sf::Event::MouseMoved) {
+                    set_mouse_position(event.mouseMove.x, event.mouseMove.y);
+                } else if (event.type == sf::Event::KeyPressed) {
+                    enqueue_key_pressed(event);
+                }
             }
         }
 
@@ -119,6 +129,12 @@ void run(std::function<void(double)> on_tick) {
             gui->render(*main_window);
         }
 
+        if (optional_display_hook) {
+            main_window->pushGLStates();
+            main_window->resetGLStates();
+            optional_display_hook.get()();
+            main_window->popGLStates();
+        }
         main_window->display();
         if (main_detail::taking_screenshot) {
             sf::Image screen = rltk::get_window()->capture();
