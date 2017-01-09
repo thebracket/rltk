@@ -70,7 +70,7 @@ struct color_t {
 	}
 
 	/* You can compare colors */
-	bool operator==(const color_t &other) {
+	bool operator==(const color_t &other) const {
 		if (other.r == r && other.g == g && other.b == b) {
 			return true;
 		} else {
