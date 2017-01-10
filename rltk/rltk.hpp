@@ -21,6 +21,7 @@
 #include "perlin_noise.hpp"
 #include "serialization_utils.hpp"
 #include "rexspeeder.hpp"
+#include "scaling.hpp"
 
 namespace rltk {
 

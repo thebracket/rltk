@@ -1,5 +1,6 @@
 #include "virtual_terminal.hpp"
 #include "texture_resources.hpp"
+#include "scaling.hpp"
 #include <algorithm>
 #include <stdexcept>
 #include <iostream>
@@ -7,8 +8,8 @@
 namespace rltk {
 
 void virtual_terminal::resize_pixels(const int width, const int height) noexcept {
-	int w = width/font->character_size.first;
-	int h = height/font->character_size.second;
+	int w = static_cast<int>(width/(font->character_size.first * scale_factor));
+	int h = static_cast<int>(height/(font->character_size.second * scale_factor));
 	resize_chars(w,h);
 }
 
@@ -218,6 +219,7 @@ void virtual_terminal::render(sf::RenderWindow &window) {
 	sf::Sprite compositor(backing.getTexture());
 	compositor.move(static_cast<float>(offset_x), static_cast<float>(offset_y));
 	compositor.setColor(sf::Color(tint.r, tint.g, tint.b, alpha));
+    compositor.scale(scale_factor, scale_factor);
 	window.draw(sf::Sprite(compositor));
 	dirty = false;
 }

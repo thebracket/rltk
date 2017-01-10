@@ -1,4 +1,5 @@
 #include "input_handler.hpp"
+#include "scaling.hpp"
 #include <array>
 #include <algorithm>
 
@@ -34,8 +35,8 @@ bool get_mouse_button_state(const int button) {
 }
 
 void set_mouse_position(const int x, const int y) {
-	rltk::state::mouse_x = x;
-	rltk::state::mouse_y = y;
+	rltk::state::mouse_x = static_cast<int>(x / scale_factor);
+	rltk::state::mouse_y = static_cast<int>(y / scale_factor);
 }
 
 std::pair<int,int> get_mouse_position() {

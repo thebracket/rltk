@@ -23,6 +23,7 @@ add_library(rltk 	rltk/rltk.cpp
 					rltk/xml.cpp
 					rltk/perlin_noise.cpp
 					rltk/rexspeeder.cpp
+					rltk/scaling.cpp
 )
 
 # Require SFML
