@@ -368,6 +368,31 @@ inline void each(F&& callback) {
 	}
 }
 
+/*
+ * Variadic each_if. Use this to call a function for all entities having a discrete set of components. For example,
+ * each<position, ai>([] (entity_t &e, position &pos, ai &brain) { ... code returns true if needs processing ... },
+ * [] (entity_t &e, position &pos, ai &brain) { ... code ... });
+ */
+template <typename... Cs, typename P, typename F>
+inline void each_if(P&& predicate, F&& callback) {
+	std::array<size_t, sizeof...(Cs)> family_ids{ component_t<Cs>{}.family_id... };
+	for (auto it=entity_store.begin(); it!=entity_store.end(); ++it) {
+		if (!it->second.deleted) {
+			bool matches = true;
+			for (const std::size_t &compare : family_ids) {
+				if (!it->second.component_mask.test(compare)) {
+					matches = false;
+					break;
+				}
+			}
+			if (matches && predicate(it->second, *it->second.component<Cs>()...)) {
+				// Call the functor
+				callback(it->second, *it->second.component<Cs>()...);
+			}
+		}
+	}
+}
+
 // Forward declaration
 struct base_message_t;
 
