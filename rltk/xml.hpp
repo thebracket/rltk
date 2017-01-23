@@ -4,12 +4,12 @@
 #include <fstream>
 #include <vector>
 #include <utility>
-#include <boost/filesystem/operations.hpp>
-#include <boost/filesystem/path.hpp>
 #include <memory>
 #include <sstream>
+#include <cstdio>
 #include "color_t.hpp"
 #include "vchar.hpp"
+#include "filesystem.hpp"
 
 namespace rltk {
 
@@ -109,7 +109,7 @@ struct xml_node {
 
 struct xml_writer {
     xml_writer(const std::string &fn, const std::string &root_name) : filename(fn), root(xml_node(root_name,0)) {
-        if (boost::filesystem::exists(filename)) boost::filesystem::remove(filename);
+        if (exists(filename)) std::remove(filename.c_str());
 	    lbfile = std::make_unique<std::ofstream>(filename, std::ios::out | std::ios::binary);
     }
 
@@ -131,7 +131,7 @@ private:
 
 struct xml_reader {
     xml_reader(const std::string &fn) : filename(fn) {
-        if (!boost::filesystem::exists(filename)) throw std::runtime_error(std::string("File not found: ") + filename);
+        if (!exists(filename)) throw std::runtime_error(std::string("File not found: ") + filename);
 	    lbfile = std::make_unique<std::ifstream>(filename, std::ios::in | std::ios::binary);
         load();
     }

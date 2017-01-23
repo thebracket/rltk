@@ -5,7 +5,6 @@
 #include <cctype>
 #include <locale>
 #include <iostream>
-#include <boost/algorithm/string.hpp>
 #include <string>
 
 using namespace std::string_literals;
@@ -65,14 +64,22 @@ static inline std::string &ltrim(std::string &s) {
     return s;
 }
 
+static inline void erase_all(std::string &s, const std::string &to_remove) {
+    auto pos = s.find(to_remove);
+    while (pos != std::string::npos) {
+        s.erase(pos, to_remove.size());
+	pos = s.find(to_remove);
+    }
+}
+
 static inline std::string remove_xml_braces(std::string s) {
-    boost::erase_all(s, "<");
-    boost::erase_all(s, ">");
+    erase_all(s, "<");
+    erase_all(s, ">");
     return s;
 }
 
 static inline std::string remove_colon_value(std::string s) {
-    boost::erase_all(s, ":value");
+    erase_all(s, ":value");
     return s;
 }
 
@@ -83,7 +90,7 @@ void xml_reader::load() {
     std::string line;
     while (getline(*lbfile, line)) {
         std::string trimmed = ltrim(line);
-        boost::erase_all(trimmed, "\n");
+        erase_all(trimmed, "\n");
 
         if (first_line) {
             root.name = remove_xml_braces(trimmed);

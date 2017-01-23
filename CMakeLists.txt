@@ -55,16 +55,6 @@ target_link_libraries(ex9 rltk)
 target_link_libraries(ex10 rltk)
 target_link_libraries(ex11 rltk)
 
-# Require Boost
-set(Boost_USE_STATIC_LIBS      OFF) # only find static libs
-set(Boost_USE_MULTITHREADED    ON)
-set(Boost_USE_STATIC_RUNTIME   OFF)
-find_package(Boost COMPONENTS filesystem system REQUIRED)
-if(Boost_FOUND)
-  include_directories(${Boost_INCLUDE_DIRS})
-  target_link_libraries(rltk ${Boost_LIBRARIES})
-endif()
-
 # We depend upon zlib
 find_package(ZLIB REQUIRED)
 if (ZLIB_FOUND)

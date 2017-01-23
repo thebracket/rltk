@@ -1,8 +1,0 @@
-{
-	"fonts" : {
-		"8x8" : {"file":"terminal8x8.png", "width":8, "height":8},
-		"16x16" : {"file":"terminal16x16.png", "width":16, "height":16},
-		"32x32" : {"file":"terminal32x32.png", "width":32, "height":32},
-		"8x16" : {"file":"VGA8x16.png", "width":8, "height":16}
-	}
-}

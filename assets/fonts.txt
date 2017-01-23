@@ -1,0 +1,5 @@
+8x8,terminal8x8.png,8,8
+16x16,terminal16x16.png,16,16
+32x32,terminal32x32.png,32,32
+8x16,VGA8x16.png,8,16
+

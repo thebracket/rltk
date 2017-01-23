@@ -2,18 +2,28 @@
 #include "texture_resources.hpp"
 #include <unordered_map>
 #include <stdexcept>
-#include <boost/filesystem.hpp>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
 #include <iostream>
-
-using namespace boost::filesystem;
-using boost::property_tree::ptree;
-using boost::property_tree::read_json;
+#include <sstream>
+#include <fstream>
+#include "filesystem.hpp"
 
 namespace rltk {
 
 namespace font_detail {
+
+std::vector<std::string> split ( const std::string &str, const char &delimiter )
+{
+     std::vector<std::string> internal;
+     std::stringstream ss ( str ); // Turn the string into a stream.
+     std::string tok;
+
+     while ( getline ( ss, tok, delimiter ) ) {
+          internal.push_back ( tok );
+     }
+
+     return internal;
+}
+
 std::unordered_map<std::string, rltk::bitmap_font> atlas;
 }
 
@@ -49,10 +59,19 @@ void register_font(const std::string font_tag, const std::string filename, int w
 
 void register_font_directory(const std::string path) {
 	if (!exists(path)) throw std::runtime_error("Font directory does not exist.");
-	if (!is_directory(path)) throw std::runtime_error("Font directory is not a directory.");
-	const std::string info_file = path + "/fonts.json";
-	if (!exists(info_file)) throw std::runtime_error("No fonts.json file in font directory.");
+	const std::string info_file = path + "/fonts.txt";
+	if (!exists(info_file)) throw std::runtime_error("No fonts.txt file in font directory.");
 
+	std::ifstream f(info_file);
+	std::string line;
+	while (getline(f, line)) {
+		auto split = font_detail::split(line, ',');
+		if (split.size() == 4) {
+			register_font(split[0], path + "/" + split[1], std::stoi(split[2]), std::stoi(split[3]));
+		}
+	}
+
+	/*
 	ptree font_tree;
 	read_json(info_file, font_tree);
 
@@ -65,7 +84,7 @@ void register_font_directory(const std::string path) {
     	const int height = font_tree.get<int>(font_tree_path + "height");
 
     	register_font(font_name, path + "/" + font_file, width, height);
-    }
+    }*/
 }
 
 }
