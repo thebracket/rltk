@@ -9,7 +9,6 @@
 #include "virtual_terminal.hpp"
 #include <string>
 #include <functional>
-#include <boost/optional.hpp>
 #include <vector>
 #include <iostream>
 
@@ -25,10 +24,10 @@ struct gui_control_t {
 	virtual bool mouse_in_control(const int tx, const int ty) { return false; }
 
 	// Callbacks
-	boost::optional<std::function<void(gui_control_t *)>> on_render_start;
-	boost::optional<std::function<void(gui_control_t *, int, int)>> on_mouse_over;
-	boost::optional<std::function<void(gui_control_t *, int, int)>> on_mouse_down;
-	boost::optional<std::function<void(gui_control_t *, int, int)>> on_mouse_up;
+	std::function<void(gui_control_t *)> on_render_start = nullptr;
+	std::function<void(gui_control_t *, int, int)> on_mouse_over = nullptr;
+	std::function<void(gui_control_t *, int, int)> on_mouse_down = nullptr;
+	std::function<void(gui_control_t *, int, int)> on_mouse_up = nullptr;
 };
 
 struct gui_static_text_t : public gui_control_t {

@@ -11,7 +11,6 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <boost/optional.hpp>
 #include <vector>
 #include "font_manager.hpp"
 #include "texture.hpp"
@@ -33,7 +32,8 @@ struct xchar {
 	float y = 0.0f;
 	int angle = 0; // Rotation angle in degrees, defaults to 0 - not rotated
 	unsigned char opacity = 255;
-	boost::optional<color_t> background; // If provided, a background is drawn
+	bool has_background = false;
+	color_t background; // If provided, a background is drawn
 };
 
 struct virtual_terminal_sparse {

@@ -76,8 +76,8 @@ void init(const config_advanced &config) {
     gui = std::make_unique<gui_t>(config.width_px, config.height_px);
 }
 
-boost::optional<std::function<bool(sf::Event)>> optional_event_hook;
-boost::optional<std::function<void()>> optional_display_hook;
+std::function<bool(sf::Event)> optional_event_hook = nullptr;
+std::function<void()> optional_display_hook = nullptr;
 
 void run(std::function<void(double)> on_tick) {    
     reset_mouse_state();
@@ -92,7 +92,7 @@ void run(std::function<void(double)> on_tick) {
         {
             bool handle_events = true;
             if (optional_event_hook) {
-                handle_events = optional_event_hook.get()(event);
+                handle_events = optional_event_hook(event);
             }
             if (handle_events) {
                 if (event.type == sf::Event::Closed) {
@@ -132,7 +132,7 @@ void run(std::function<void(double)> on_tick) {
         if (optional_display_hook) {
             main_window->pushGLStates();
             main_window->resetGLStates();
-            optional_display_hook.get()();
+            optional_display_hook();
             main_window->popGLStates();
         }
         main_window->display();

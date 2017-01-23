@@ -28,7 +28,7 @@ void layer_t::render(sf::RenderWindow &window) {
 			// Render start events
 			for (auto it=controls.begin(); it != controls.end(); ++it) {
 				if (it->second->on_render_start) {
-					auto callfunc = it->second->on_render_start.get();
+					auto callfunc = it->second->on_render_start;
 					callfunc(it->second.get());
 				}
 			}
@@ -46,17 +46,17 @@ void layer_t::render(sf::RenderWindow &window) {
 					// Mouse over
 					if (it->second->mouse_in_control(terminal_x, terminal_y)) {
 						if (it->second->on_mouse_over) {
-							auto callfunc = it->second->on_mouse_over.get();
+							auto callfunc = it->second->on_mouse_over;
 							callfunc(it->second.get(), terminal_x, terminal_y);
 						}
 
 						// Mouse down and up
 						if (get_mouse_button_state(button::LEFT) && it->second->on_mouse_down) {
-							auto callfunc = it->second->on_mouse_down.get();
+							auto callfunc = it->second->on_mouse_down;
 							callfunc(it->second.get(), terminal_x, terminal_y);
 						}
 						if (!get_mouse_button_state(button::LEFT) && it->second->on_mouse_up) {
-							auto callfunc = it->second->on_mouse_up.get();
+							auto callfunc = it->second->on_mouse_up;
 							callfunc(it->second.get(), terminal_x, terminal_y);
 						}
 					}

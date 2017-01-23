@@ -122,6 +122,6 @@ inline virtual_terminal_sparse * sterm(const int &handle) { return gui->get_laye
 void request_screenshot(const std::string &filename);
 
 /* Lifecycle hooks, for example to integrate ImGui with your application. */
-extern boost::optional<std::function<bool(sf::Event)>> optional_event_hook;
-extern boost::optional<std::function<void()>> optional_display_hook;
+extern std::function<bool(sf::Event)> optional_event_hook;
+extern std::function<void()> optional_display_hook;
 }

@@ -46,8 +46,8 @@ void virtual_terminal_sparse::render(sf::RenderWindow &window) {
 			const int texture_y = (target.glyph / 16) * font_height;
 			sf::Vector2f position((target.x * fontW) + fontW/2.0f, (target.y * fontH) + fontH/2.0f);
 
-			if (target.background) {
-				sf::Color bgsfml = color_to_sfml(target.background.get());
+			if (target.has_background) {
+				sf::Color bgsfml = color_to_sfml(target.background);
 				sf::Sprite sprite;
 				sprite.setTexture(*tex);
 				sprite.setTextureRect(sf::IntRect(space_x, space_y, font_width, font_height));
