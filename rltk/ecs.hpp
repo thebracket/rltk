@@ -15,7 +15,6 @@
 #include <queue>
 #include <future>
 #include <mutex>
-#include <boost/optional.hpp>
 #include <typeinfo>
 #include <atomic>
 #include "serialization_utils.hpp"
@@ -259,8 +258,8 @@ struct entity_t {
 	 * Find a component of the specified type that belongs to the entity.
 	 */
 	template <class C>
-	inline boost::optional<C&> component() noexcept {
-		boost::optional<C&> result;
+	inline C * component() noexcept {
+		C * result = nullptr;
 		if (deleted) return result;
 
 		C empty_component;
@@ -268,7 +267,7 @@ struct entity_t {
 		if (!component_mask.test(temp.family_id)) return result;
 		for (component_t<C> &component : static_cast<component_store_t<component_t<C>> *>(component_store[temp.family_id].get())->components) {
 			if (component.entity_id == id) {
-				result = component.data;
+				result = &component.data;
 				return result;
 			}
 		}
@@ -290,18 +289,18 @@ void unset_component_mask(const std::size_t id, const std::size_t family_id, boo
  * entity(ID) is used to reference an entity. So you can, for example, do:
  * entity(12)->component<position_component>()->x = 3;
  */
-boost::optional<entity_t&> entity(const std::size_t id) noexcept;
+entity_t * entity(const std::size_t id) noexcept;
 
 /*
  * Creates an entity with a new ID #. Returns a pointer to the entity, to enable
  * call chaining. For example create_entity()->assign(foo)->assign(bar)
  */
-boost::optional<entity_t&> create_entity();
+entity_t * create_entity();
 
 /*
  * Creates an entity with a specified ID #. You generally only do this during loading.
  */
-boost::optional<entity_t&> create_entity(const std::size_t new_id);
+entity_t * create_entity(const std::size_t new_id);
 
 /*
  * Finds all entities that have a component of the type specified, and returns a

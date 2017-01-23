@@ -19,17 +19,17 @@ void unset_component_mask(const std::size_t id, const std::size_t family_id, boo
 	}
 }
 
-boost::optional<entity_t&> entity(const std::size_t id) noexcept {
-	boost::optional<entity_t&> result;
+entity_t * entity(const std::size_t id) noexcept {
+	entity_t * result = nullptr;
 	auto finder = entity_store.find(id);
 	if (finder == entity_store.end()) return result;
 	if (finder->second.deleted) return result;
-	result = finder->second;
+	result = &finder->second;
 	return result;
 }
 
-boost::optional<entity_t&> create_entity() {
-	entity_t new_entity;
+entity_t * create_entity() {
+    entity_t new_entity;
     while (entity_store.find(new_entity.id) != entity_store.end()) {
         ++entity_t::entity_counter;
         new_entity.id = entity_t::entity_counter;
@@ -37,10 +37,10 @@ boost::optional<entity_t&> create_entity() {
     //std::cout << "New Entity ID#: " << new_entity.id << "\n";
 
     entity_store.emplace(new_entity.id, new_entity);
-	return entity(new_entity.id);
+    return entity(new_entity.id);
 }
 
-boost::optional<entity_t&> create_entity(const std::size_t new_id) {
+entity_t * create_entity(const std::size_t new_id) {
 	entity_t new_entity(new_id);
     if (entity_store.find(new_entity.id) != entity_store.end()) {
         throw std::runtime_error("WARNING: Duplicate entity ID. Odd things will happen\n");

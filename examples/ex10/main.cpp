@@ -62,10 +62,10 @@ int left_x, right_x, top_y, bottom_y;
 
 struct actor_moved_message : base_message_t {
 	actor_moved_message() {}
-	actor_moved_message(boost::optional<entity_t &> ACTOR, const int fx, const int fy, const int dx, const int dy) :
+	actor_moved_message(entity_t * ACTOR, const int fx, const int fy, const int dx, const int dy) :
 		mover(ACTOR), from_x(fx), from_y(fy), destination_x(dx), destination_y(dy) {}
 
-	boost::optional<entity_t &> mover;
+	entity_t * mover;
 	int from_x, from_y, destination_x, destination_y;
 };
 
