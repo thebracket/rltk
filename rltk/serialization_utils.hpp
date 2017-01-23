@@ -9,6 +9,7 @@
 #include "color_t.hpp"
 #include "xml.hpp"
 #include "vchar.hpp"
+#include <boost/optional.hpp>
 
 namespace rltk {
 
@@ -115,6 +116,36 @@ inline void _component_to_xml(xml_node *c, std::pair<const char *, std::vector<s
 		xml_node * i2 = e->add_node(std::string(arg.first) + std::string("_second"));
 		rltk::component_to_xml(i2, std::make_pair(arg.first, item.second));
 	}
+}
+
+template<typename T, typename S>
+inline void _component_to_xml(xml_node *c, std::pair<const char *, std::unordered_set<T,S>> arg) {
+	xml_node * set = c->add_node(arg.first);
+	for (auto it = arg.second.begin(); it != arg.second.end(); ++it) {
+        xml_node * key = set->add_node("key");
+        rltk::component_to_xml(key, std::make_pair("k", *it));
+    }
+}
+
+template<typename T, typename S>
+inline void _component_to_xml(xml_node *c, std::pair<const char *, std::unordered_map<T,S>> arg) {
+    xml_node * map = c->add_node(arg.first);
+    for (auto it = arg.second.begin(); it != arg.second.end(); ++it) {
+        xml_node * entry = map->add_node(arg.first);
+        entry->add_value("key", to_string(it->first));
+        rltk::component_to_xml(entry, std::make_pair("v", it->second));
+    }
+}
+
+template<typename T>
+inline void _component_to_xml(xml_node * c, std::pair<const char *, boost::optional<T>> arg) {
+    xml_node * optional = c->add_node(arg.first);
+    if (!arg.second) {
+        optional->add_value("initialized", "no");
+    } else {
+        optional->add_value("initialized", "yes");
+        rltk::component_to_xml(optional, std::make_pair(arg.first, arg.second.get()));
+    }
 }
 
 template <typename First, typename... Rest>
