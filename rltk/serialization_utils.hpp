@@ -9,7 +9,6 @@
 #include "color_t.hpp"
 #include "xml.hpp"
 #include "vchar.hpp"
-#include <boost/optional.hpp>
 
 namespace rltk {
 
@@ -138,13 +137,13 @@ inline void _component_to_xml(xml_node *c, std::pair<const char *, std::unordere
 }
 
 template<typename T>
-inline void _component_to_xml(xml_node * c, std::pair<const char *, boost::optional<T>> arg) {
+inline void _component_to_xml(xml_node * c, std::pair<const char *, std::unique_ptr<T>> arg) {
     xml_node * optional = c->add_node(arg.first);
     if (!arg.second) {
         optional->add_value("initialized", "no");
     } else {
         optional->add_value("initialized", "yes");
-        rltk::component_to_xml(optional, std::make_pair(arg.first, arg.second.get()));
+        rltk::component_to_xml(optional, std::make_pair(arg.first, *arg.second));
     }
 }
 
