@@ -631,7 +631,7 @@ namespace rltk {
          * call at the end of the next system execution. This is thead-safe, so you can emit_defer from within a parallel_each.
          */
         template <class MSG>
-        inline void emit_deferred(MSG &&message) {
+        inline void emit_deferred(MSG message) {
             impl::message_t<MSG> handle(message);
             if (pubsub_holder.size() > handle.family_id) {
 

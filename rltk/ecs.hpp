@@ -149,7 +149,7 @@ namespace rltk {
     }
 
     template <class MSG>
-    inline void emit_deferred(MSG &&message) {
+    inline void emit_deferred(MSG message) {
         emit_deferred<MSG>(message);
     }
 
