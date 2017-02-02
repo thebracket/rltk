@@ -1,10 +1,12 @@
 #include "ecs.hpp"
+#include "../cereal/types/polymorphic.hpp"
+#include "../cereal/archives/xml.hpp"
 
 namespace rltk {
 
 std::size_t impl::base_component_t::type_counter = 1;
 std::size_t base_message_t::type_counter = 1;
-std::atomic<std::size_t> entity_t::entity_counter{1}; // Not using zero since it is used as null so often
+std::size_t entity_t::entity_counter{1}; // Not using zero since it is used as null so often
 ecs default_ecs;
 
 entity_t * ecs::entity(const std::size_t id) noexcept {
@@ -76,60 +78,16 @@ void ecs::ecs_tick(const double duration_ms) {
 }
 
 void ecs::ecs_save(std::unique_ptr<std::ofstream> &lbfile) {
-	// Initialize the XML system
-	xml_writer writer(std::move(lbfile), "ECS");
-
-	// Store the number of entities and their ID numbers
-	xml_node * entities = writer.add_node("entities");
-	entities->add_value( "entityCount", std::to_string(entity_store.size()) );
-    for (auto it=entity_store.begin(); it!=entity_store.end(); ++it) {
-		entities->add_value("entityId", std::to_string(it->first));
-	}
-
-	// Store the last entity number
-	entities->add_value("lastEntity", std::to_string(entity_t::entity_counter));
-
-	// For each component type
-	xml_node * components = writer.add_node("components");
-
-	std::size_t number_of_components = 0;
-	for (auto &it : component_store) {
-		if (it) number_of_components += it->size();
-	}
-	components->add_value("componentCount", std::to_string(number_of_components));
-
-    for (auto &it : component_store) {
-        if (it) it->save(components);
-    }
-
-	writer.commit();
+    cereal::XMLOutputArchive oarchive(*lbfile);
+    oarchive(*this);
 }
 
-void ecs::ecs_load(std::unique_ptr<std::ifstream> &lbfile, const std::function<void(xml_node *, std::size_t, std::string)> &helper) {
+void ecs::ecs_load(std::unique_ptr<std::ifstream> &lbfile) {
 	entity_store.clear();
 	component_store.clear();
-    xml_reader reader(std::move(lbfile));
-
-    xml_node * entity_list = reader.get()->find("entities");
-    //std::size_t number_of_entities = entity_list->val<std::size_t>("entityCount");
-	std::size_t last_entity = entity_list->val<std::size_t>("lastEntity");
-    for (const auto &e : entity_list->values) {
-        if (e.first == "entityId") {
-            std::size_t entity_id;
-            std::stringstream ss;
-            ss << e.second;
-            ss >> entity_id;
-            create_entity(entity_id);
-        }
-    }
-	entity_t::entity_counter = last_entity;
-
-    xml_node * component_list = reader.get()->find("components");
-    //std::size_t number_of_components = component_list->val<std::size_t>("componentCount");
-    for (xml_node &comp : component_list->children) {
-        std::size_t entity_id = comp.val<std::size_t>("entity_id");
-        helper(&comp, entity_id, comp.name);
-    }
+    cereal::XMLInputArchive iarchive(*lbfile);
+    iarchive(*this);
+    std::cout << "Loaded " << entity_store.size() << " entities, and " << component_store.size() << " component types.\n";
 }
 
 std::string ecs::ecs_profile_dump() {

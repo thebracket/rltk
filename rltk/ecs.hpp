@@ -19,6 +19,7 @@
 #include <atomic>
 #include "serialization_utils.hpp"
 #include "xml.hpp"
+#include <cereal/types/polymorphic.hpp>
 #include "ecs_impl.hpp"
 
 namespace rltk {
@@ -195,12 +196,12 @@ namespace rltk {
         ecs_save(default_ecs, lbfile);
     }
 
-    inline void ecs_load(ecs &ECS, std::unique_ptr<std::ifstream> &lbfile, const std::function<void(xml_node *, std::size_t, std::string)> &helper) {
-        ECS.ecs_load(lbfile, helper);
+    inline void ecs_load(ecs &ECS, std::unique_ptr<std::ifstream> &lbfile) {
+        ECS.ecs_load(lbfile);
     }
 
-    inline void ecs_load(std::unique_ptr<std::ifstream> &lbfile, const std::function<void(xml_node *, std::size_t, std::string)> &helper) {
-        ecs_load(default_ecs, lbfile, helper);
+    inline void ecs_load(std::unique_ptr<std::ifstream> &lbfile) {
+        ecs_load(default_ecs, lbfile);
     }
 
     inline std::string ecs_profile_dump(ecs &ECS) {

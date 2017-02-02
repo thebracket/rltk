@@ -9,6 +9,7 @@
 
 #include <tuple>
 #include <SFML/Graphics.hpp>
+#include <cereal/cereal.hpp>
 
 namespace rltk {
 
@@ -80,6 +81,12 @@ struct color_t {
 
 	/* RGB storage */
 	uint8_t r,g,b;
+
+	template<class Archive>
+	void serialize(Archive & archive)
+	{
+		archive( r, g, b ); // serialize things by passing them to the archive
+	}
 };
 
 /* Converts a color_t to an SFML color */

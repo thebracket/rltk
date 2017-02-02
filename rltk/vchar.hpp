@@ -7,6 +7,7 @@
  */
 
 #include "color_t.hpp"
+#include <cereal/cereal.hpp>
 
 namespace rltk {
 /* 
@@ -22,5 +23,11 @@ struct vchar {
 	uint32_t glyph;
 	color_t foreground;
 	color_t background;
+
+	template<class Archive>
+	void serialize(Archive & archive)
+	{
+		archive( glyph, foreground, background ); // serialize things by passing them to the archive
+	}
 };
 }

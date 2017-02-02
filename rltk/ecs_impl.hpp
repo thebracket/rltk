@@ -1,5 +1,11 @@
 #pragma once
 
+#include "../cereal/cereal.hpp"
+#include <cereal/types/memory.hpp>
+#include <cereal/types/unordered_map.hpp>
+#include <cereal/types/bitset.hpp>
+#include <cereal/types/vector.hpp>
+
 namespace rltk {
 
     // Forward declarations
@@ -63,6 +69,12 @@ namespace rltk {
             static std::size_t type_counter;
             std::size_t entity_id;
             bool deleted = false;
+
+            template<class Archive>
+            void serialize(Archive & archive)
+            {
+                archive( entity_id, deleted ); // serialize things by passing them to the archive
+            }
         };
 
         /* Extracts xml_identity from a class, or uses the RTTI name if one isn't available */
@@ -133,6 +145,12 @@ namespace rltk {
             std::size_t family_id;
             C data;
 
+            template<class Archive>
+            void serialize(Archive & archive)
+            {
+                archive( cereal::base_class<base_component_t>(this), family_id, data ); // serialize things by passing them to the archive
+            }
+
             inline void family() {
                 static std::size_t family_id_tmp = base_component_t::type_counter++;
                 family_id = family_id_tmp;
@@ -158,6 +176,11 @@ namespace rltk {
             virtual void really_delete()=0;
             virtual void save(xml_node * xml)=0;
             virtual std::size_t size()=0;
+
+            template<class Archive>
+            void serialize(Archive & archive)
+            {
+            }
         };
 
         /*
@@ -198,6 +221,13 @@ namespace rltk {
             virtual std::size_t size() override final {
                 return components.size();
             }
+
+            template<class Archive>
+            void serialize(Archive & archive)
+            {
+                archive( cereal::base_class<base_component_store>(this), components ); // serialize things by passing them to the archive
+            }
+
         };
 
         /*
@@ -297,7 +327,7 @@ namespace rltk {
          * Static ID counter - used to ensure that entity IDs are unique. This would need to be atomic
          * in a threaded app.
          */
-        static std::atomic<std::size_t> entity_counter;
+        static std::size_t entity_counter;
 
         /*
          * The entities ID number. Used to identify the entity. These should be unique.
@@ -346,6 +376,12 @@ namespace rltk {
         template <class C>
         inline C * component() noexcept {
             return component<C>(default_ecs);
+        }
+
+        template<class Archive>
+        void serialize(Archive & archive)
+        {
+            archive( component_mask, id, deleted ); // serialize things by passing them to the archive
         }
     };
 
@@ -656,7 +692,7 @@ namespace rltk {
 
         void ecs_save(std::unique_ptr<std::ofstream> &lbfile);
 
-        void ecs_load(std::unique_ptr<std::ifstream> &lbfile, const std::function<void(xml_node *, std::size_t, std::string)> &helper);
+        void ecs_load(std::unique_ptr<std::ifstream> &lbfile);
 
         std::string ecs_profile_dump();
 
@@ -689,6 +725,15 @@ namespace rltk {
             for (auto &holder : pubsub_holder) {
                 if (holder) holder->deliver_messages();
             }
+        }
+
+        /*
+         * Cereal support for save/load
+         */
+        template<class Archive>
+        void serialize(Archive & archive)
+        {
+            archive( entity_store, component_store, entity_t::entity_counter, impl::base_component_t::type_counter ); // serialize things by passing them to the archive
         }
     };
 
@@ -757,3 +802,5 @@ namespace rltk {
     }
 
 } // End RLTK namespace
+
+CEREAL_REGISTER_ARCHIVE(rltk::ecs)
