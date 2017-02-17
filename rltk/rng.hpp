@@ -7,7 +7,6 @@
  * Random number generator class.
  */
 
-#include <random>
 #include <string>
 
 namespace rltk
@@ -17,13 +16,14 @@ class random_number_generator
 {
 public:
 	random_number_generator();
-	random_number_generator(const uint64_t seed);
+	random_number_generator(const int seed);
 	random_number_generator(const std::string seed);
 
 	int roll_dice(const int &n, const int &d);
-	uint64_t initial_seed;
+	int initial_seed;
 private:
-	std::mt19937 rng;
+    int fastrand();
+    int g_seed;
 };
 
 }

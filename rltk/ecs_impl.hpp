@@ -53,7 +53,7 @@ namespace rltk {
          * Constant defining the maximum number of components to support. This sizes the bitsets,
          * so we don't want it to be much bigger than needed.
          */
-        constexpr std::size_t MAX_COMPONENTS = 64;
+        constexpr std::size_t MAX_COMPONENTS = 128;
 
         /*
          * If the current component set does not support serialization, this will become true.
