@@ -133,6 +133,8 @@ public:
 	 */
 	inline std::pair<int,int> get_font_size() noexcept { return font->character_size; }
 
+	inline std::string get_font_tag() noexcept { return font->texture_tag; }
+
 	int term_width;
 	int term_height;
 	bool visible = true;
