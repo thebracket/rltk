@@ -62,13 +62,19 @@ void init(const config_simple_px &config) {
 
 void init(const config_advanced &config) {
     register_font_directory(config.font_path);
+
+    sf::ContextSettings settings;
+    settings.antialiasingLevel = 4;
+    settings.depthBits = 32;
+    settings.stencilBits = 8;
+
     if (!config.fullscreen) {
         main_window = std::make_unique<sf::RenderWindow>(sf::VideoMode(config.width_px, config.height_px), 
-            config.window_title, sf::Style::Titlebar | sf::Style::Resize | sf::Style::Close);
+            config.window_title, sf::Style::Titlebar | sf::Style::Resize | sf::Style::Close, settings);
     } else {
         sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
         main_window = std::make_unique<sf::RenderWindow>(sf::VideoMode(desktop.width, desktop.height, desktop.bitsPerPixel)
-            , config.window_title, sf::Style::Fullscreen);
+            , config.window_title, sf::Style::Fullscreen, settings);
     }
     main_window->setVerticalSyncEnabled(true);
     main_detail::use_root_console = false;
