@@ -108,13 +108,33 @@ inline void line_func(const int &x1, const int &y1, const int &x2, const int &y2
  * implementation of Bresenham's line algorithm.
  * https://gist.github.com/yamamushi/5823518
  */
-void line_func_3d(const int &x1, const int &y1, const int &z1, const int &x2, const int &y2, const int &z2, std::function<void(int, int, int)> &&func) noexcept;
+template <typename F>
+void line_func_3d(const int &x1, const int &y1, const int &z1, const int &x2, const int &y2, const int &z2, F &&func) noexcept
+{
+    float x = static_cast<float>(x1)+0.5F;
+    float y = static_cast<float>(y1)+0.5F;
+    float z = static_cast<float>(z1)+0.5F;
+
+    float length = distance3d(x1, y1, z1, x2, y2, z2);
+    int steps = static_cast<int>(std::floor(length));
+    float x_step = (x - x2) / length;
+    float y_step = (y - y2) / length;
+    float z_step = (z - z2) / length;
+
+    for (int i=0; i<steps; ++i) {
+        x += x_step;
+        y += y_step;
+        z += z_step;
+        func(static_cast<int>(std::floor(x)), static_cast<int>(std::floor(y)), static_cast<int>(std::floor(z)));
+    }
+}
 
 /*
  * Perform a function for each line element between x1/y1 and x2/y2. We used to use Bresenham's algorithm,
  * but benchmarking showed that a simple float based vector was faster.
  */
-inline void line_func_cancellable(const int &x1, const int &y1, const int &x2, const int &y2, std::function<bool(int, int)> &&func) noexcept {
+template <typename F>
+inline void line_func_cancellable(const int &x1, const int &y1, const int &x2, const int &y2, F &&func) noexcept {
     float x = static_cast<float>(x1) + 0.5F;
     float y = static_cast<float>(y1) + 0.5F;
     const float dest_x = static_cast<float>(x2);
@@ -132,10 +152,29 @@ inline void line_func_cancellable(const int &x1, const int &y1, const int &x2, c
 }
 
 /*
- * Perform a function for each line element between x1/y1/z1 and x2/y2/z2. We used to use Bresenham's algorithm,
- * but benchmarking showed that a simple float based vector was faster.
- * Cancellable version: the function can return "false" to stop traversing the line.
+ * Perform a function for each line element between x1/y1/z1 and x2/y2/z2. Uses a 3D
+ * implementation of Bresenham's line algorithm.
+ * https://gist.github.com/yamamushi/5823518
  */
-void line_func_3d_cancellable(const int &x1, const int &y1, const int &z1, const int &x2, const int &y2, const int &z2, std::function<bool(int, int, int)> &&func) noexcept;
+template<typename F>
+void line_func_3d_cancellable(const int &x1, const int &y1, const int &z1, const int &x2, const int &y2, const int &z2, F &&func) noexcept
+{
+    float x = static_cast<float>(x1)+0.5F;
+    float y = static_cast<float>(y1)+0.5F;
+    float z = static_cast<float>(z1)+0.5F;
 
+    float length = distance3d(x1, y1, z1, x2, y2, z2);
+    int steps = static_cast<int>(std::floor(length));
+    float x_step = (x - x2) / length;
+    float y_step = (y - y2) / length;
+    float z_step = (z - z2) / length;
+
+    for (int i=0; i<steps; ++i) {
+        x += x_step;
+        y += y_step;
+        z += z_step;
+        const bool keep_going = func(static_cast<int>(std::floor(x)), static_cast<int>(std::floor(y)), static_cast<int>(std::floor(z)));
+        if (!keep_going) return;
+    }
+}
 }
