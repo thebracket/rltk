@@ -7,7 +7,7 @@ namespace rltk {
 
 namespace state {
 bool window_focused = true;
-std::array<bool, 5> mouse_button_pressed;
+std::array<bool, 7> mouse_button_pressed;
 int mouse_x = 0;
 int mouse_y = 0;
 }

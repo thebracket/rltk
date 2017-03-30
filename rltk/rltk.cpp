@@ -120,6 +120,12 @@ void run(std::function<void(double)> on_tick) {
                     set_mouse_position(event.mouseMove.x, event.mouseMove.y);
                 } else if (event.type == sf::Event::KeyPressed) {
                     enqueue_key_pressed(event);
+                } else if (event.type == sf::Event::MouseWheelMoved) {
+                    if (event.mouseWheel.delta < 0) {
+                        set_mouse_button_state(button::WHEEL_UP, true);
+                    } else if (event.mouseWheel.delta > 0) {
+                        set_mouse_button_state(button::WHEEL_DOWN, true);
+                    }
                 }
             }
         }

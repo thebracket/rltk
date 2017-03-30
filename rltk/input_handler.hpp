@@ -22,6 +22,8 @@ constexpr int RIGHT = 1;
 constexpr int MIDDLE = 2;
 constexpr int SIDE1 = 3;
 constexpr int SIDE2 = 4;
+constexpr int WHEEL_UP = 5;
+constexpr int WHEEL_DOWN = 6;
 }
 
 /* Does the game window currently have focus? You might want to pause if it doesn't. */
