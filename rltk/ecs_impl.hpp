@@ -597,7 +597,7 @@ namespace rltk {
          */
         template <typename... Cs, typename P, typename F>
         inline void each_if(P&& predicate, F callback) {
-            std::array<size_t, sizeof...(Cs)> family_ids{ impl::component_t<Cs>{}.family_id... };
+            std::array<size_t, sizeof...(Cs)> family_ids{ {impl::component_t<Cs>{}.family_id...} };
             for (auto it=entity_store.begin(); it!=entity_store.end(); ++it) {
                 if (!it->second.deleted) {
                     bool matches = true;
