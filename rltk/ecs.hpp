@@ -119,12 +119,12 @@ namespace rltk {
     template <typename... Cs, typename P, typename F>
     inline void each_if(ecs &ECS, P&& predicate, F callback) {
         ECS.each_if<Cs...>(predicate, callback);
-    };
+    }
 
     template <typename... Cs, typename P, typename F>
     inline void each_if(P&& predicate, F callback) {
         each_if<Cs...>(default_ecs, predicate, callback);
-    };
+    }
 
     inline void ecs_garbage_collect(ecs &ECS) {
         ECS.ecs_garbage_collect();
