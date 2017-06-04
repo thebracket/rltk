@@ -26,6 +26,10 @@ add_library(rltk 	rltk/rltk.cpp
 					rltk/scaling.cpp
 )
 
+# Require cereal
+find_package(Cereal REQUIRED)
+include_directories(${CEREAL_INCLUDE_DIR})
+
 # Require SFML
 find_package(SFML 2 COMPONENTS system window graphics REQUIRED)
 include_directories(${SFML_INCLUDE_DIR})
