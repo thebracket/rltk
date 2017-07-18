@@ -13,6 +13,15 @@ and probably some of the entity-component-system I've been enjoying.
 
 You need SFML for your platform, Boost, and cmake. Make a "build" folder, and use CMake to generate build files for your platform (I'll expand upon this later, when this is a more useful library).
 
+## Building on Visual Studio 2017
+
+* Setup VCPKG, following the instructions [here](https://blogs.msdn.microsoft.com/vcblog/2016/09/19/vcpkg-a-tool-to-acquire-and-build-c-open-source-libraries-on-windows/)
+* Ensure that you've integrated it, with `vcpkg integrate install` (see [here](https://github.com/Microsoft/vcpkg/blob/master/docs/examples/using-sqlite.md))
+* Install packages: `vcpkg install sfml` and `vcpkg install cereal`. These take a while.
+* Open Visual Studio 2017, and use "Open Folder" to open the RLTK folder to which you cloned everything. The CVPKG stuff will ensure that SFML is linked correctly.
+* If you've previously opened the project in VS2017, use the CMake menu to delete your cache and regenerate everything. You really shouldn't have to do this, but CMake integration is young.
+* You should now be able to select an output, and build/run it.
+
 ## Included Examples (with lots of comments!)
 
 I'll write proper documentation as the library evolves; I don't really want to write up a lot of docs and have to revise them

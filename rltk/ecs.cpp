@@ -1,6 +1,6 @@
 #include "ecs.hpp"
-#include "../cereal/types/polymorphic.hpp"
-#include "../cereal/archives/xml.hpp"
+#include <cereal/types/polymorphic.hpp>
+#include <cereal/archives/binary.hpp>
 
 namespace rltk {
 
@@ -78,14 +78,14 @@ void ecs::ecs_tick(const double duration_ms) {
 }
 
 void ecs::ecs_save(std::unique_ptr<std::ofstream> &lbfile) {
-    cereal::XMLOutputArchive oarchive(*lbfile);
+    cereal::BinaryOutputArchive oarchive(*lbfile);
     oarchive(*this);
 }
 
 void ecs::ecs_load(std::unique_ptr<std::ifstream> &lbfile) {
 	entity_store.clear();
 	component_store.clear();
-    cereal::XMLInputArchive iarchive(*lbfile);
+    cereal::BinaryInputArchive iarchive(*lbfile);
     iarchive(*this);
     std::cout << "Loaded " << entity_store.size() << " entities, and " << component_store.size() << " component types.\n";
 }

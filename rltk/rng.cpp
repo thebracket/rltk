@@ -1,6 +1,7 @@
 #include "rng.hpp"
 
 #include <iostream>
+#include <time.h>
 
 namespace rltk {
 
