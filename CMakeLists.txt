@@ -33,7 +33,9 @@ target_include_directories(rltk PUBLIC
 		)
 target_link_libraries(rltk PUBLIC ${ZLIB_LIBRARIES} ${SFML_LIBRARIES})
 if(NOT MSVC) # Why was this here? I exempted the wierd linker flags
-	target_compile_options(rltk "-O3 -Wall -Wpedantic -march=native -mtune=native -g")
+	target_compile_options(rltk PUBLIC -O3 -Wall -Wpedantic -march=native -mtune=native -g)
+else()
+	target_compile_options(rltk PUBLIC /W3 /EHsc)
 endif()
 
 install (TARGETS rltk
@@ -42,33 +44,33 @@ install (TARGETS rltk
 		RUNTIME DESTINATION bin)
 
 set(RLTK_HEADERS
-		astar.hpp
-		colors.hpp
-		color_t.hpp
-		ecs.hpp
-		ecs_impl.hpp
-		filesystem.hpp
-		font_manager.hpp
-		fsa.hpp
-		geometry.hpp
-		gui.hpp
-		gui_control_t.hpp
-		input_handler.hpp
-		layer_t.hpp
-		path_finding.hpp
-		perlin_noise.hpp
-		rexspeeder.hpp
-		rltk.hpp
-		rng.hpp
-		scaling.hpp
-		serialization_utils.hpp
-		texture.hpp
-		texture_resources.hpp
-		vchar.hpp
-		virtual_terminal.hpp
-		virtual_terminal_sparse.hpp
-		visibility.hpp
-		xml.hpp)
+		rltk/astar.hpp
+		rltk/colors.hpp
+		rltk/color_t.hpp
+		rltk/ecs.hpp
+		rltk/ecs_impl.hpp
+		rltk/filesystem.hpp
+		rltk/font_manager.hpp
+		rltk/fsa.hpp
+		rltk/geometry.hpp
+		rltk/gui.hpp
+		rltk/gui_control_t.hpp
+		rltk/input_handler.hpp
+		rltk/layer_t.hpp
+		rltk/path_finding.hpp
+		rltk/perlin_noise.hpp
+		rltk/rexspeeder.hpp
+		rltk/rltk.hpp
+		rltk/rng.hpp
+		rltk/scaling.hpp
+		rltk/serialization_utils.hpp
+		rltk/texture.hpp
+		rltk/texture_resources.hpp
+		rltk/vchar.hpp
+		rltk/virtual_terminal.hpp
+		rltk/virtual_terminal_sparse.hpp
+		rltk/visibility.hpp
+		rltk/xml.hpp)
 
 install(FILES ${RLTK_HEADERS}
 		DESTINATION "include/rltk"
