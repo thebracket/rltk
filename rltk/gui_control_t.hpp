@@ -20,6 +20,7 @@ namespace rltk {
  * Base type for retained-mode GUI controls.
  */
 struct gui_control_t {
+        virtual ~gui_control_t() = default;
 	virtual void render(virtual_terminal * console)=0;
 	virtual bool mouse_in_control(const int tx, const int ty) { return false; }
 

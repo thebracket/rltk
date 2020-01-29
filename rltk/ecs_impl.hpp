@@ -172,6 +172,7 @@ namespace rltk {
          * Base class for the component store. Concrete component stores derive from this.
          */
         struct base_component_store {
+            virtual ~base_component_store() = default;
             virtual void erase_by_entity_id(ecs &ECS, const std::size_t &id)=0;
             virtual void really_delete()=0;
             virtual void save(xml_node * xml)=0;
@@ -256,6 +257,7 @@ namespace rltk {
          * Base class for storing subscriptions to messages
          */
         struct subscription_base_t {
+            virtual ~subscription_base_t() = default;
             virtual void deliver_messages()=0;
         };
 
@@ -389,6 +391,7 @@ namespace rltk {
      * Systems should inherit from this class.
      */
     struct base_system {
+        virtual ~base_system() = default;
         virtual void configure() {}
         virtual void update(const double duration_ms)=0;
         std::string system_name = "Unnamed System";
