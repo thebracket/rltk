@@ -17,7 +17,7 @@ namespace visibility_private {
  * Benchmark results from example 6 (on my desktop):
  * - Using line_func, it averages 0.3625 uS per line.
  * - Using line_func_cancellable, it averages 0.25 uS per line.
- * - Using a naieve float based slope, it averages 0.2 uS per line.
+ * - Using a naive float based slope, it averages 0.2 uS per line.
  */
 
 template<class location_t_, class navigator_t>
@@ -30,9 +30,9 @@ void internal_2d_sweep(const location_t_ &position, const int &range, std::funct
 	const int end_x = start_x + offset.first;
 	const int end_y = start_y + offset.second;
 	
-	line_func_cancellable(start_x, start_y, end_x, end_y, [&blocked, &is_opaque, &set_visible, &range, &position] (int X, int Y) {
+	line_func_cancellable(start_x, start_y, end_x, end_y, [&blocked, &is_opaque, &set_visible, &range, &start_x, &start_y] (int X, int Y) {
 		if (blocked) return false;
-		float distance = distance2d(static_cast<int>(position.x), static_cast<int>(position.y), X, Y);
+		float distance = distance2d(static_cast<int>(start_x), static_cast<int>(start_y), X, Y);
 		if (distance <= range) {
 			location_t_ pos = navigator_t::get_xy(X,Y);
 			if (!blocked) set_visible(pos);
